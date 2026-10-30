@@ -41,3 +41,19 @@ a.game .fork:hover,.fork:hover{background:var(--yl);color:#111}
 .providers a,.providers span{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:10px;font:700 12px/1 var(--mono);letter-spacing:.1em;text-decoration:none;border:1px solid var(--yl);color:#111;background:var(--yl)}
 .providers span{background:transparent;color:var(--mute);border-color:var(--line)}
 .vrg-act .btn.acct{border-color:var(--yl);color:var(--yl)}.vrg-act .btn img{width:18px;height:18px;border-radius:50%}
+/* compact home: hero in one short row, posters fully visible without scrolling at 1080p */
+body.home .wrap{padding:18px 24px 40px}
+body.home .hero{grid-template-columns:1fr auto;gap:24px;margin-bottom:18px;align-items:center}
+body.home .hero h1{font-size:clamp(24px,2.4vw,34px);margin:0 0 4px}
+body.home .hero h1 br{display:none}
+body.home .hero .kicker{margin-bottom:8px}
+body.home .hero .lead{font-size:14px;margin:0;max-width:640px}
+body.home .hero img{max-width:220px;justify-self:end}
+body.home .game .t.top{padding:12px 16px 12px}
+body.home .game b{font-size:18px;margin-bottom:2px}
+body.home .game span{font-size:13px}
+body.home .game .row{margin-top:10px}
+body.home .game .go,body.home .game .fork{padding:8px 12px;font-size:11px}
+body.home .game .cover img{aspect-ratio:auto;height:min(46vh,480px);object-fit:contain;background:#0b0c10}
+body.home footer{margin-top:22px;padding-top:14px}
+@media(max-width:760px){body.home .hero{grid-template-columns:1fr}body.home .hero img{max-width:160px;justify-self:start;order:-1}body.home .game .cover img{height:auto;aspect-ratio:1/1;object-fit:cover}}
