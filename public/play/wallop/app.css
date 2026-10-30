@@ -100,12 +100,12 @@ a{color:inherit}
 @media(max-width:560px){#top .battle,#top #themeName,#top .back{display:none}#top{gap:8px;padding:0 10px}.wallet b{font-size:17px}#clockBox b{font-size:18px}}
 
 /* side meters: NOISE earned this round backing each fighter */
-.sidebar{position:absolute;top:0;bottom:0;width:14px;z-index:5;background:rgba(255,255,255,.05);pointer-events:none}
+.sidebar{position:absolute;top:0;bottom:0;width:26px;z-index:5;background:rgba(255,255,255,.05);pointer-events:none}
 .sidebar.l{left:0;border-right:1px solid rgba(255,255,255,.08)}.sidebar.r{right:0;border-left:1px solid rgba(255,255,255,.08)}
 .sb-fill{position:absolute;left:0;right:0;bottom:0;height:0;transition:height .12s ease-out}
 .sidebar.l .sb-fill{background:linear-gradient(180deg,#9ff7c6,var(--up));box-shadow:0 0 14px rgba(68,239,153,.6)}
 .sidebar.r .sb-fill{background:linear-gradient(180deg,#ffb0a8,var(--dn));box-shadow:0 0 14px rgba(255,111,97,.6)}
-.sb-n{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font:800 11px/1 var(--mono);color:#fff;text-shadow:0 1px 4px #000}
+.sb-n{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font:800 12px/1 var(--mono);color:#fff;text-shadow:0 1px 4px #000,0 0 6px #000;background:rgba(0,0,0,.55);padding:3px 4px;border-radius:5px}
 .sidebar.l .sb-n{color:var(--up)}.sidebar.r .sb-n{color:var(--dn)}
 #tapHint{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}#tapTally{font:700 11px/1.4 var(--mono);letter-spacing:.08em;color:var(--mut)}#tapTally b{color:var(--yl)}
 /* the battle is the pick that matters */
