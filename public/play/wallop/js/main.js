@@ -26,7 +26,7 @@ let cur=null;                 /* {minute, match, no, resolved:Set, picks:{}, tap
 let prev=null;                /* last finished battle, for the card */
 function startBattle(minute){
   const match=genMatch(minute);
-  cur={ minute, match, no:battleNoOf(minute), resolved:new Set(), picks:{}, tapNoise:{}, results:{}, teethWon:0 };
+  cur={ minute, match, no:battleNoOf(minute), resolved:new Set(), picks:{}, tapNoise:{}, tapBy:{}, tapTotal:0, results:{}, teethWon:0 };
   /* joined mid-fight: rounds already decided are marked, not replayed */
   for(const r of match.rounds) if(r.resolveAt<=clock.ct()) cur.resolved.add(r.i);
   arena.newMatch(); arena.setFraming('fight'); arena.setMode(clock.phase()==='FIGHT'?'shadow':'idle');
@@ -106,12 +106,12 @@ let lead=null;
 function tap(side,e){
   if(!cur||!clock.inCountdown()) return;
   audio.unlock();
-  const ri=clock.roundIndex(); cur.tapNoise[ri]=cur.tapNoise[ri]||0;
+  const ri=clock.roundIndex(); cur.tapNoise[ri]=cur.tapNoise[ri]||0; cur.tapBy[ri]=cur.tapBy[ri]||{a:0,b:0};
   const r=arenaEl.getBoundingClientRect();
   const px=(e.clientX||r.left+r.width*(side==='a'?.3:.7))-r.left, py=(e.clientY||r.top+r.height*.6)-r.top;
   arena.tap(px*(WORLD_W/r.width), py*(WORLD_W/r.width)+arena.viewTop);
   let gain=0;
-  if(lead===side && cur.tapNoise[ri]<NOISE_TAP_CAP){ gain=NOISE_PER_TAP; cur.tapNoise[ri]+=gain; me.noise+=gain; audio.tap(); }
+  if(lead===side && cur.tapNoise[ri]<NOISE_TAP_CAP){ gain=NOISE_PER_TAP; cur.tapNoise[ri]+=gain; cur.tapBy[ri][side]+=gain; cur.tapTotal+=gain; me.noise+=gain; audio.tap(); }
   const d=document.createElement('span'); d.className='plus'+(gain?'':' zero'); d.textContent=gain?'+'+gain:(lead?'NOT AHEAD':'FLAT');
   d.style.left=(px-14)+'px'; d.style.top=(py-20)+'px'; $('#tapFx').appendChild(d); setTimeout(()=>d.remove(),850);
   const z=$(side==='a'?'#tapL':'#tapR'); z.classList.add('hit'); setTimeout(()=>z.classList.remove('hit'),120);
@@ -229,6 +229,11 @@ function frame(now){
   else { lead=null; arena.setLead(null,0); }
   arena.setDirection(ph==='FIGHT'?d/(sg*1.1):0);
   const sc=paintPips(); arena.setHurt(sc.b/ROUNDS*0.5, sc.a/ROUNDS*0.5);
+  /* side meters + tally */
+  { const t=(ri>=0&&cur.tapBy[ri])||{a:0,b:0};
+    $('#sbA').style.height=Math.min(100,t.a/NOISE_TAP_CAP*100)+'%'; $('#sbB').style.height=Math.min(100,t.b/NOISE_TAP_CAP*100)+'%';
+    $('#sbNA').textContent=t.a?'+'+t.a:'0'; $('#sbNB').textContent=t.b?'+'+t.b:'0';
+    $('#tapTally').innerHTML=`<b>+${(ri>=0&&cur.tapNoise[ri])||0}</b> NOISE from taps this round · <b>+${cur.tapTotal}</b> this battle`; }
   arena.frame(dt);
   audio.crowd(ph==='FIGHT'?0.35+0.5*clamp(Math.abs(d)/sg,0,1):0.12,dt);
 

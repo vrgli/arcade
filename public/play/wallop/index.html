@@ -34,6 +34,8 @@
         <canvas id="arena" width="780" height="1040"></canvas>
         <div id="tintLayer"></div>
         <div id="lbTop" class="letterbox"></div><div id="lbBot" class="letterbox"></div>
+        <div class="sidebar l"><div class="sb-fill" id="sbA"></div><b class="sb-n" id="sbNA">0</b></div>
+        <div class="sidebar r"><div class="sb-fill" id="sbB"></div><b class="sb-n" id="sbNB">0</b></div>
         <div id="countdown"><div class="cd-round" id="cdRound">ROUND 1</div><div class="cd-num" id="cdNum">10</div></div>
         <div id="lead" class="lead"><span id="leadTxt">PRICE DECIDES AT 1</span><b id="leadPct">—</b></div>
         <div id="tapL" class="tapzone l"><span>TAP IF <em id="tapNameA">CAPT BTC</em> IS AHEAD</span></div>
@@ -48,7 +50,7 @@
         </div>
         <div id="toast"></div>
       </div>
-      <div id="tapHint">During each 10-second countdown, tap the fighter who is ahead. <b>+2 NOISE</b> a tap, up to 80 a round.</div>
+      <div id="tapHint"><span>During each 10-second countdown, tap the fighter who is ahead. <b>+2 NOISE</b> a tap, up to 80 a round.</span><span id="tapTally"><b>+0</b> NOISE from taps this round · <b>+0</b> this battle</span></div>
     </section>
 
     <aside id="bets">
