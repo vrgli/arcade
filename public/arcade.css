@@ -63,3 +63,9 @@ body.home .game .cover img{height:auto;aspect-ratio:1/1;object-fit:cover}
 body.home .game .t.top span{display:block;min-height:2.7em}
 body.home .game .t.top .row{margin-top:8px}
 @media(max-width:760px){body.home .games{--tile:1fr;grid-template-columns:1fr}body.home .game .t.top span{min-height:0}}
+
+/* wide tiles: full width, wide posters, no bands */
+body.home .wrap{max-width:1480px}
+body.home .games{grid-template-columns:1fr 1fr;justify-content:stretch;gap:24px}
+body.home .game .cover img{aspect-ratio:16/10;object-fit:cover;height:auto;max-height:calc(100vh - 470px)}
+@media(max-width:760px){body.home .games{grid-template-columns:1fr}body.home .game .cover img{max-height:none}}
