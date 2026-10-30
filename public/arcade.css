@@ -57,3 +57,9 @@ body.home .game .go,body.home .game .fork{padding:8px 12px;font-size:11px}
 body.home .game .cover img{aspect-ratio:auto;height:min(46vh,480px);object-fit:contain;background:#0b0c10}
 body.home footer{margin-top:22px;padding-top:14px}
 @media(max-width:760px){body.home .hero{grid-template-columns:1fr}body.home .hero img{max-width:160px;justify-self:start;order:-1}body.home .game .cover img{height:auto;aspect-ratio:1/1;object-fit:cover}}
+/* tiles sized to the poster: square art fills the tile width, both tiles fit the viewport height */
+body.home .games{--tile:min(50vh,44vw,600px);grid-template-columns:repeat(2,var(--tile));justify-content:center;gap:24px}
+body.home .game .cover img{height:auto;aspect-ratio:1/1;object-fit:cover}
+body.home .game .t.top span{display:block;min-height:2.7em}
+body.home .game .t.top .row{margin-top:8px}
+@media(max-width:760px){body.home .games{--tile:1fr;grid-template-columns:1fr}body.home .game .t.top span{min-height:0}}
