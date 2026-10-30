@@ -7,28 +7,39 @@
 <link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/arcade.css">
 <script src="/vg.js"></script>
 </head><body>
-<script src="/vrg-chrome.js" data-app="Arcade" data-public="1"></script>
+<div id="barActions" hidden><a id="acctBtn" class="btn" href="/leaderboard">SIGN IN</a></div>
+<script src="/vrg-chrome.js" data-app="Arcade" data-public="1" data-actions="#barActions"></script>
+<div id="scrim" hidden></div>
+<section id="guest" class="sheet" hidden>
+  <button class="x" data-close>×</button>
+  <p class="kicker">PLAY <span id="gName">THE GAME</span> FOR FREE</p>
+  <h2>You can play right now as a guest.</h2>
+  <p>Sign in and your score is kept between visits and counted on the <a href="/leaderboard">leaderboard</a>. Guests start fresh every time.</p>
+  <div class="providers" id="providers"></div>
+  <a class="ghost" id="guestGo" href="#">Play as a guest</a>
+</section>
 <main class="wrap">
   <section class="hero">
     <div>
       <p class="kicker">VRG · PLAYED AND RUN</p>
       <h1>Small games.<br>Played in the browser.</h1>
-      <p class="lead">No account, no download. Pick a game, or host a table and send a friend the link.</p>
+      <p class="lead">Nothing to install, no account needed. Pick a game, or host a table and send a friend the link.</p>
     </div>
     <img id="vrgLogo" src="/logo-3d.webp" alt="VRG" title="tickle me">
   </section>
   <section class="games">
     <div class="game">
+      <div class="t top"><div class="n">01 · CARD GAME · 4 SEATS</div><a class="title" href="/play/tariff-wars/"><b>Tariff Wars</b></a><span>Open your deals, the highest tariff wins. Play against the AI or host a table for friends.</span><div class="row"><a class="go play" href="/play/tariff-wars/" data-game="Tariff Wars">PLAY FOR FREE</a><a class="fork" href="https://github.com/vrgli/arcade/fork" data-game="tariff-wars"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> FORK ME</a></div></div>
       <a class="cover" href="/play/tariff-wars/"><img src="/play/tariff-wars/poster.png" alt="Tariff Wars"></a>
-      <div class="t"><div class="n">01 · CARD GAME · 4 SEATS</div><a class="title" href="/play/tariff-wars/"><b>Tariff Wars</b></a><span>Open your deals, the highest tariff wins. Play against the AI or host a table for friends.</span><div class="row"><a class="go" href="/play/tariff-wars/">PLAY</a><a class="fork" href="https://github.com/vrgli/arcade/fork" data-game="tariff-wars">FORK ME</a></div></div>
     </div>
     <div class="game">
+      <div class="t top"><div class="n">02 · FIGHT GAME · EVERY MINUTE</div><a class="title" href="/play/wallop/"><b>Wallop</b></a><span>Bitcoin throws the punch. A sixty-second fight every minute: pick the rounds, pick the battle, win teeth.</span><div class="row"><a class="go play" href="/play/wallop/" data-game="Wallop">PLAY FOR FREE</a><a class="fork" href="https://github.com/vrgli/arcade/fork" data-game="wallop"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> FORK ME</a></div></div>
       <a class="cover" href="/play/wallop/"><img src="/play/wallop/poster.png" alt="Wallop"></a>
-      <div class="t"><div class="n">02 · FIGHT GAME · EVERY MINUTE</div><a class="title" href="/play/wallop/"><b>Wallop</b></a><span>Bitcoin throws the punch. A sixty-second fight every minute: pick the rounds, pick the battle, win teeth.</span><div class="row"><a class="go" href="/play/wallop/">PLAY</a><a class="fork" href="https://github.com/vrgli/arcade/fork" data-game="wallop">FORK ME</a></div></div>
     </div>
   </section>
   <footer><a href="https://vrg.li">VRG.LI</a><a href="https://github.com/vrgli/arcade">GITHUB</a><a href="/source/">SOURCE · FREE TO FORK</a><a href="/leaderboard">LEADERBOARD</a><a href="/stats">STATS</a><a href="/privacy">PRIVACY</a><span>PLAY AS A GUEST · SIGN IN TO KEEP YOUR SCORE</span></footer>
 </main>
 <script src="/tickle.js"></script>
 <script src="/fork.js"></script>
+<script src="/home.js"></script>
 </body></html>
