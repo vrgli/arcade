@@ -1,0 +1,33 @@
+/* arcade.vrg.li — VRG brand: near-black, yellow, plain sans, mono labels. */
+:root{--bg:#0f1115;--panel:#16191f;--line:#23262d;--ink:#e8eaed;--mute:#8b9098;--yl:#ffd400;--sans:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Helvetica,Arial,sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans)}
+a{color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding:48px 24px 80px}
+.kicker{font:600 12px/1 var(--mono);letter-spacing:.18em;color:var(--yl);margin:0 0 14px}
+h1{font-size:clamp(36px,5vw,64px);line-height:1.02;letter-spacing:-.02em;margin:0 0 14px;font-weight:600}
+.lead{color:var(--mute);font-size:18px;max-width:560px;margin:0 0 40px}
+.mute{color:var(--mute)}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;margin-bottom:56px}
+.hero img{width:100%;max-width:520px;justify-self:center;filter:drop-shadow(0 24px 44px rgba(0,0,0,.65))}
+.games{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:640px){.games{grid-template-columns:1fr}}
+.game{display:block;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;transition:transform .15s,border-color .15s}
+.game:hover{transform:translateY(-3px);border-color:#3b4049}
+.game img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;background:#0b0c10;border-bottom:1px solid var(--line)}
+.game .t{padding:16px 18px 18px}
+.game .n{font:600 11px/1 var(--mono);letter-spacing:.16em;color:var(--mute);margin-bottom:8px}
+.game b{display:block;font-size:22px;letter-spacing:-.01em;margin-bottom:6px}
+.game span{color:var(--mute);font-size:14px;display:block}
+.game .go{display:inline-block;margin:0;text-decoration:none;background:var(--yl);color:#111;font:700 12px/1 var(--mono);letter-spacing:.12em;padding:10px 14px;border-radius:9px}
+footer{display:flex;gap:18px;flex-wrap:wrap;align-items:center;color:var(--mute);font:500 12px/1 var(--mono);letter-spacing:.08em;border-top:1px solid var(--line);margin-top:64px;padding-top:22px}
+footer a{text-decoration:none}footer a:hover{color:var(--ink)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:0 0 8px}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}th{font:600 11px/1 var(--mono);letter-spacing:.12em;color:var(--mute)}
+section{margin:34px 0}h2{font-size:20px;margin:0 0 10px;letter-spacing:-.01em}
+.prose p{max-width:680px;color:#c4c8ce}.prose h2{margin-top:30px}
+@media(max-width:760px){.hero{grid-template-columns:1fr}.hero img{max-width:260px;order:-1}}
+.hero img{cursor:pointer;transform-origin:50% 60%}
+@keyframes jerk{0%{transform:none}12%{transform:rotate(-7deg) scale(1.07) translateY(-8px)}30%{transform:rotate(6deg) scale(1.05) translateY(-4px)}48%{transform:rotate(-4deg) scale(1.03)}66%{transform:rotate(2deg) scale(1.01)}100%{transform:none}}
+.hero img.jerk{animation:jerk .65s cubic-bezier(.3,1.4,.5,1)}
+.game .fork,.fork{display:inline-block;margin:0;border:1px solid var(--yl);color:var(--yl);font:700 12px/1 var(--mono);letter-spacing:.12em;padding:9px 13px;border-radius:9px;text-decoration:none;cursor:pointer}
+a.game .fork:hover,.fork:hover{background:var(--yl);color:#111}
+.game .cover{display:block}.game .title{text-decoration:none}.game .row{display:flex;gap:10px;align-items:center;margin-top:14px}

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Wallop · arcade.vrg.li</title>
+<meta name="description" content="Bitcoin throws the punch. A sixty-second fight every minute: pick the rounds, pick the battle, win teeth.">
+<link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="app.css">
+<script src="/vg.js" data-game="wallop"></script>
+</head>
+<body>
+<div id="app" data-phase="BETTING" data-screen="arena">
+  <header id="top">
+    <a class="back" href="/">← ARCADE</a>
+    <span class="brand">WALLOP</span>
+    <span class="battle">BATTLE <b id="battleNo">—</b></span>
+    <span class="sp"></span>
+    <button id="btnTheme" class="ctl" title="Change the fighters">🎭 <span id="themeName">CAPT BTC vs BUCK</span></button>
+    <button id="btnHow" class="ctl" title="How it works">?</button>
+    <button id="btnSound" class="ctl" title="Sound">🔇</button>
+    <a id="btnAccount" class="ctl acct" href="#" title="Sign in">SIGN IN</a>
+  </header>
+
+  <main id="main">
+    <section id="left">
+      <div id="hud">
+        <div class="wallet"><span class="k">TEETH</span><b id="teeth">0</b></div>
+        <div class="wallet"><span class="k">NOISE</span><b id="noise">100</b></div>
+        <div class="sp"></div>
+        <div id="score"><span class="n a" id="nameA">CAPT BTC</span><span class="pips" id="pips"></span><span class="n b" id="nameB">BUCK</span></div>
+        <div class="sp"></div>
+        <div id="clockBox"><span class="k" id="clockLabel">BELL IN</span><b id="clock">0:15</b></div>
+      </div>
+
+      <div id="arenaWrap">
+        <canvas id="arena" width="780" height="1040"></canvas>
+        <div id="tintLayer"></div>
+        <div id="lbTop" class="letterbox"></div><div id="lbBot" class="letterbox"></div>
+        <div id="countdown"><div class="cd-round" id="cdRound">ROUND 1</div><div class="cd-num" id="cdNum">10</div></div>
+        <div id="lead" class="lead"><span id="leadTxt">PRICE DECIDES AT 1</span><b id="leadPct">—</b></div>
+        <div id="tapL" class="tapzone l"><span>TAP IF <em id="tapNameA">CAPT BTC</em> IS AHEAD</span></div>
+        <div id="tapR" class="tapzone r"><span>TAP IF <em id="tapNameB">BUCK</em> IS AHEAD</span></div>
+        <div id="tapFx"></div>
+        <div id="card" hidden>
+          <div class="c-kicker" id="cKicker">BATTLE 1500</div>
+          <div class="c-title" id="cTitle">CAPT BTC WINS 2–1</div>
+          <ul class="c-lines" id="cLines"></ul>
+          <div class="c-total" id="cTotal"></div>
+          <div class="c-next">NEXT BELL IN <b id="cNext">0:12</b></div>
+        </div>
+        <div id="toast"></div>
+      </div>
+      <div id="tapHint">During each 10-second countdown, tap the fighter who is ahead. <b>+2 NOISE</b> a tap, up to 80 a round.</div>
+    </section>
+
+    <aside id="bets">
+      <div class="b-head"><span class="kicker">PICK THE WINNERS</span><h2 id="betsTitle">Bell in <b id="betsClock">0:15</b></h2>
+        <p class="b-how"><em id="howA">CAPT BTC</em> lands if <b>BTC/USD</b> is higher at the end of the 10-second countdown than at its start. <em id="howB">BUCK</em> lands if it is lower. If it barely moves, <b>nobody</b> lands. The battle goes to whoever takes more rounds.</p>
+      </div>
+      <div id="markets"></div>
+      <p class="b-foot">A round pick costs <b>25 NOISE</b> and pays <b>1 TOOTH</b>; the battle costs <b>50</b> and pays <b>3</b>. Calling <b>NOBODY</b> pays <b>4</b> and <b>10</b>. Picks lock when that round starts; the battle locks at the bell. Tap a pick again to take it back.</p>
+      <p class="b-foot" id="priceNote">Price feed: simulation, the same for everyone, until the live BTC/USD feed is switched on.</p>
+    </aside>
+  </main>
+
+  <div id="scrim" hidden></div>
+  <section id="signup" class="sheet" hidden>
+    <button class="x" data-close>×</button>
+    <p class="kicker">YOU PLAYED WITHOUT SIGNING IN</p>
+    <h2>Too bad: these teeth live in this tab only.</h2>
+    <p>Sign in now, pocket a <b>250 NOISE</b> sign-up bonus, and keep your NOISE and TEETH for the next battles and the leaderboard.</p>
+    <div class="providers" id="providers"></div>
+    <button class="ghost" data-close>Keep playing as a guest</button>
+  </section>
+  <section id="how" class="sheet" hidden>
+    <button class="x" data-close>×</button>
+    <p class="kicker">HOW IT WORKS</p>
+    <h2>A fight every minute. Bitcoin throws the punch.</h2>
+    <p>Each battle is three rounds. A round is a ten-second countdown: the two fighters shadowbox, and at <b>1</b> the move in <b>BTC/USD</b> over those ten seconds decides who lands. Up, the left fighter. Down, the right one. Flat, nobody.</p>
+    <p><b>Pick</b> the winner of each round and of the battle before they lock. Picks cost NOISE and pay TEETH. <b>Tap</b> the fighter who is ahead during a countdown to earn NOISE. You start with 100 NOISE.</p>
+    <p>Sign in to keep your TEETH and NOISE between visits and to appear on the <a href="/leaderboard">leaderboard</a>. The fighters are a costume: change them any time with 🎭. <a href="/source/">Fork the game</a>, it is free.</p>
+    <button class="ghost" data-close>Got it</button>
+  </section>
+</div>
+<script type="module" src="js/main.js"></script>
+</body></html>

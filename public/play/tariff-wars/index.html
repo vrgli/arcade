@@ -1,0 +1,635 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tariff Wars · arcade.vrg.li</title><style>
+:root{--bg:#121318;--pan:#1a1c24;--pan2:#22252f;--line:#3a3f4f;--ink:#f1f2f7;--mut:#9aa1b5;--gold:#e8c15a;--good:#39c07c;--bad:#ff6b7d;--warn:#e0a020;
+ --fruit:#e3b53a;--wine:#9b4a9b;--cars:#d64545;--tech:#3f82d8;--deal:#1d5a3a;--dealb:#39c07c;--over:#4a2a2a;--overb:#ff6b7d;--pw:150px}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:"Segoe UI",system-ui,sans-serif;color:var(--ink);background:var(--bg);overflow:hidden}
+#app{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}
+img.px{image-rendering:pixelated;display:block}
+/* ===== TOP BAR — canonical shared header (arcade-header.css); .stat/#flash/.steps are what drawTop() fills ===== */
+.stat{font-size:12px;color:var(--mut);background:var(--pan2);padding:4px 11px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}.stat b{color:var(--ink)}.stat .dn{color:var(--warn);font-weight:800}
+@media (max-width:1560px){.stat .mtxt,.step .stx,.firstpill .ftx{display:none}.ah-center{flex:0 1 auto}.ah-right{flex:0 0 auto}}
+#flash{display:flex;align-items:center;gap:12px;max-width:760px;width:100%;min-width:230px;padding:7px 16px;border-radius:10px;background:linear-gradient(90deg,rgba(232,193,90,.10),rgba(232,193,90,.20));border:1px solid rgba(232,193,90,.5);box-shadow:0 0 16px rgba(232,193,90,.25)}
+#flash .who{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#20160a;background:var(--gold);padding:3px 9px;border-radius:6px;font-weight:800;white-space:nowrap;flex:0 0 auto}
+#flash .msg{font-weight:700;color:#f6e2b0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.steps{display:flex;gap:6px}.step{font-size:11px;font-weight:800;padding:5px 10px;border-radius:7px;white-space:nowrap;background:var(--pan2);border:1px solid var(--line);color:var(--mut)}.step.on{background:var(--gold);border-color:var(--gold);color:#20160a}
+.firstpill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;letter-spacing:.3px;color:#20160a;background:var(--gold);padding:2px 9px;border-radius:20px;white-space:nowrap;vertical-align:middle}
+.turnpill{font-size:10px;font-weight:800;letter-spacing:.5px;color:#20160a;background:var(--gold);padding:2px 8px;border-radius:20px;white-space:nowrap}
+.firstseat{font-size:10px;font-weight:800;letter-spacing:.4px;color:#053;background:var(--good);padding:2px 8px;border-radius:20px;white-space:nowrap}
+.leadpill{font-size:11px;font-weight:900;color:#053;background:var(--good);border-radius:20px;padding:2px 10px;white-space:nowrap}
+/* ===== MAIN: left column (deal + standings) · right column (seats, table, my hand) ===== */
+.main{display:grid;grid-template-columns:520px minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:10px;padding:10px;min-height:0}
+.leftcol{display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px;min-height:0}
+.rightcol{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:10px;min-height:0}
+.box{background:var(--pan);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.box.active{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.bh{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--line);font-size:12px;font-weight:800;letter-spacing:.6px;color:var(--mut);flex:0 0 auto;white-space:nowrap;overflow:hidden}
+.bh b{color:var(--ink)}.box.active .bh{color:var(--gold)}.bh .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.hbtn{background:#2a2f40;color:var(--gold);border:1px solid var(--line);padding:3px 10px;border-radius:7px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}.hbtn:hover{background:#37456b}
+.bc{padding:10px 14px;min-height:0;flex:1;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+/* ===== PROPOSAL CARDS (horizontal) ===== */
+.pc{position:relative;width:var(--pw);height:var(--pw);border-radius:14px;background:var(--gc,#5a6178);border:3px solid var(--gb,#5a6178);display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:4px;flex:0 0 auto;color:var(--gt,#fff);box-shadow:0 3px 10px #0006;transition:transform .1s,box-shadow .1s}
+.pc .g{display:flex;align-items:center;justify-content:center;line-height:1}.pc .g i{font-style:normal;font-size:calc(var(--pw)*.42);line-height:1;filter:drop-shadow(0 2px 2px #0005)}
+.pc .t{font-size:calc(var(--pw)*.27);font-weight:900;line-height:1;letter-spacing:-1px;text-shadow:0 2px 3px #0004}
+.pc.fruit{--gc:var(--fruit);--gb:#f3cf63;--gt:#2a1f05}.pc.wine{--gc:var(--wine);--gb:#c06ec0;--gt:#fff}.pc.cars{--gc:var(--cars);--gb:#f07070;--gt:#fff}.pc.tech{--gc:var(--tech);--gb:#7fb0f0;--gt:#fff}
+.pc.leg{--gb:var(--dealb);box-shadow:0 0 0 2px var(--dealb),0 4px 12px #0007}.pc.play{cursor:pointer}.pc.play:hover{transform:translateY(-6px);box-shadow:0 0 0 2px var(--dealb),0 0 18px rgba(57,192,124,.8)}
+.pc.dim{opacity:.35;filter:saturate(.4)}.pc.win{--gb:var(--good);box-shadow:0 0 0 2px var(--good),0 0 18px rgba(57,192,124,.7)}.pc.trumpc{--gb:var(--gold);box-shadow:0 0 0 2px var(--gold),0 3px 10px #0006}
+.pc.ph{border:2px dashed #5a6178;background:transparent;box-shadow:none;align-items:center;justify-content:center;color:var(--mut);font-size:13px;font-weight:700;text-align:center}
+.pc.pw{border-style:dashed;background:transparent;opacity:.5}
+.back{width:var(--pw);height:var(--pw);border-radius:12px;background:repeating-linear-gradient(45deg,#2b3350,#2b3350 6px,#222a42 6px,#222a42 12px);border:2px solid #3b4260;flex:0 0 auto}
+/* ===== THE DEAL ===== */
+.dealrow{display:flex;align-items:center;gap:16px;--pw:96px}
+.trumpface{width:88px;height:88px;border-radius:50%;background:#2a2e3c;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 18px rgba(232,193,90,.3)}
+.tl{font-size:11px;letter-spacing:.6px;font-weight:800;color:var(--gold);text-align:center;margin-bottom:6px}.tl.mut{color:var(--mut)}
+.idle{width:118px;height:70px;border-radius:12px;border:2px solid #5a6178;background:var(--pan2);display:flex;align-items:center;justify-content:center;gap:6px;font-weight:900;font-size:28px}
+.idle small{font-size:16px;color:var(--mut);font-weight:700}.idle.empty{opacity:.4}
+.counter{border-top:1px solid var(--line);padding-top:10px}
+.dots{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;padding:4px 0}
+.dot{width:var(--gdot,46px);height:var(--gdot,46px);border-radius:50%;border:2px dotted var(--line);display:flex;align-items:center;justify-content:center;font-size:calc(var(--gdot,46px)*.52)}
+.dot.on{background:var(--deal);border:2px solid var(--dealb)}.dot.over{background:var(--over);border:2px solid var(--overb)}
+.cstat{text-align:center;font-weight:900;font-size:14px;padding:7px 12px;border-radius:9px;margin-top:6px}
+.cstat.even{color:#c6f5da;background:color-mix(in srgb,var(--good) 20%,transparent);border:1px solid var(--good)}
+.cstat.under{color:#f7e2b0;background:color-mix(in srgb,var(--warn) 20%,transparent);border:1px solid var(--warn)}
+.cstat.over{color:#ffc9cb;background:color-mix(in srgb,var(--bad) 20%,transparent);border:1px solid var(--bad)}
+.cstat.wait{color:var(--mut);background:var(--pan2);border:1px solid var(--line)}
+/* ===== WON DEALS & SCORE ===== */
+#b2{gap:0}
+.sthead{display:grid;grid-template-columns:150px 1fr 110px;font-size:11px;color:var(--mut);font-weight:800;letter-spacing:.5px;padding:0 6px 4px;flex:0 0 auto}
+.sthead span:nth-child(3){text-align:right}
+.srow{flex:1;display:grid;grid-template-columns:150px 1fr 110px;align-items:center;border-top:1px solid var(--line);padding:6px;min-height:0;border-left:3px solid transparent;border-radius:8px;position:relative}
+.srow.turn{background:linear-gradient(90deg,rgba(232,193,90,.15),transparent);border-left-color:var(--gold)}
+.srow.lead{background:linear-gradient(90deg,rgba(57,192,124,.10),transparent)}
+.who{display:flex;align-items:center;gap:10px;min-width:0}.ava{width:56px;height:56px;border-radius:50%;background:#2a2e3c;border:2px solid var(--line);overflow:hidden;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.who.you .ava{border-color:var(--good)}.who .nm{font-weight:800;font-size:16px;line-height:1.1}.who .sub{font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:80px}.who.you .nm{color:var(--good)}
+.pips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pip{width:38px;height:38px;border-radius:50%;border:2px dotted var(--line);display:flex;align-items:center;justify-content:center;font-size:19px;position:relative}
+.pip.won{background:var(--deal);border:2px solid var(--dealb)}.pip.over{background:var(--over);border:2px solid var(--overb)}
+.pip .eye{position:absolute;top:-8px;right:-8px;font-size:13px;background:#0e1118;border:1px solid var(--line);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1}
+.pip .eye:hover{border-color:var(--gold)}
+.pips .none{font-size:12px;color:var(--mut);font-style:italic}
+.score{text-align:right;font-weight:900;font-size:26px;display:flex;align-items:baseline;justify-content:flex-end;gap:8px}.score .d{font-size:13px;font-weight:800}.score .d.up{color:var(--good)}.score .d.dn{color:var(--bad)}.score .md{font-size:16px}
+.revealrow{position:absolute;left:4px;right:4px;top:4px;bottom:4px;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(14,17,24,.96);z-index:6;padding:4px 8px;border-radius:10px;border:1px solid var(--gold);cursor:pointer;--pw:60px}
+.scorelead{margin-left:auto;font-size:12px;font-weight:800;color:var(--gold)}
+/* ===== SEATS ===== */
+.seats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.seat{background:var(--pan);border:1px solid var(--line);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.seat.turn{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset,0 0 18px rgba(232,193,90,.18)}
+.seat.win{border-color:var(--good)}
+.seat .top{display:flex;align-items:center;gap:12px;min-width:0}.seat .ava{width:64px;height:64px}
+.seat .nm{font-weight:900;font-size:18px}.seat.you .nm{color:var(--good)}.seat .sub{color:var(--mut);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seat .pills{display:flex;gap:6px;flex-wrap:nowrap;height:20px;align-items:center;overflow:hidden}
+.seat .hand{display:flex;align-items:center;gap:8px;margin-top:auto}.seat .bag{width:64px;height:44px;border-radius:10px;border:2px solid #5a6178;background:var(--pan2);display:flex;align-items:center;justify-content:center;font-size:22px}
+.seat .hand b{font-size:24px;font-weight:900}.seat .hand small{color:var(--mut);font-size:11px;line-height:1.2}
+/* ===== THE TABLE ===== */
+#b3{padding:12px 16px}
+.felt{flex:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:center;justify-items:center;min-height:0;overflow:hidden}
+.played{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;max-width:100%}
+.played .lbl{font-size:12px;color:var(--mut);display:flex;gap:6px;align-items:center;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}.played .lbl b{color:var(--ink)}.played.you .lbl b{color:var(--good)}
+.played .ord{width:22px;height:22px;border-radius:50%;background:#0e1118;border:1px solid var(--line);font-size:12px;font-weight:800;color:var(--mut);display:flex;align-items:center;justify-content:center}
+.center{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;max-width:90%}
+.bigask{font-size:20px;font-weight:800;color:#f6e2b0}.bigask small{display:block;font-size:13px;color:var(--mut);font-weight:600;margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.chip{width:54px;height:54px;border-radius:12px;border:1px solid var(--line);background:var(--pan2);color:var(--ink);font-weight:800;cursor:pointer;font-size:1.2rem}.chip:hover{border-color:var(--gold);background:#2d2a1e}
+.btn{background:var(--good);color:#053;border:0;padding:.7rem 1.4rem;border-radius:10px;font-weight:800;cursor:pointer;font-size:1rem}.btn.alt{background:#2a2f40;color:var(--ink)}
+.settle{width:100%;gap:10px!important}.settle .bigask{font-size:18px}.felt.st{overflow-y:auto;align-items:safe center}.settle .line{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:100%}
+.settle .sl{background:var(--pan2);border:1px solid var(--line);border-radius:12px;padding:6px 8px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.settle .sl .r{font-size:13px;color:var(--mut)}.settle .sl .d{font-weight:900;font-size:22px}.d.up{color:var(--good)}.d.dn{color:var(--bad)}
+#boxPlay.trickwon{animation:trickwon 1.9s ease-out}
+@keyframes trickwon{0%{box-shadow:inset 0 0 0 0 rgba(232,193,90,0)}12%{box-shadow:inset 0 0 0 3px rgba(232,193,90,.95),inset 0 0 46px rgba(232,193,90,.28)}100%{box-shadow:inset 0 0 0 0 rgba(232,193,90,0)}}
+/* ===== MY PROPOSALS ===== */
+#boxHand .bh{border:0;padding:0 0 8px;justify-content:center;font-size:14px;color:var(--ink)}
+#boxHand{padding:10px 14px 14px}
+.fan{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;min-height:var(--pw)}
+.fan .empty{color:var(--mut);font-style:italic;font-size:13px;align-self:center}
+/* fly animation: table cards travel to the winner's standings row, then flip face-down */
+.flylayer{position:fixed;inset:0;pointer-events:none;z-index:80}
+.flycard{position:fixed;transition:left .62s cubic-bezier(.4,0,.2,1),top .62s cubic-bezier(.4,0,.2,1)}
+.flyinner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .46s}
+.flycard.flipped .flyinner{transform:rotateY(180deg)}
+.flyface{position:absolute;inset:0;backface-visibility:hidden}.flyface.bk{transform:rotateY(180deg)}
+.flyface .pc,.flyface .back{width:100%!important;height:100%!important}
+/* ===== GAME LOG / HISTORY ===== */
+.logwrap{max-height:52vh;overflow:auto;display:flex;flex-direction:column;gap:2px;margin-top:.6rem;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--pan2)}
+.logrow{display:flex;gap:8px;font-size:13px;padding:4px 2px;border-bottom:1px solid var(--line);line-height:1.35}.logrow:last-child{border-bottom:0}
+.logrow .lgwho{flex:0 0 auto;font-weight:800;color:var(--gold);min-width:54px}.logrow .lgmsg{color:var(--ink)}
+.logrow.rnd{background:color-mix(in srgb,var(--gold) 12%,transparent);border-radius:6px;margin:3px 0}.logrow.rnd .lgwho{color:var(--mut)}
+.logempty{color:var(--mut);font-style:italic;text-align:center;padding:10px}
+.htab{border-collapse:collapse;width:100%;font-size:13px}.htab th,.htab td{padding:6px 9px;border-bottom:1px solid var(--line);text-align:center}.htab th{color:var(--gold);font-size:12px}
+.htab td:first-child,.htab th:first-child{text-align:left;color:var(--mut)}.htab td small{color:var(--mut);font-size:.8em}.htab tr.tot td{font-weight:900;border-top:2px solid var(--gold);color:var(--gold)}
+.histwrap{max-height:60vh;overflow:auto;margin-top:1rem}
+/* ===== OVERLAYS ===== */
+.overlay{position:fixed;inset:0;background:rgba(8,10,16,.84);display:flex;align-items:center;justify-content:center;z-index:50;padding:1.4rem}.overlay[hidden]{display:none}
+.sheet{background:var(--pan);border:1px solid var(--line);border-radius:18px;padding:1.6rem 2rem;max-width:760px;width:100%;text-align:center;max-height:96vh;overflow:auto}
+.sheet h1{color:var(--gold);margin:.2rem 0 .4rem}.sheet p{color:var(--mut);line-height:1.55;margin:.4rem 0}.sheet p b{color:var(--ink)}
+.leaders{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:.6rem 0 .2rem}
+.ld{background:var(--pan2);border:2px solid var(--line);border-radius:16px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:transform .1s,border-color .1s;font:inherit;color:var(--ink)}
+.ld:hover,.ld.sel{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 0 18px rgba(232,193,90,.35)}
+.ld .ava{width:96px;height:96px;border-color:#5a6178}.ld.sel .ava{border-color:var(--gold)}
+.ld .nm{font-weight:900;font-size:17px}.ld .of{font-size:12px;color:var(--mut)}.ld.sel .nm{color:var(--gold)}
+.modes{display:flex;flex-direction:column;gap:8px;margin-top:.6rem}
+.modebtn{display:flex;align-items:center;gap:14px;background:var(--pan2);border:1px solid var(--line);border-radius:11px;padding:10px 16px;cursor:pointer;font:inherit;color:var(--ink);text-align:left;transition:transform .08s,border-color .1s}
+.modebtn:hover{border-color:var(--gold);transform:translateY(-2px);background:#26314a}
+.modebtn .mn{font-weight:800;font-size:15px;flex:1}.modebtn .mseq{font-size:14px;color:var(--gold);font-weight:700;font-variant-numeric:tabular-nums;min-width:96px;text-align:center}.modebtn .mh{font-size:12px;color:var(--mut);min-width:80px;text-align:right}
+.modebtn.hot{border-color:rgba(255,107,125,.5);background:linear-gradient(90deg,rgba(255,107,125,.12),var(--pan2))}.modebtn.hot:hover{border-color:var(--bad)}.modebtn.hot .mh{color:#ffc9cb}
+.rseats{display:flex;justify-content:center;gap:16px;margin:18px 0 6px}
+.rseat{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 12px;border:2px solid var(--line);border-radius:16px;background:var(--pan2);min-width:110px;transition:transform .1s,border-color .1s,box-shadow .1s;opacity:.5}
+.rseat .ava{width:76px;height:76px}.rseat .rname{font-size:14px;font-weight:800;color:var(--mut)}
+.rseat.on{opacity:1;border-color:var(--gold);box-shadow:0 0 16px rgba(232,193,90,.45);transform:translateY(-4px)}.rseat.on .rname{color:var(--ink)}
+.rseat.winner{opacity:1;border-color:var(--gold);background:linear-gradient(180deg,rgba(232,193,90,.28),var(--pan2));box-shadow:0 0 26px rgba(232,193,90,.7);transform:translateY(-6px) scale(1.06)}.rseat.winner .rname{color:var(--gold)}
+.rresult{min-height:28px;font-size:20px;font-weight:900;color:var(--gold);text-align:center;margin-top:10px}
+.sheet table{border-collapse:collapse;width:100%;margin-top:1rem}.sheet td,.sheet th{padding:.5rem;border-bottom:1px solid var(--line);font-size:.95rem}.sheet td.name{text-align:left;font-weight:600;display:flex;align-items:center;gap:10px}.sheet tr.me{background:color-mix(in srgb,var(--good) 12%,transparent)}
+.sheet td .ava{width:36px;height:36px}
+.sheet .logo{display:block;width:min(260px,70%);margin:0 auto 6px;border-radius:14px;border:1px solid var(--line)}.sheet h1.sr{position:absolute;left:-9999px}
+.help{text-align:left}.help h3{color:var(--gold);font-size:15px;margin:1rem 0 .3rem}.help p{margin:.2rem 0}.help .ex{display:flex;gap:8px;justify-content:center;margin:.6rem 0;--pw:96px}
+#arena-note{position:fixed;bottom:2px;left:2px;font-size:10px;color:#2a3345}
+</style>
+<link rel="stylesheet" href="arcade-header.css" />
+<link rel="icon" href="/favicon.ico"><script src="/vg.js" data-game="tariff-wars"></script>
+</head>
+<body><div id="app">
+ <header id="topbar" class="ah-topbar" style="--hdr-accent:#e8c15a;">
+   <div class="ah-left">
+     <a id="ah-arcade" class="ah-arcade" href="/arcade">← Arcade</a>
+     <span class="ah-brand-text">Tariff Wars</span>
+   </div>
+   <div class="ah-center"><div id="flash"><span class="who" id="flash-who">Tariff Wars</span><span class="msg" id="flash-msg"></span></div></div>
+   <!-- RIGHT: #tbr keeps the runtime readouts (drawTop() innerHTML-replaces it, so
+        controls must NOT be its children) · controls live in a sibling group. -->
+   <div class="ah-right">
+     <span id="tbr" style="display:flex;gap:8px;align-items:center"></span>
+     <span class="ah-ctlgroup" id="ah-ctlgroup" style="display:flex;gap:10px;align-items:center">
+       <button id="btn-newgame" class="ah-ctl">NEW GAME</button>
+       <button id="btn-log" class="ah-ctl">LOG</button>
+       <button id="btn-help" class="ah-ctl">HOW TO PLAY</button>
+     </span>
+   </div>
+ </header>
+ <div class="main">
+  <div class="leftcol">
+   <div class="box" id="boxDeal"><div class="bh">✦ THE DEAL · trump card &amp; open deals</div><div class="bc" id="b5"></div></div>
+   <div class="box" id="boxScore"><div class="bh">🤝 WON DEALS &amp; SCORE<span class="right"><span class="scorelead" id="scoreLead"></span><button class="hbtn" id="histBtn">History ▸</button></span></div><div class="bc" id="b2"></div></div>
+  </div>
+  <div class="rightcol">
+   <div class="seats" id="seats"></div>
+   <div class="box" id="boxPlay"><div class="bh" id="tableHead">🤝 THE TABLE</div><div class="bc" id="b3"></div></div>
+   <div class="box" id="boxHand"><div class="bh" id="handHead">💰 MY PROPOSALS</div><div class="fan" id="b1"></div></div>
+  </div>
+ </div>
+</div>
+<div class="overlay" id="histOv" hidden><div class="sheet" style="max-width:640px"><h1 style="font-size:1.3rem">📊 Score history</h1><div class="histwrap" id="histBody"></div><div style="margin-top:1.2rem"><button class="btn" id="histClose">Close</button></div></div></div>
+<div class="overlay" id="logOv" hidden><div class="sheet" style="max-width:560px;text-align:left"><h1 style="font-size:1.3rem;text-align:center">📜 Game log</h1><div class="logwrap" id="logBody"></div><div style="margin-top:1.2rem;text-align:center"><button class="btn" id="logClose">Close</button></div></div></div>
+<div class="overlay" id="startOv"><div class="sheet"><img src="logo.png" alt="Tariff Wars" class="logo"><h1 class="sr">Tariff Wars</h1><p>Donald Trump is auctioning off trade deals among four great leaders. Each round you declare how many deals you'll close, then fight for them proposal by proposal — <b>the highest tariff wins</b>. Score big only if you close exactly what you opened.</p>
+<p><b>Choose your leader:</b></p><div class="leaders" id="leaders"></div>
+<p><span id="mode-heading"><b>Choose a game mode:</b></span></p><div class="modes">
+  <button class="modebtn" data-mode="full"><span class="mn">Full game</span><span class="mseq">1 → 10 → 1</span><span class="mh">19 rounds</span></button>
+  <button class="modebtn" data-mode="asc"><span class="mn">Half ascending</span><span class="mseq">1 → 10</span><span class="mh">10 rounds</span></button>
+  <button class="modebtn" data-mode="desc"><span class="mn">Half descending</span><span class="mseq">10 → 1</span><span class="mh">10 rounds</span></button>
+  <button class="modebtn" data-mode="intense"><span class="mn">Intense</span><span class="mseq">6 → 10 → 6</span><span class="mh">9 rounds</span></button>
+  <button class="modebtn hot" data-mode="extreme"><span class="mn">🔥 Even more intense</span><span class="mseq">8 → 10 → 8</span><span class="mh">only 5 rounds</span></button>
+</div></div></div>
+<div class="overlay" id="rouletteOv" hidden><div class="sheet" style="max-width:640px"><h1 style="font-size:1.3rem">🎲 Who makes the first proposal?</h1><p style="margin-top:-.3rem">The opener is drawn at random. It passes to the next leader each round.</p><div class="rseats" id="rouletteSeats"></div><div class="rresult" id="rouletteResult">&nbsp;</div></div></div>
+<div class="overlay" id="endOv" hidden><div class="sheet" id="endSheet" style="max-width:560px"></div></div>
+<div class="overlay" id="helpOv" hidden><div class="sheet help" style="max-width:640px"><h1 style="font-size:1.3rem;text-align:center">🍌🍾🚗📱 How to Play — Tariff Wars</h1>
+<h3>The story</h3>
+<p>Donald Trump is holding an auction. Four leaders — <b>Vlad</b>, <b>Ursula</b>, <b>Modi</b> and <b>Xi</b> — compete to walk away with the most trade deals. You play one of them; the other three are at the table too, as AI or as friends online.</p>
+<h3>Objective</h3>
+<p>Most points across all rounds wins the auction. There is no target to reach — just finish with the highest score.</p>
+<h3>Your proposals</h3>
+<p>Your cards are <b>💰 Proposals</b>: a tariff of 10% to 100% on one of four goods — 🍌 Fruit, 🍾 Wine, 🚗 Cars, 📱 Tech. Forty proposals in all, ten per good. <b>The highest tariff wins.</b></p>
+<div class="ex" id="helpEx"></div>
+<h3>A round, step by step</h3>
+<p>You pick a mode first, so a game runs 5 to 19 rounds. The number of proposals each leader holds changes every round — from 1 up to 10. Each round: look at your proposals, <b>open your deals</b>, then <b>negotiate</b> them one at a time.</p>
+<h3>Opening deals</h3>
+<p>Say how many deals you will close this round — anywhere from 0 up to the number of proposals you hold. These are your <b>Open Deals</b>. The Deal Proposals Counter on the left shows whether the table has opened more or fewer deals than there are to win. The Trump Card is revealed before anyone opens.</p>
+<h3>Negotiating</h3>
+<p>The opener puts a proposal on the table; its good is the one being negotiated. You must play a proposal on the <b>same good</b> if you have one — if you don't, play anything. The highest tariff on the negotiated good takes the deal — unless a proposal on the Trump good is played: then the highest Trump proposal wins. Whoever closes a deal makes the first proposal of the next one.</p>
+<h3>The Trump Card</h3>
+<p>Each round the Auctioneer flips one proposal; its good becomes <b>Trump</b> for the round. Any Trump proposal beats any proposal on another good. The exception is the 10-proposal round: every proposal is dealt, so nothing is left to flip — no Trump that round. The 💰 Idle Proposals box shows how many proposals stayed out of play.</p>
+<h3>Scoring</h3>
+<p>Close <b>exactly</b> the deals you opened and you score <b>+10, plus 2 per deal</b> (opening 0 and closing 0 still pays +10). Miss it — over or under, punished the same — and you lose <b>2 for every deal you are off</b>. Your 🤝 Won Deals and the running score are in the panel on the left; tap 👀 to review the last deal a leader closed.</p>
+<div style="text-align:center;margin-top:1.4rem"><button class="btn" id="helpClose">Close</button></div></div></div>
+<div id="arena-note"></div>
+<script src="engine.js"></script><script src="sprites.js"></script><script src="arcade-bridge.js"></script>
+<script>
+(function(){
+ var AUTOTEST=new URLSearchParams(location.search).has('autotest');
+ var LEADERS=[{id:'vlad',nm:'Vlad'},{id:'ursula',nm:'Ursula'},{id:'modi',nm:'Modi'},{id:'xi',nm:'Xi'}];
+ var GOODS=[{e:'🍌',n:'Fruit',c:'fruit'},{e:'🍾',n:'Wine',c:'wine'},{e:'🚗',n:'Cars',c:'cars'},{e:'📱',n:'Tech',c:'tech'}]; // engine suit idx 0-3
+ var FAST=new URLSearchParams(location.search).has('fast');
+ var PLAY_MS=FAST?40:1000,TRICK_MS=FAST?80:1900,DECL_MS=FAST?20:560;
+ var G=null,$=function(id){return document.getElementById(id);};
+ // Seat p (local; 0 = me) → which leader sits there. Solo: I pick a leader and the
+ // other three follow clockwise. Online: the server seat number IS the leader.
+ var myLeader=0,SEATLDR=[0,1,2,3],SUBS=['you','AI','AI','AI'];
+ var NAMES=['Vlad','Ursula','Modi','Xi'];
+ function setSeats(me){myLeader=me;for(var p=0;p<4;p++){SEATLDR[p]=(me+p)%4;NAMES[p]=LEADERS[SEATLDR[p]].nm;}SUBS=['you','AI','AI','AI'];}
+ setSeats(0);
+ var SPR={};function img(id,px){var k=id+'@'+px;if(!SPR[k]){var c=PX.draw(id,px);SPR[k]='<img class="px" src="'+c.toDataURL()+'" width="'+c.width+'" height="'+c.height+'" alt="'+id+'">';}return SPR[k];}
+ function ava(p,px){return '<div class="ava">'+img(LEADERS[SEATLDR[p]].id,px||3)+'</div>';}
+ function nm(p){return NAMES[p];}
+ function nmYou(p){return p===0?'You':NAMES[p];}
+ // --- online multiplayer (rvr = real-vs-real) -----------------------------
+ var rvr=false,net=null,mySeat=0,lastServerState=null,mpResultShown=false;
+ var mpReveal=-1,mpLastTrickSeq=0;
+ function sleep(ms){return AUTOTEST?Promise.resolve():new Promise(function(r){setTimeout(r,ms);});}
+ function card(c,o){o=o||{};var g=GOODS[c.s];
+  return '<div class="pc '+g.c+(o.win?' win':'')+(o.dim?' dim':'')+(o.trump?' trumpc':'')+(o.leg?' leg':'')+(o.play?' play':'')+'" title="'+g.n+' '+(c.r*10)+'%" data-i="'+(o.i!=null?o.i:'')+'"><div class="g"><i>'+g.e+'</i></div><div class="t">'+(c.r*10)+'%</div></div>';}
+ function flash(who,msg){$('flash-who').textContent=who;$('flash-msg').textContent=msg;}
+ function logPush(entry){if(!G)return;G.log=G.log||[];G.log.push(entry);if(!$('logOv').hidden)renderLog();}
+ function setAction(msg,who){flash(who||'Tariff Wars',msg);logPush({who:who||'Tariff Wars',msg:msg});}
+ function renderLog(){
+  var rows=(G&&G.log||[]);
+  $('logBody').innerHTML=rows.length?rows.map(function(e){
+   if(e.round)return '<div class="logrow rnd"><span class="lgwho">▸ Round</span><span class="lgmsg">'+e.msg+'</span></div>';
+   return '<div class="logrow"><span class="lgwho">'+(e.who||'')+'</span><span class="lgmsg">'+e.msg+'</span></div>';
+  }).join(''):'<div class="logempty">The game log will fill up as you play.</div>';
+  var w=$('logBody');w.scrollTop=w.scrollHeight;
+ }
+ function openLog(){renderLog();$('logOv').hidden=false;}
+ function snd(n,a){try{if(!AUTOTEST&&!FAST&&window.ArcadeHeader&&ArcadeHeader.Sound&&ArcadeHeader.Sound[n])ArcadeHeader.Sound[n](a);}catch(e){}}
+
+ var MODE_NAMES={full:'Full game',asc:'Half ascending',desc:'Half descending',intense:'Intense',extreme:'Even more intense'};
+ function modeSizes(mode){var s=[],i;
+  var up=function(a,b){for(i=a;i<=b;i++)s.push(i);},down=function(a,b){for(i=a;i>=b;i--)s.push(i);};
+  if(mode==='asc')up(1,10);
+  else if(mode==='desc')down(10,1);
+  else if(mode==='intense'){up(6,10);down(9,6);}
+  else if(mode==='extreme'){up(8,10);down(9,8);}
+  else {up(1,10);down(9,1);}
+  return s;}
+ function startGame(mode){mode=mode||G&&G.mode||'full';
+  setSeats(myLeader);
+  G={mode:mode,sizes:modeSizes(mode),totals:[0,0,0,0],ri:0,start:0,bids:[null,null,null,null],won:[0,0,0,0],hands:[[],[],[],[]],
+     startedAt:Date.now(),
+     trump:null,trumpCard:null,size:0,phase:1,_active:-1,_decl:[false,false,false,false],_trick:[],_led:null,_win:-1,_leader:0,
+     wonPiles:[[],[],[],[]],reveal:-1,history:[],log:[],lastDeltas:null,awaitCard:null,status:'playing',seed:(AUTOTEST?12345:(Date.now()%1e9)),
+     rng:KL.mulberry32(AUTOTEST?12345:((Date.now()^Math.floor(Math.random()*1e9))>>>0))};
+  G.start=Math.floor(G.rng()*4);G.firstStarter=G.start;
+  $('startOv').hidden=true;$('endOv').hidden=true;playGame();
+ }
+ function sizeCards(){ // my hand: as wide as fits all N proposals on one row, within 110–170px
+  var w=($('b1').clientWidth||1300)-8,n=Math.max(G.size,1);
+  var pw=Math.max(84,Math.min(120,Math.floor((w-10*(n-1))/n)));
+  document.documentElement.style.setProperty('--pw',pw+'px'); }
+ function dir(){var s=G.sizes,i=G.ri,mx=Math.max.apply(null,s),left=s.length-(i+1),lbl;
+  if(i>0&&s[i]<s[i-1])lbl='▼ coming down';else if(s[i]===mx)lbl='— peak';else lbl='▲ climbing';
+  return [lbl,left];}
+ function drawTop(){
+  var d=dir();
+  $('tbr').innerHTML='<span class="stat" title="Game mode: '+MODE_NAMES[G.mode]+'">🎮<span class="mtxt"> '+MODE_NAMES[G.mode]+'</span></span>'+
+   '<span class="stat" title="'+d[1]+' round'+(d[1]===1?'':'s')+' left after this one">🔁 Round <b>'+(G.ri+1)+'</b>/'+G.sizes.length+' <span class="dn">'+d[0]+'</span></span>'+
+   '<span class="stat" title="Proposals in hand this round">💰 <b>'+G.size+'</b> each</span>'+
+   '<span class="firstpill" title="'+nm(G.start)+' opens this round">▶ '+nm(G.start)+'<span class="ftx"> opens</span></span>'+
+   '<span class="steps"><span class="step'+(G.phase===1?' on':'')+' title="Deal">🃏<span class="stx"> DEAL</span></span><span class="step'+(G.phase===1?' on':'')+' title="Open deals">🤝<span class="stx"> OPEN</span></span><span class="step'+(G.phase>=2?' on':'')+' title="Negotiate">💬<span class="stx"> NEGOTIATE</span></span></span>';
+  $('boxDeal').classList.toggle('active',G.phase===1);
+  $('boxPlay').classList.toggle('active',G.phase>=2);
+ }
+ function legalOf(led){return led==null?G.hands[0]:(G.hands[0].some(function(c){return c.s===led;})?G.hands[0].filter(function(c){return c.s===led;}):G.hands[0]);}
+ function renderSeats(){
+  var h='';
+  for(var p=0;p<4;p++){var turn=G._active===p,opens=G.phase===1&&p===G.start,leads=G.phase===2&&p===G._leader,win=G.phase===2&&G._win===p;
+   h+='<div class="seat'+(p===0?' you':'')+(turn?' turn':'')+(win?' win':'')+'"><div class="top">'+ava(p,4)+'<div style="min-width:0"><div class="nm">'+nm(p)+'</div><div class="sub">'+SUBS[p]+'</div></div></div>'+
+    '<div class="pills">'+(opens?'<span class="firstseat" title="Opens this round">▶ OPENS</span>':'')+(leads?'<span class="firstpill" title="Leads this deal">★ LEADS</span>':'')+(turn?'<span class="turnpill">'+(G.phase===1?(p===0?'YOU OPEN':'OPENING'):(p===0?'YOUR TURN':'TO PLAY'))+'</span>':'')+'</div>'+
+    '<div class="hand"><div class="bag">💰</div><b>×'+G.hands[p].length+'</b><small>proposals<br>in hand</small></div></div>';}
+  $('seats').innerHTML=h;
+ }
+ function renderHand(playable,led){
+  var legal=legalOf(led);
+  var cap=G.phase===1?G.size+' proposal'+(G.size===1?'':'s')+' this round':(playable?(led!=null?'follow '+GOODS[led].e+' '+GOODS[led].n+' — off-good proposals are dimmed':'your lead — any proposal'):(G.hands[0].length?G.hands[0].length+' proposal'+(G.hands[0].length===1?'':'s')+' left':'all played'));
+  $('handHead').innerHTML='💰 MY PROPOSALS · <span style="color:var(--mut);font-weight:600">'+cap+'</span>';
+  $('b1').innerHTML=G.hands[0].length?G.hands[0].map(function(c,i){var lg=legal.some(function(x){return KL.sameCard(x,c);});return card(c,{i:i,leg:playable&&lg,dim:playable&&!lg,play:playable&&lg});}).join(''):'<div class="empty">no proposals left this round</div>';
+  if(playable){Array.prototype.forEach.call(document.querySelectorAll('#b1 .pc.play'),function(el){el.onclick=function(){pickCard(+el.dataset.i);};});}
+ }
+ function renderTrumpDeal(){
+  var sum=0,pledgedCount=0;G.bids.forEach(function(b){if(b!=null){sum+=b;pledgedCount++;}});
+  var N=G.size,filled=Math.min(sum,N),allIn=pledgedCount===4;
+  var idle=40-4*N-(G.trumpCard?1:0);
+  var trump=G.trumpCard?card(G.trumpCard,{trump:true}):'<div class="pc ph">10-proposal round<br>no Trump Card</div>';
+  var over=allIn&&sum>N;
+  var dots='';for(var i=0;i<N;i++){var on=i<filled;dots+='<div class="dot'+(on?(over?' over':' on'):'')+'">'+(on?'🤝':'')+'</div>';}
+  var st,tx;
+  if(!allIn){st='wait';tx=sum+' opened so far — leaders still opening…';}
+  else if(sum===N){st='even';tx='EVEN — '+sum+' deals opened for '+N+' on the table';}
+  else if(sum>N){st='over';tx='OVER by '+(sum-N)+' 🤝 Deal'+(sum-N>1?'s':'');}
+  else {st='under';tx='Short of '+(N-sum)+' 🤝 Deal'+(N-sum>1?'s':'');}
+  $('b5').innerHTML='<div class="dealrow"><div><div class="tl">THE AUCTIONEER</div><div class="trumpface">'+img('trump',5)+'</div></div>'+
+   '<div><div class="tl">TRUMP CARD</div>'+trump+'</div>'+
+   '<div><div class="tl mut">💰 IDLE PROPOSALS</div><div class="idle'+(idle<=0?' empty':'')+'">💰 <small>×</small>'+idle+'</div></div></div>'+
+   '<div class="counter"><div class="tl mut">DEAL PROPOSALS COUNTER · <b style="color:var(--ink)">'+sum+'</b> opened of '+N+'</div><div class="dots" style="--gdot:'+Math.max(34,Math.min(46,Math.round(430/N)))+'px">'+dots+'</div><div class="cstat '+st+'">'+tx+'</div></div>';
+ }
+ function renderTable(){
+  var h='';
+  if(G.phase===1){
+   $('tableHead').innerHTML='🤝 THE TABLE · open deals · '+(G._active>=0?'<b>'+nm(G._active)+'</b>&nbsp;'+(G._active===0?'open':'opens'):'…');
+   if(G._active===0&&!AUTOTEST&&G.awaitBid){h='<div class="felt"><div class="center"><div class="bigask">How many deals will you close?<small>you hold '+G.size+' proposal'+(G.size===1?'':'s')+' — check the Trump Card ←</small></div><div class="chips" id="chips"></div>'+
+     '<div style="font-size:13px;color:var(--mut)">'+[1,2,3].filter(function(p){return G.bids[p]!=null;}).map(function(p){return nm(p)+' opened <b style="color:var(--ink)">'+G.bids[p]+'</b>';}).join(' · ')+'</div></div></div>';}
+   else{h='<div class="felt"><div class="center"><div class="bigask" style="color:var(--mut)">Leaders are opening their deals…</div></div></div>';}
+   $('b3').innerHTML=h;
+   if(G._active===0&&!AUTOTEST&&G.awaitBid){var cc='';for(var i=0;i<=G.size;i++)cc+='<button class="chip" data-b="'+i+'">'+i+'</button>';$('chips').innerHTML=cc;Array.prototype.forEach.call(document.querySelectorAll('#chips .chip'),function(b){b.onclick=function(){var r=G.awaitBid;G.awaitBid=null;r(+b.dataset.b);};});}
+   return;
+  }
+  var order=[G._leader,(G._leader+1)%4,(G._leader+2)%4,(G._leader+3)%4];
+  var played={};G._trick.forEach(function(t,idx){played[t.player]={card:t.card,ord:idx+1};});
+  var tn=G.size-G.hands[G._leader].length+(played[G._leader]?1:0);
+  $('tableHead').innerHTML='🤝 THE TABLE · deal '+Math.min(Math.max(tn,1),G.size)+' of '+G.size+' · <b>'+nm(G._leader)+'</b>&nbsp;leads'+(G._led!=null?' · follow '+GOODS[G._led].e+' '+GOODS[G._led].n:'')+
+   '<span class="right"><span class="stat">highest tariff wins'+(G.trump!=null?' · '+GOODS[G.trump].e+' '+GOODS[G.trump].n+' beats all':' · no Trump this round')+'</span></span>';
+  var fw=($('b3').clientWidth||1200)-32,fh=($('b3').clientHeight||300)-24;
+  var tpw=Math.max(72,Math.min(150,Math.floor((fw-30)/4)-16,fh-62));
+  h='<div class="felt" style="--pw:'+tpw+'px">';
+  for(var p=0;p<4;p++){var pl=played[p],win=G._win===p,turn=G._active===p,seq=order.indexOf(p)+1;
+   var st=[];if(p===G._leader)st.push('led'+(G._led!=null?' '+GOODS[G._led].e:''));if(pl&&G.trump!=null&&pl.card.s===G.trump)st.push('Trump!');if(turn&&!pl)st.push(p===0?'your turn':'to play');
+   var cw=pl?card(pl.card,{win:win,trump:G.trump!=null&&pl.card.s===G.trump,dim:G.trickHold&&!win}):'<div class="pc ph">'+(turn?(p===0?'YOUR TURN':'…'):'…')+'</div>';
+   h+='<div class="played'+(p===0?' you':'')+'"><div class="lbl"><span class="ord">'+seq+'</span><b>'+nm(p)+'</b>'+(st.length?' · '+st.join(' · '):'')+'</div>'+cw+(win?'<span class="leadpill">'+(G.trickHold?'🤝 DEAL WON':'LEADING THE DEAL')+'</span>':'<span style="height:19px"></span>')+'</div>';}
+  $('b3').innerHTML=h+'</div>';
+ }
+ function pips(bid,won,p){if(bid==null)return '<span class="none">not yet opened</span>';var h='',w=Math.min(won,bid),i;
+  var eye=G.wonPiles[p].length?'<span class="eye" data-p="'+p+'" title="Review the last deal won">'+(G.reveal===p?'🙈':'👀')+'</span>':'';
+  for(i=0;i<w;i++)h+='<div class="pip won">🤝'+(i===w-1&&won<=bid?eye:'')+'</div>';
+  for(i=0;i<bid-won;i++)h+='<div class="pip"></div>';
+  for(i=0;i<Math.max(0,won-bid);i++)h+='<div class="pip over">🤝'+(i===won-bid-1?eye:'')+'</div>';
+  return h||'<div class="pip"></div>';}
+ function renderStandings(){
+  var sorted=[0,1,2,3].map(function(p){return {p:p,t:G.totals[p]};}).sort(function(a,b){return b.t-a.t||a.p-b.p;});
+  var rankOf={};sorted.forEach(function(r,i){rankOf[r.p]=i;});
+  var margin=sorted[0].t-sorted[1].t,tied=margin===0,started=G.history.length>0;
+  var h='<div class="sthead"><span>LEADER</span><span>OPEN DEALS · this round</span><span>SCORE</span></div>';
+  for(var p=0;p<4;p++){var turn=G._active===p,lead=started&&rankOf[p]===0&&!tied,d=G.lastDeltas?G.lastDeltas[p]:null;
+   h+='<div class="srow'+(turn?' turn':'')+(lead?' lead':'')+'" data-p="'+p+'"><div class="who'+(p===0?' you':'')+'">'+ava(p,3)+'<div style="min-width:0"><div class="nm">'+nm(p)+'</div><div class="sub">('+SUBS[p]+')</div></div></div>'+
+    '<div class="pips">'+pips(G.bids[p],G.won[p],p)+(turn?'<span class="turnpill" style="margin-left:6px">'+(G.phase===1?'OPENING':'PROPOSING')+'</span>':'')+'</div>'+
+    '<div class="score">'+(lead?'<span class="md">🥇</span>':'')+G.totals[p]+(d!=null?'<span class="d '+(d>=0?'up':'dn')+'">'+(d>=0?'+':'')+d+'</span>':'')+'</div>';
+   if(G.reveal===p&&G.wonPiles[p].length){var last=G.wonPiles[p][G.wonPiles[p].length-1];h+='<div class="revealrow" data-hide="'+p+'">'+last.map(function(c){return card(c.card,{win:c.win});}).join('')+'</div>';}
+   h+='</div>';}
+  $('b2').innerHTML=h;
+  var lead=$('scoreLead');if(lead)lead.textContent=!started?'':(tied?'👑 tied':'🥇 '+nm(sorted[0].p)+' +'+margin);
+  Array.prototype.forEach.call(document.querySelectorAll('#b2 .eye[data-p]'),function(b){b.onclick=function(){var p=+b.dataset.p;G.reveal=(G.reveal===p?-1:p);mpReveal=G.reveal;renderStandings();};});
+  Array.prototype.forEach.call(document.querySelectorAll('#b2 .revealrow[data-hide]'),function(b){b.onclick=function(){G.reveal=-1;mpReveal=-1;renderStandings();};});
+ }
+ function medal(i){return ['🥇','🥈','🥉','4️⃣'][i];}
+ function openHistory(){
+  var head='<th>Round</th>'+[0,1,2,3].map(function(p){return '<th>'+nmYou(p)+'</th>';}).join('');
+  var body=G.history.map(function(h){return '<tr><td>R'+(h.ri+1)+' <small>'+h.size+'p</small></td>'+[0,1,2,3].map(function(p){
+    return '<td><b style="color:'+(h.deltas[p]>=0?'var(--good)':'var(--bad)')+'">'+(h.deltas[p]>=0?'+':'')+h.deltas[p]+'</b> <small>'+h.totals[p]+'</small></td>';}).join('')+'</tr>';}).join('');
+  var tot='<tr class="tot"><td>Total</td>'+[0,1,2,3].map(function(p){return '<td>'+G.totals[p]+'</td>';}).join('')+'</tr>';
+  $('histBody').innerHTML='<table class="htab"><thead><tr>'+head+'</tr></thead><tbody>'+(body||'<tr><td colspan="5" style="text-align:center;color:var(--mut)">No rounds completed yet.</td></tr>')+tot+'</tbody></table>';
+  $('histOv').hidden=false;
+ }
+ async function animateWin(winner,trickData){
+  if(AUTOTEST||FAST){G.wonPiles[winner].push(trickData);return;}
+  var srcEls=Array.prototype.slice.call(document.querySelectorAll('#b3 .played .pc:not(.ph)'));
+  var target=document.querySelector('#b2 .srow[data-p="'+winner+'"] .pips');
+  if(srcEls.length<4||!target){G.wonPiles[winner].push(trickData);await sleep(600);return;}
+  var trRect=target.getBoundingClientRect(),cw=Math.round(parseFloat(getComputedStyle(srcEls[0]).width)*.4),ch=cw;
+  var layer=document.createElement('div');layer.className='flylayer';document.body.appendChild(layer);
+  var clones=srcEls.map(function(e){var r=e.getBoundingClientRect();var fc=document.createElement('div');fc.className='flycard';
+    fc.style.width=r.width+'px';fc.style.height=r.height+'px';fc.style.left=r.left+'px';fc.style.top=r.top+'px';fc.style.setProperty('--pw',r.width+'px');
+    fc.innerHTML='<div class="flyinner"><div class="flyface">'+e.outerHTML+'</div><div class="flyface bk"><div class="back"></div></div></div>';
+    layer.appendChild(fc);return fc;});
+  layer.offsetHeight;
+  await sleep(900);   // hold face-up on the table so the deal can be read
+  var gap=6,totalW=4*cw+3*gap,sx=trRect.left+Math.max(0,(trRect.width-totalW)/2),my=trRect.top+(trRect.height-ch)/2;
+  clones.forEach(function(fc,i){fc.style.width=cw+'px';fc.style.height=ch+'px';fc.style.left=(sx+i*(cw+gap))+'px';fc.style.top=my+'px';});
+  await sleep(640);   // travel to the winner's standings row
+  clones.forEach(function(fc,i){fc.classList.add('flipped');fc.style.left=(sx+i*4)+'px';fc.style.top=(my+i*4)+'px';});
+  await sleep(480);
+  layer.remove();
+  G.wonPiles[winner].push(trickData);
+ }
+ function renderAll(){drawTop();renderSeats();renderHand(false,null);renderTable();renderTrumpDeal();renderStandings();}
+ window.addEventListener('resize',function(){if(!G||G.status!=='playing')return;sizeCards();if(G.phase>=2)renderTable();});
+
+ function startRoulette(target){
+  if(AUTOTEST||FAST)return Promise.resolve();
+  return new Promise(function(res){
+   var ov=$('rouletteOv');
+   ov.querySelector('#rouletteSeats').innerHTML=[0,1,2,3].map(function(p){
+    return '<div class="rseat" data-p="'+p+'">'+ava(p,4)+'<div class="rname">'+nmYou(p)+'</div></div>';}).join('');
+   ov.querySelector('#rouletteResult').innerHTML='&nbsp;';
+   ov.hidden=false;
+   var seatEls=ov.querySelectorAll('.rseat');
+   var total=4*3+target,i=0;
+   function step(){
+    for(var k=0;k<seatEls.length;k++){seatEls[k].classList.toggle('on',k===(i%4));seatEls[k].classList.remove('winner');}
+    snd('play');
+    if(i>=total){
+     seatEls[target].classList.add('winner');
+     ov.querySelector('#rouletteResult').innerHTML='▶ <b>'+nmYou(target)+'</b> '+(target===0?'open':'opens')+' the first deal';
+     snd('reward');
+     setTimeout(function(){ov.hidden=true;res();},1500);
+     return;
+    }
+    var slow=Math.max(0,i-(total-7));
+    i++;setTimeout(step,70+slow*slow*7);
+   }
+   step();
+  });
+ }
+ async function playGame(){try{await startRoulette(G.firstStarter);logPush({who:'Deal',msg:nmYou(G.firstStarter)+' won the draw to open the auction.'});for(G.ri=0;G.ri<G.sizes.length;G.ri++){await playRound();}endGame();}catch(e){if(AUTOTEST)$('arena-note').textContent='ERROR:'+(e&&e.message||e);else throw e;}}
+ async function playRound(){
+  G.size=G.sizes[G.ri];sizeCards();var d=KL.dealRound(G.size,G.rng);G.hands=d.hands;G.trump=d.trump;G.trumpCard=d.trumpCard;
+  G.bids=[null,null,null,null];G.won=[0,0,0,0];G._decl=[false,false,false,false];G.wonPiles=[[],[],[],[]];G.reveal=-1;G._trick=[];G._led=null;G._win=-1;G.phase=1;G._active=-1;G._leader=G.start;G.trickHold=false;
+  logPush({round:true,msg:'Round '+(G.ri+1)+'/'+G.sizes.length+' · '+G.size+'-proposal · '+nmYou(G.start)+' open'+(G.start===0?'':'s')+' the round'+(G.trumpCard?' · Trump '+GOODS[G.trumpCard.s].e+' '+GOODS[G.trumpCard.s].n:' · no Trump')});
+  renderAll();snd('deal',Math.min(G.size,6));setAction('Open your deals — how many will you close this round?','Deal');
+  for(var n=0;n<4;n++){var p=(G.start+n)%4;G._active=p;drawTop();renderSeats();renderStandings();renderTable();
+   var bid;
+   if(p===0&&!AUTOTEST){setAction('Your turn — how many deals will you close?','You');bid=await new Promise(function(res){G.awaitBid=res;renderTable();});}
+   else{await sleep(DECL_MS);bid=KL.aiBid(G.hands[p],G.trump,G.size);}
+   G.bids[p]=bid;G._decl[p]=true;renderTrumpDeal();renderStandings();renderTable();setAction(nm(p)+' opened '+bid+' deal'+(bid===1?'':'s')+'.',nmYou(p));await sleep(220);
+  }
+  G.phase=2;var leader=G.start;
+  for(var t=0;t<G.size;t++){
+   G._trick=[];var led=null;G._win=-1;G._leader=leader;
+   for(var m=0;m<4;m++){var pl=(leader+m)%4;G._active=pl;G._led=led;drawTop();renderSeats();renderTable();renderHand(false,led);renderStandings();
+    var c;
+    if(pl===0&&!AUTOTEST){setAction((led==null?'Your turn — lead with any proposal.':'Your turn — follow '+GOODS[led].e+' '+GOODS[led].n+' if you can.'),'You');renderHand(true,led);c=await new Promise(function(res){G.awaitCard=res;});renderHand(false,led);}
+    else{c=KL.aiPlay({hand:G.hands[pl],trick:G._trick,led:led,trump:G.trump,need:G.bids[pl]-G.won[pl]});await sleep(PLAY_MS);}
+    var idx=G.hands[pl].findIndex(function(x){return KL.sameCard(x,c);});G.hands[pl].splice(idx,1);
+    if(led==null)led=c.s;G._led=led;G._trick.push({player:pl,card:c});snd('play');
+    G._win=G._trick[KL.trickWinner(G._trick,led,G.trump)].player;renderTable();renderSeats();renderHand(false,led);
+   }
+   var w=G._win;G.won[w]++;var trickData=G._trick.map(function(x){return {card:x.card,win:x.player===w};});
+   snd(w===0?'reward':'draw');
+   G.trickHold=true;G._active=-1;renderTable();renderSeats();setAction(nm(w)+(w===0?' (you) close':' closes')+' the deal with '+GOODS[G._trick.filter(function(x){return x.player===w;})[0].card.s].e+' '+(G._trick.filter(function(x){return x.player===w;})[0].card.r*10)+'%.',nmYou(w));
+   await animateWin(w,trickData);
+   G.trickHold=false;renderStandings();renderTable();
+   leader=w;
+  }
+  G.phase=3;var deltas=[];for(var q=0;q<4;q++){deltas[q]=KL.roundScore(G.bids[q],G.won[q]);G.totals[q]+=deltas[q];}
+  G.lastDeltas=deltas.slice();G.history.push({ri:G.ri,size:G.size,deltas:deltas.slice(),totals:G.totals.slice(),bids:G.bids.slice(),won:G.won.slice()});
+  G._active=-1;drawTop();renderSeats();renderStandings();renderHand(false,null);
+  var line=[0,1,2,3].map(function(p){var hit=G.bids[p]===G.won[p];return '<div class="sl">'+ava(p,2)+'<div class="r"><b style="color:var(--ink)">'+nm(p)+'</b> '+(hit?'closed the deals':'missed')+'<br>'+G.won[p]+' won / '+G.bids[p]+' open</div><div class="d '+(deltas[p]>=0?'up':'dn')+'">'+(deltas[p]>=0?'+':'')+deltas[p]+'</div></div>';}).join('');
+  $('tableHead').innerHTML='🤝 THE TABLE · round '+(G.ri+1)+' settled';
+  $('b3').innerHTML='<div class="felt st"><div class="center settle"><div class="bigask">Round '+(G.ri+1)+' settled<small>close exactly what you open: +10, plus 2 per deal · miss by any margin: −2 per deal off</small></div><div class="line">'+line+'</div><button class="btn" id="cont">'+(G.ri<G.sizes.length-1?'Next round →':'Final result →')+'</button></div></div>';
+  setAction('Round settled — scores updated.','Deal');
+  await new Promise(function(res){if(AUTOTEST){res();return;}$('cont').onclick=res;});
+  G.start=(G.start+1)%4;
+ }
+ function pickCard(i){if(!G.awaitCard)return;var c=G.hands[0][i],led=G._led;
+  if(!legalOf(led).some(function(x){return KL.sameCard(x,c);}))return;var r=G.awaitCard;G.awaitCard=null;r(c);}
+ function endGame(){G.status='done';var order=[0,1,2,3].map(function(p){return {p:p,nm:nm(p),t:G.totals[p]};}).sort(function(a,b){return b.t-a.t;});
+  var place=order.findIndex(function(o){return o.p===0;})+1;G.place=['1st','2nd','3rd','4th'][place-1];G.won0=order[0].p===0;
+  snd(G.won0?'reward':'draw');
+  if(AUTOTEST){$('arena-note').textContent='DONE winner='+order[0].nm+' totals='+G.totals.join(',')+' you='+G.place;return;}
+  var deals=[0,0,0,0];G.history.forEach(function(h){for(var p=0;p<4;p++)deals[p]+=h.won[p];});
+  $('endSheet').innerHTML='<h1>'+(G.won0?'🏆 You win the auction!':order[0].nm+' wins the auction')+'</h1><div style="color:var(--mut);font-size:.9rem;margin:-.3rem 0 .2rem">'+MODE_NAMES[G.mode]+' · '+G.sizes.length+' rounds</div><table><tr><th style="text-align:left">Final standing</th><th>Deals closed</th><th>Points</th></tr>'+order.map(function(o,i){return '<tr'+(o.p===0?' class="me"':'')+'><td class="name">'+medal(i)+' '+ava(o.p,2)+o.nm+(o.p===0?' (you)':'')+'</td><td>'+deals[o.p]+' 🤝</td><td><b>'+o.t+'</b></td></tr>';}).join('')+'</table><div style="margin-top:1.2rem;display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn" id="again">Play Again</button><button class="btn alt" id="changemode">Change mode</button><button class="btn alt" id="backarcade">← Back to Arcade</button></div>';
+  $('endOv').hidden=false;$('again').onclick=function(){$('endOv').hidden=true;startGame(G.mode);};$('changemode').onclick=function(){$('endOv').hidden=true;$('startOv').hidden=false;};
+  $('backarcade').onclick=function(){var url=(window.ArcadeHeader&&ArcadeHeader.isKktShell&&ArcadeHeader.isKktShell())?'/arcade':'/arcade';try{window.top.location.href=url;}catch(e){location.href=url;}};}
+ // Score bridge contract (same as Presina): status 'done' + won/place + the XP signals.
+ window.__kl={game:{getState:function(){if(rvr)return{seed:'mp',status:'playing',score:0};if(!G)return{seed:'none',status:'playing',score:0};return {seed:G.seed,status:G.status,score:G.totals?G.totals[0]:0,faction:LEADERS[myLeader].nm,place:G.place||'',won:!!G.won0,mode:G.mode?MODE_NAMES[G.mode]:'',
+   duration_seconds:G.startedAt?Math.round((Date.now()-G.startedAt)/1000):null,turns_taken:G.ri||0,players:4,margin:(G.totals?Math.max(0,G.totals[0]-Math.max(G.totals[1],G.totals[2],G.totals[3])):0)};}}};
+ // Leader picker on the start sheet.
+ function renderLeaders(){$('leaders').innerHTML=LEADERS.map(function(l,i){return '<button class="ld'+(i===myLeader?' sel':'')+'" data-l="'+i+'"><div class="ava">'+img(l.id,5)+'</div><div class="nm">'+l.nm+'</div></button>';}).join('');
+  Array.prototype.forEach.call(document.querySelectorAll('#leaders .ld'),function(b){b.onclick=function(){myLeader=+b.dataset.l;try{localStorage.setItem('tw-leader',myLeader);}catch(e){}renderLeaders();};});}
+ try{var sv=parseInt(localStorage.getItem('tw-leader'),10);if(sv>=0&&sv<4)myLeader=sv;}catch(e){}
+ renderLeaders();
+ $('helpEx').innerHTML=card({s:0,r:4})+card({s:0,r:9},{win:true})+card({s:2,r:10},{dim:true});
+ $('btn-newgame').onclick=function(){$('endOv').hidden=true;$('startOv').hidden=false;};
+ Array.prototype.forEach.call(document.querySelectorAll('#startOv .modebtn'),function(b){b.onclick=function(){startGame(b.dataset.mode);};});
+ $('histBtn').onclick=function(){if(G)openHistory();};
+ $('histClose').onclick=function(){$('histOv').hidden=true;};
+ $('btn-log').onclick=function(){openLog();};
+ $('logClose').onclick=function(){$('logOv').hidden=true;};
+ // ===== ONLINE MULTIPLAYER (rvr) ==========================================
+ // Re-index the server's absolute seats so MY seat becomes local 0, build a
+ // G-shaped object and reuse the renderers. Server seat s plays leader s.
+ function mpApply(state){
+  if(!state) return;
+  lastServerState=state;
+  var me=mySeat;
+  var toLocal=function(seat){return (seat-me+4)%4;};
+  var toServer=function(i){return (me+i)%4;};
+  var lp=[0,1,2,3].map(function(i){return state.players[toServer(i)]||{hand:[],handCount:0,bid:null,won:0};});
+  for(var i=0;i<4;i++){SEATLDR[i]=toServer(i);NAMES[i]=LEADERS[SEATLDR[i]].nm;SUBS[i]=i===0?'you':(lp[i].isAI?'AI':(lp[i].name||('P'+(lp[i].id!=null?lp[i].id:'?'))));}
+  myLeader=SEATLDR[0];
+  if(!G)G={};
+  G.mode=state.mode; G.sizes=modeSizes(state.mode);
+  G.ri=state.round.ri; G.size=state.round.size;
+  G.start=toLocal(state.opener);
+  G.phase=state.phase; G.trump=state.trump; G.trumpCard=state.trumpCard;
+  G._led=(state.led==null?null:state.led);
+  G._leader=toLocal(state.leader);
+  G._active=toLocal(state.current);
+  G.hands=lp.map(function(p,i){return i===0?(p.hand||[]):new Array(p.handCount||0).fill({s:0,r:0});});
+  G.bids=lp.map(function(p){return p.bid;});
+  G.won=lp.map(function(p){return p.won;});
+  G.totals=[0,1,2,3].map(function(i){return state.totals[toServer(i)];});
+  G._trick=(state.trick||[]).map(function(t){return {player:toLocal(t.seat),card:t.card};});
+  var pt=state.pendingTrick||null;
+  G._win=pt?toLocal(pt.winner):(G._trick.length?G._trick[KL.trickWinner(G._trick,G._led,G.trump)].player:-1);
+  G.trickHold=!!pt;
+  G.wonPiles=[0,1,2,3].map(function(i){return (state.wonPiles&&state.wonPiles[toServer(i)])||[];});
+  G.reveal=mpReveal;
+  G.log=(state.log||[]).map(function(e){
+   if(e.round)return {round:true,msg:e.msg};
+   return {who:(e.seat!=null&&e.seat===mySeat)?'You':(e.who||'Tariff Wars'),msg:e.msg};
+  });
+  if(!$('logOv').hidden)renderLog();
+  G.history=(state.history||[]).map(function(h){return {ri:h.ri,size:h.size,
+    deltas:[0,1,2,3].map(function(i){return h.deltas[toServer(i)];}),
+    totals:[0,1,2,3].map(function(i){return h.totals[toServer(i)];}),
+    bids:[0,1,2,3].map(function(i){return h.bids[toServer(i)];}),
+    won:[0,1,2,3].map(function(i){return h.won[toServer(i)];})};});
+  G.lastDeltas=G.history.length?G.history[G.history.length-1].deltas:null;
+  G.status=(state.status==='finished'?'done':'playing');
+  var myTurn=(G._active===0)&&state.status==='playing';
+  G.awaitBid=(G.phase===1&&myTurn)?function(n){if(net)net.pledge(n);G.awaitBid=null;}:null;
+  G.awaitCard=(G.phase===2&&myTurn)?function(c){if(net)net.playCard(c);G.awaitCard=null;}:null;
+  sizeCards();
+  drawTop();renderSeats();renderTrumpDeal();renderStandings();
+  renderHand(G.phase===2&&myTurn,G._led);renderTable();
+  if(pt&&pt.seq!==mpLastTrickSeq){
+   mpLastTrickSeq=pt.seq;
+   var wl=toLocal(pt.winner);
+   var wc=(pt.plays.filter(function(x){return x.seat===pt.winner;})[0]||{}).card;
+   flash(nmYou(wl),(wl===0?'You close':nm(wl)+' closes')+' the deal'+(wc?' with '+GOODS[wc.s].e+' '+(wc.r*10)+'%':'')+'.');
+   snd(wl===0?'reward':'play');
+   var b3=$('boxPlay');if(b3){b3.classList.remove('trickwon');void b3.offsetWidth;b3.classList.add('trickwon');}
+  }
+  if(state.status==='finished'&&state.result)mpShowResult(state.result);
+ }
+ function mpDecide(state,seat){
+  var me=state.players[seat]; if(!me||state.status!=='playing')return null;
+  if(state.phase===1)return {type:'pledge',args:[seat,KL.aiBid(me.hand,state.trump,state.round.size)]};
+  var card=KL.aiPlay({hand:me.hand,trick:state.trick,led:state.led,trump:state.trump,need:(me.bid==null?0:me.bid)-me.won});
+  return {type:'playCard',args:[seat,card]};
+ }
+ function mpShowResult(result){
+  if(mpResultShown)return; mpResultShown=true;
+  var order=result.players.map(function(p){return {seat:p.playerId,score:p.finalScore,name:LEADERS[p.playerId%4].nm+(p.playerId===mySeat?' (you)':(p.isAI?'':' · '+(p.name||'')))};}).sort(function(a,b){return b.score-a.score;});
+  var youWon=result.winner===mySeat;
+  var backBtn='<button class="btn alt" id="mpback">← Back to Arcade</button>';
+  var againBtn=window.__presinaRematch?'<button class="btn" id="mpagain" style="background:var(--gold);color:#20160a;font-weight:800">🔄 Play again</button>':'';
+  $('endSheet').innerHTML='<h1>'+(youWon?'🏆 You win the auction!':order[0].name+' wins the auction')+'</h1>'+
+    '<div style="color:var(--mut);font-size:.9rem;margin:-.3rem 0 .2rem">'+(MODE_NAMES[result.mode]||result.mode)+' · online</div>'+
+    '<table><tr><th style="text-align:left">Final standing</th><th>Points</th></tr>'+order.map(function(o,i){return '<tr'+(o.seat===mySeat?' class="me"':'')+'><td class="name">'+medal(i)+' <div class="ava">'+img(LEADERS[o.seat%4].id,2)+'</div>'+o.name+'</td><td><b>'+o.score+'</b></td></tr>';}).join('')+'</table>'+
+    '<div style="margin-top:1.2rem;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">'+againBtn+backBtn+'</div>';
+  $('endOv').hidden=false;snd(youWon?'reward':'draw');
+  if($('mpagain'))$('mpagain').onclick=function(){var b=$('mpagain');b.disabled=true;b.textContent='Restarting the table…';
+   Promise.resolve(window.__presinaRematch()).then(function(ok){if(!ok&&$('mpagain')){$('mpagain').disabled=false;$('mpagain').textContent='🔄 Play again';}});};
+  $('mpback').onclick=function(){var u=(window.ArcadeHeader&&ArcadeHeader.isKktShell&&ArcadeHeader.isKktShell())?'/arcade':'/arcade';try{window.top.location.href=u;}catch(e){location.href=u;}};
+ }
+ // Bridge the ES-module MP client (mp-client.js) ↔ this IIFE + the e2e harness.
+ // (Kept under the __presina name: the relay host and the testbed are shared with Presina.)
+ window.__presina={
+  attachNet:function(n){net=n;},
+  setStarted:function(seat){mySeat=seat;rvr=true;mpResultShown=false;mpReveal=-1;mpLastTrickSeq=0;$('startOv').hidden=true;$('endOv').hidden=true;$('rouletteOv').hidden=true;},
+  applyServerState:mpApply,
+  onFinished:function(result){if(result)mpShowResult(result);},
+  onRematch:function(){mpResultShown=false;$('endOv').hidden=true;},
+  decide:mpDecide,
+  act:function(intent){if(!intent||!net)return;if(intent.type==='pledge')net.pledge(intent.args[1]);else if(intent.type==='playCard')net.playCard(intent.args[1]);},
+  meId:function(){return mySeat;},
+  get state(){return lastServerState;},
+  get rvr(){return rvr;}
+ };
+ if(AUTOTEST)startGame('full');
+})();
+</script>
+<script type="module">
+import { startMultiplayer } from './mp-client.js';
+(function(){
+  async function boot(action, code){
+    const api = {
+      onStarted: (seat) => window.__presina && window.__presina.setStarted(seat),
+      onState:   (state) => window.__presina && window.__presina.applyServerState(state),
+      onFinished:(result) => window.__presina && window.__presina.onFinished(result),
+      onRematch: () => window.__presina && window.__presina.onRematch(),
+      onError:   (err) => console.warn('[tariff-wars mp] rejected:', err),
+    };
+    const mp = await startMultiplayer(api);
+    if (window.__presina) window.__presina.attachNet(mp.net);
+    window.__presinaRematch = () => mp.rematch();
+    if (action === 'join' || code) mp.join(code); else mp.host();
+  }
+  window.__presinaBoot = boot;
+  function inject(){
+    const sheet = document.querySelector('#startOv .sheet');
+    if (sheet && !document.getElementById('btn-host-game')){
+      const wrap = document.createElement('div'); wrap.style.marginTop = '12px';
+      const b = document.createElement('button');
+      b.id = 'btn-host-game'; b.className = 'btn';
+      b.style.cssText = 'width:100%;background:var(--gold);color:#20160a;font-weight:800';
+      b.textContent = '🌐 Host a Game (online)';
+      b.onclick = () => boot('host');
+      wrap.appendChild(b); sheet.appendChild(wrap);
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', inject); else inject();
+  const room = new URLSearchParams(location.search).get('room');
+  if (room) boot('join', room);
+})();
+</script>
+<script>(function(){var sh=document.querySelector("#startOv .sheet");if(sh){var c=document.createElement("p");c.style.cssText="margin:14px 0 0;font:600 11px/1.4 ui-monospace,Menlo,monospace;letter-spacing:.12em;color:#8b9098;text-align:center";c.innerHTML='A VRG GAME · <a href="/source/" style="color:#ffd400;text-decoration:none">FREE TO COPY AND REMIX</a>';sh.appendChild(c);var n=document.createElement("div");n.id="vg-acct";n.style.cssText="margin:12px 0 0;padding:10px 12px;border:1px solid #3a3410;border-radius:10px;background:#1a1808;font:600 12px/1.5 system-ui,sans-serif;color:#c4c8ce;text-align:center";n.textContent="Playing as a guest.";sh.insertBefore(n,c);fetch("/api/me",{credentials:"same-origin"}).then(function(r){return r.json();}).then(function(d){if(d.account){n.innerHTML="Signed in as <b style=\"color:#ffd400\">"+String(d.account.name||"you").replace(/[<>]/g,"")+"</b> · your wins count on the <a href=\"/leaderboard\" style=\"color:#ffd400\">leaderboard</a>.";return;}var P=[["google","Google"],["apple","Apple"],["discord","Discord"],["github","GitHub"]],on=P.filter(function(x){return d.providers&&d.providers[x[0]];});n.innerHTML="Playing as a guest: this score is not kept. <b style=\"color:#ffd400\">Sign in</b> to keep your wins and join the <a href=\"/leaderboard\" style=\"color:#ffd400\">leaderboard</a>."+(on.length?"<div style=\"margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap\">"+on.map(function(x){return "<a href=\"/auth/"+x[0]+"?next="+encodeURIComponent(location.pathname)+"\" style=\"background:#ffd400;color:#111;padding:6px 10px;border-radius:7px;text-decoration:none;font-weight:800\">"+x[1]+"</a>";}).join("")+"</div>":"<div style=\"margin-top:6px;color:#8b9098\">Sign-in opens soon.</div>");}).catch(function(){});}})();</script>
+<script src="arcade-header.js"></script>
+<script>
+(function(){
+  var grp = document.getElementById('ah-ctlgroup');
+  ArcadeHeader.buildAudioButtons(grp, { music: { mood: 'wistful' } });
+  ArcadeHeader.setupArcadeBack(document.getElementById('ah-arcade'));
+  ArcadeHeader.armOnFirstGesture();
+  var helpOv = document.getElementById('helpOv');
+  document.getElementById('btn-help').addEventListener('click', function(){ helpOv.hidden = false; });
+  document.getElementById('helpClose').addEventListener('click', function(){ helpOv.hidden = true; });
+})();
+</script>
+<style>#arcade-home{display:none !important;}</style>
+</body></html>

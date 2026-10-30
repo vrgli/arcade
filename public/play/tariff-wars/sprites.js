@@ -1,0 +1,100 @@
+/* Tariff Wars — pixel avatars. 16×16 maps drawn on canvas; no image files. */
+(function(root){
+ 'use strict';
+ var SPRITES={
+  vlad:{pal:{H:'#d8c69c',S:'#f1cfae',E:'#3b5f8a',M:'#c9977a',W:'#f5f5f5',T:'#c62828',J:'#1e2433'},map:[
+   '................',
+   '......HHHH......',
+   '....HHSSSSHH....',
+   '...HSSSSSSSSH...',
+   '...SSSSSSSSSS...',
+   '...SSSSSSSSSS...',
+   '...SESSSSSSES...',
+   '...SSSSSSSSSS...',
+   '...SSSSMMSSSS...',
+   '....SSSSSSSS....',
+   '.....SSSSSS.....',
+   '..JJJJWWWWJJJJ..',
+   '.JJJJJWTTWJJJJJ.',
+   '.JJJJJWTTWJJJJJ.',
+   'JJJJJJJTTJJJJJJJ',
+   'JJJJJJJJJJJJJJJJ']},
+  ursula:{pal:{H:'#f2d462',S:'#f6d9bf',E:'#2f5d9a',M:'#d08a8a',W:'#f8f8f8',J:'#2f6fd6'},map:[
+   '................',
+   '....HHHHHHHH....',
+   '...HHHHHHHHHH...',
+   '..HHHHHHHHHHHH..',
+   '..HHSSSSSSSSHH..',
+   '..HHSSSSSSSSHH..',
+   '..HHSESSSSESHH..',
+   '..HHSSSSSSSSHH..',
+   '..HHSSSMMSSSHH..',
+   '..HHHSSSSSSHHH..',
+   '...HHHSSSSHHH...',
+   '..JJJJWWWWJJJJ..',
+   '.JJJJJJWWJJJJJJ.',
+   '.JJJJJJWWJJJJJJ.',
+   'JJJJJJJWWJJJJJJJ',
+   'JJJJJJJJJJJJJJJJ']},
+  modi:{pal:{H:'#e6e6e6',S:'#a7724a',E:'#2a1a10',M:'#7d4f2e',G:'#3a3a3a',B:'#dedede',W:'#fafafa',J:'#ee8a2b'},map:[
+   '................',
+   '.....HHHHHH.....',
+   '....HHHHHHHH....',
+   '...HSSSSSSSSH...',
+   '...HSSSSSSSSH...',
+   '...SSSSSSSSSS...',
+   '...GGGGSSGGGG...',
+   '...GESGSSGESG...',
+   '...SSSSSSSSSS...',
+   '...BSSSMMSSSB...',
+   '...BBBBBBBBBB...',
+   '....BBBBBBBB....',
+   '..JJJJWWWWJJJJ..',
+   '.JJJJJWWWWJJJJJ.',
+   '.JJJJJWWWWJJJJJ.',
+   'JJJJJJWWWWJJJJJJ']},
+  xi:{pal:{H:'#141414',S:'#f0cfa6',E:'#1a1a1a',M:'#c38c6e',W:'#f5f5f5',T:'#c62828',J:'#1b2240'},map:[
+   '................',
+   '....HHHHHHHH....',
+   '...HHHHHHHHHH...',
+   '...HHHHHHHHHH...',
+   '...SSSSSSSSSS...',
+   '...SSSSSSSSSS...',
+   '...SESSSSSSES...',
+   '...SSSSSSSSSS...',
+   '...SSSSMMSSSS...',
+   '...SSSSSSSSSS...',
+   '....SSSSSSSS....',
+   '..JJJJWWWWJJJJ..',
+   '.JJJJJWTTWJJJJJ.',
+   '.JJJJJWTTWJJJJJ.',
+   'JJJJJJJTTJJJJJJJ',
+   'JJJJJJJJJJJJJJJJ']},
+  /* the auctioneer — appears on the Trump Card */
+  trump:{pal:{H:'#f6c84a',S:'#f3b98a',E:'#3b6fb0',M:'#b9775a',W:'#f5f5f5',T:'#d32f2f',J:'#1e2433'},map:[
+   '................',
+   '...HHHHHHHHHH...',
+   '..HHHHHHHHHHHH..',
+   '..HHHHHHHHHHHH..',
+   '..HHSSSSSSSSHH..',
+   '...SSSSSSSSSS...',
+   '...SESSSSSSES...',
+   '...SSSSSSSSSS...',
+   '...SSSSMMSSSS...',
+   '...SSSSSSSSSS...',
+   '....SSSSSSSS....',
+   '..JJJJWWWWJJJJ..',
+   '.JJJJJWTTWJJJJJ.',
+   '.JJJJJWTTWJJJJJ.',
+   'JJJJJJJTTJJJJJJJ',
+   'JJJJJJJJJJJJJJJJ']}
+ };
+ function draw(name,px){
+  var sp=SPRITES[name],c=document.createElement('canvas');px=px||4;
+  c.width=16*px;c.height=16*px;c.className='px';
+  var g=c.getContext('2d');
+  sp.map.forEach(function(row,y){for(var x=0;x<16;x++){var k=row[x];if(k==='.')continue;g.fillStyle=sp.pal[k]||'#f0f';g.fillRect(x*px,y*px,px,px);}});
+  return c;
+ }
+ root.PX={draw:draw,SPRITES:SPRITES};
+})(window);
