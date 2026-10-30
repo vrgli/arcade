@@ -1,6 +1,6 @@
 // Home: sign-in control in the brand bar, and the "play for free" interstitial.
 (function () {
-  var PROV = [['google','Google'],['github','GitHub'],['discord','Discord'],['apple','Apple']];
+  var PROV = [['google','Google'],['github','GitHub'],['discord','Discord']];
   var providers = {}, account = null, target = '/';
   var $ = function (s) { return document.querySelector(s); };
   function openSheet() { $('#scrim').hidden = false; $('#guest').hidden = false; }

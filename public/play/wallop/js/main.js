@@ -144,7 +144,7 @@ function showCard(b){
 }
 
 /* ── account ─────────────────────────────────────────────────────────────── */
-const PROVIDERS=[['google','Google'],['apple','Apple'],['discord','Discord'],['github','GitHub']];
+const PROVIDERS=[['google','Google'],['github','GitHub'],['discord','Discord']];
 function paintProviders(){
   $('#providers').innerHTML=PROVIDERS.map(([k,n])=>providers[k]
     ? `<a href="/auth/${k}?next=${encodeURIComponent(location.pathname)}">${n}</a>`

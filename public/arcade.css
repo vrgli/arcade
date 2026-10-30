@@ -37,7 +37,7 @@ a.game .fork:hover,.fork:hover{background:var(--yl);color:#111}
 .sheet h2{margin:8px 0 10px;font:800 22px/1.15 var(--sans);letter-spacing:-.01em}.sheet p{color:#c4c8ce;font-size:14px}.sheet p a{color:var(--yl)}
 .sheet .x{position:absolute;right:10px;top:8px;font-size:22px;color:var(--mute);padding:4px 8px;background:none;border:0;cursor:pointer}
 .sheet .ghost{display:block;text-align:center;margin-top:10px;width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font:700 12px/1 var(--mono);letter-spacing:.12em;color:var(--mute);text-decoration:none;background:none;cursor:pointer}
-.providers{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.providers{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px}
 .providers a,.providers span{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:10px;font:700 12px/1 var(--mono);letter-spacing:.1em;text-decoration:none;border:1px solid var(--yl);color:#111;background:var(--yl)}
 .providers span{background:transparent;color:var(--mute);border-color:var(--line)}
 .vrg-act .btn.acct{border-color:var(--yl);color:var(--yl)}.vrg-act .btn img{width:18px;height:18px;border-radius:50%}
