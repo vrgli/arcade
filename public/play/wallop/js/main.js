@@ -111,7 +111,7 @@ function tap(side,e){
   const ri=clock.roundIndex(); cur.tapNoise[ri]=cur.tapNoise[ri]||0; cur.tapBy[ri]=cur.tapBy[ri]||{a:0,b:0};
   const r=arenaEl.getBoundingClientRect();
   const px=(e.clientX||r.left+r.width*(side==='a'?.3:.7))-r.left, py=(e.clientY||r.top+r.height*.6)-r.top;
-  arena.tap(px*(WORLD_W/r.width), py*(WORLD_W/r.width)+arena.viewTop);
+  { const [wx,wy]=arena.toWorld(px,py); arena.tap(wx,wy); }
   let gain=0;
   if(lead===side && cur.tapNoise[ri]<NOISE_TAP_CAP){ gain=NOISE_PER_TAP; cur.tapNoise[ri]+=gain; cur.tapBy[ri][side]+=gain; cur.tapSide[side]+=gain; cur.tapTotal+=gain; me.noise+=gain; audio.tap(); }
   const d=document.createElement('span'); d.className='plus'+(gain?'':' zero'); d.textContent=gain?'+'+gain:(lead?'NOT AHEAD':'FLAT');

@@ -37,7 +37,7 @@ export class Arena{
   constructor(canvas,dom){
     this.c=canvas; this.x=canvas.getContext('2d'); this.dom=dom;
     this.x.imageSmoothingEnabled=false;
-    this.S=1; this.VH=H; this.cssW=W; this.cssH=H;
+    this.S=1; this.VH=H; this.VW=W; this.offX=0; this.wide=false; this.cssW=W; this.cssH=H;
     this.p=new Particles(); this.rings=new Rings(); this.shake=new Shake(); this.pc=new PClock();
     this.decals=[]; this.toasts=[];
     this.pose={a:'neutral',b:'neutral'}; this.off={a:0,b:0}; this.rot={a:0,b:0};
@@ -97,9 +97,20 @@ export class Arena{
     if(this.c.width!==bw||this.c.height!==bh){ this.c.width=bw; this.c.height=bh;
       this.x.imageSmoothingEnabled=false; }
     this.cssW=cssW; this.cssH=cssH; this.dpr=dpr;
-    this.S=cssW/W;
-    this.VH=cssH/this.S;
-    this.viewTop=clamp(H-this.VH,-BG,H-40);
+    /* Landscape (desktop, tablets on their side): fit the full world HEIGHT and
+       let the extra width come from the painted margins, so the ring fills a
+       wide column instead of a 3:4 strip. Portrait keeps the width-fit camera. */
+    this.wide = cssW/cssH > 1.05;
+    if(this.wide){
+      this.S=Math.max(cssH/H, cssW/(W+2*BG));
+      this.VH=cssH/this.S; this.VW=cssW/this.S;
+      this.viewTop=clamp(H-this.VH,-BG,H-40);
+      this.offX=(this.VW-W)/2;
+    } else {
+      this.S=cssW/W; this.VW=W; this.offX=0;
+      this.VH=cssH/this.S;
+      this.viewTop=clamp(H-this.VH,-BG,H-40);
+    }
     return true;
   }
   _camFight(){ this.pushing=false; this.czT=1; this.cxT=0; this.cyT=0; }
@@ -144,7 +155,8 @@ export class Arena{
        edge during a hit. */
     const Z=(Number.isFinite(this.zoom)&&this.zoom>0)?this.zoom:1;
     const vcy=vy0+vh/2;
-    const xLo=W/2-(W/2)/Z,  xHi=W/2+(W/2)/Z;
+    const VW=this.VW||W;
+    const xLo=W/2-(VW/2)/Z,  xHi=W/2+(VW/2)/Z;
     const yLo=vcy-(vh/2)/Z, yHi=vcy+(vh/2)/Z;
     const availW=xHi-xLo, availH=yHi-yLo;
     const need=Math.min(availW/bw, availH/bh);
@@ -163,12 +175,12 @@ export class Arena{
     const x0=b.x0,y0=b.y0,x1=b.x1,y1=b.y1;
     if(!(vh>0&&x1>x0&&y1>y0)){ this._camFight(); return; }
     const bw=x1-x0, bh=y1-y0;
-    const fit=Math.min(W/bw, vh/bh);
+    const fit=Math.min((this.VW||W)/bw, vh/bh);
     const z=clamp(Math.min(fit,maxZ), Math.min(minZ,fit), maxZ);
     const zz=Math.max(z,ZMIN);                    /* the painted margin is what
                                                      bounds how far we may pull back */
     this.czT=zz;
-    this.cxT=clamp(((W-bw*zz)/2)-x0*zz, W-(W+BG)*zz, BG*zz);
+    this.cxT=clamp(((W-bw*zz)/2)-x0*zz, W-(W+BG)*zz, BG*zz);   /* centred on the world, which the wide offset keeps centred on screen */
     this.cyT=clamp(vy0+((vh-bh*zz)/2)-y0*zz, H-(H+BG)*zz, vy0+BG*zz);
   }
 
@@ -178,6 +190,7 @@ export class Arena{
     this.winCol = w==='a' ? '#44ef99' : '#ff6f61'; }
   busy(){ return !!this.blow || this.clinching>0; }
   toast(txt,col){ this.toasts.push({txt,col,t:0}); }
+  toWorld(px,py){ return [px/this.S-(this.offX||0), py/this.S+this.viewTop]; }
   tap(x,y){
     this.p.burst(x,y,5,110,['#ffe08a','#fff0bb','#ffffff'],{sz:2,grav:180});
     this.rings.add(x,y,16,260,'#ffd34d',1.5);
@@ -336,8 +349,8 @@ export class Arena{
     if(!Number.isFinite(this.viewTop)) this.viewTop=0;
     const k=this.S*(this.dpr||1);
     if(!(k>0)) return;
-    x.setTransform(k,0,0,k,0,-this.viewTop*k);
-    x.clearRect(-BG,this.viewTop-BG,W+BG*2,this.VH+BG*2);
+    x.setTransform(k,0,0,k,(this.offX||0)*k,-this.viewTop*k);
+    x.clearRect(-BG-(this.offX||0),this.viewTop-BG,(this.VW||W)+BG*2,this.VH+BG*2);
     const [sx,sy]=this.shake.offset();
     x.save();
     const vcy=this.viewTop+this.VH/2;

@@ -98,7 +98,7 @@ a{color:inherit}
   #main{grid-template-columns:1fr 1fr;align-items:start}
   #left{position:sticky;top:52px;height:calc(100vh - 52px);align-items:center;background:#07080b}
   #hud,#tapHint{width:100%}
-  #arenaWrap{flex:1;min-height:0;width:auto;max-width:100%;aspect-ratio:3/4;max-height:none;margin:0 auto;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+  #arenaWrap{flex:1;min-height:0;width:100%;aspect-ratio:auto;max-height:none;margin:0}
   #bets{border-top:0;border-left:1px solid var(--line);min-height:calc(100vh - 52px);padding:22px 22px 40px}
   .cd-num{font-size:120px}#countdown.beat1 .cd-num{font-size:170px}
   .opt{min-height:74px;font-size:12px}.opt img{width:44px;height:44px}
