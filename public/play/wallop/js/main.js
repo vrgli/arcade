@@ -60,7 +60,7 @@ const pair=()=>SKIN_LIBRARY[skinId];
 const pct=p=>(p*100).toFixed(p<0.1?1:0)+'%';
 function marketState(m){
   if(!cur) return 'open';
-  if(cur.results[m.key]) return cur.results[m.key].won?'won':'lost';
+  if(cur.results[m.key]) return cur.results[m.key].won?'won':(cur.results[m.key].pick?'lost':'done');
   return clock.ct()>=lockAt(m)?'locked':'open';
 }
 function renderMarkets(){
@@ -69,7 +69,8 @@ function renderMarkets(){
   $('#markets').innerHTML=MARKETS.map(m=>{
     const st=marketState(m), pick=cur.picks[m.key], res=cur.results[m.key];
     const left=Math.max(0,lockAt(m)-ct);
-    const state = st==='won' ? `WON · +${res.teeth} TEETH` : st==='lost' ? (res.out==='nobody'?'NOBODY LANDED':'LOST')
+    const landed = res ? (res.out==='nobody' ? (m.key==='battle'?'DRAW · NOBODY':'FLAT · NOBODY LANDED') : P[res.out].name+(m.key==='battle'?' WON':' LANDED')) : '';
+    const state = st==='won' ? `WON · +${res.teeth} TEETH` : st==='lost' ? `LOST · ${landed}` : st==='done' ? landed
                 : st==='locked' ? (pick?'LOCKED · PICKED':'LOCKED') : `LOCKS IN ${mmss(left)}`;
     const opt=(k,label,sub,img)=>`<button class="opt ${k}${pick===k?' on':''}${res&&res.out===k?' result':''}" data-m="${m.key}" data-k="${k}">${img?`<img src="${img}" alt="">`:''}${label}<small>${sub}</small></button>`;
     return `<div class="mkt ${m.key==='battle'?'battle':''} ${st}">

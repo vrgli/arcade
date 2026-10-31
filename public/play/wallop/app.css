@@ -82,6 +82,7 @@ a{color:inherit}
 .opt.on{border-color:var(--yl);background:#2a2408;box-shadow:inset 0 0 0 1px var(--yl)}
 .opt.on::after{content:'PICKED';font-size:8px;letter-spacing:.2em;color:var(--yl)}
 .mkt.locked .opt{opacity:.45;pointer-events:none}.mkt.locked .opt.on{opacity:1}
+.mkt.done .opt{opacity:.45;pointer-events:none}.mkt.done .state{color:var(--mut)}
 .mkt.won{border-color:var(--yl)}.mkt.won .state{color:var(--yl)}.mkt.lost .state{color:var(--dn)}
 .opt.result{border-color:#fff;opacity:1!important}
 .b-foot{margin:0;font-size:12px;color:var(--mut)}.b-foot b{color:#c4c8ce}
