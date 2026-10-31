@@ -161,6 +161,12 @@ img.px{image-rendering:pixelated;display:block}
   .settle .line{grid-template-columns:repeat(2,1fr)}
   .sheet{max-width:calc(100vw - 20px)!important;max-height:calc(100dvh - 20px);overflow:auto}
   .ah-topbar .ah-center{display:none}
+  html,body{overflow-x:hidden}
+  .ah-topbar{flex-wrap:wrap;height:auto;min-height:0;padding:6px 8px;gap:6px;align-items:center}
+  .ah-topbar .ah-left{flex:1 1 auto}
+  .ah-topbar .ah-right{flex:1 1 100%;flex-wrap:wrap;gap:6px;justify-content:flex-start}
+  #tbr{flex-wrap:wrap;gap:6px!important}.ah-ctlgroup{flex-wrap:wrap;gap:6px!important}
+  .stat,.step,.ah-ctl{font-size:11px;padding:4px 8px}
 }
 </style>
 <link rel="stylesheet" href="arcade-header.css" />

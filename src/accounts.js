@@ -18,6 +18,8 @@ export class Accounts {
     )`);
     // nick_set: 1 once the player chose their own nickname (added 2026-10-31).
     try { this.sql.exec(`ALTER TABLE accounts ADD COLUMN nick_set INTEGER DEFAULT 0`); } catch (e) {}
+    // Names that came from a provider before nicknames existed are never shown.
+    this.sql.exec(`UPDATE accounts SET name='Player' WHERE COALESCE(nick_set,0)=0 AND name<>'Player'`);
     this.sql.exec(`CREATE TABLE IF NOT EXISTS wallop (
       account_id TEXT PRIMARY KEY, noise INTEGER DEFAULT 0, teeth INTEGER DEFAULT 0, battles INTEGER DEFAULT 0,
       bets INTEGER DEFAULT 0, bets_won INTEGER DEFAULT 0, bonus_given INTEGER DEFAULT 0, updated TEXT
