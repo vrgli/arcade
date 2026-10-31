@@ -112,9 +112,9 @@ function tap(side,e){
   const r=arenaEl.getBoundingClientRect();
   const px=(e.clientX||r.left+r.width*(side==='a'?.3:.7))-r.left, py=(e.clientY||r.top+r.height*.6)-r.top;
   { const [wx,wy]=arena.toWorld(px,py); arena.tap(wx,wy); }
-  let gain=0;
+  let gain=0; const capped=lead===side && cur.tapNoise[ri]>=NOISE_TAP_CAP;
   if(lead===side && cur.tapNoise[ri]<NOISE_TAP_CAP){ gain=NOISE_PER_TAP; cur.tapNoise[ri]+=gain; cur.tapBy[ri][side]+=gain; cur.tapSide[side]+=gain; cur.tapTotal+=gain; me.noise+=gain; audio.tap(); }
-  const d=document.createElement('span'); d.className='plus'+(gain?'':' zero'); d.textContent=gain?'+'+gain:(lead?'NOT AHEAD':'FLAT');
+  const d=document.createElement('span'); d.className='plus'+(gain?'':' zero'); d.textContent=gain?'+'+gain:(capped?'ROUND CAP 80':(lead?'NOT AHEAD':'FLAT'));
   d.style.left=(px-14)+'px'; d.style.top=(py-20)+'px'; $('#tapFx').appendChild(d); setTimeout(()=>d.remove(),850);
   const z=$(side==='a'?'#tapL':'#tapR'); z.classList.add('hit'); setTimeout(()=>z.classList.remove('hit'),120);
   if(!gain) audio.blip(false);
@@ -243,7 +243,8 @@ function frame(now){
   if(ph==='FIGHT'&&clock.inCountdown()){ lead=Math.abs(d)<sg*0.08?null:(d>0?'a':'b'); arena.setLead(lead,Math.min(2,Math.floor(Math.abs(d)/(sg*0.55)))); }
   else { lead=null; arena.setLead(null,0); }
   for(const [side,sel] of [['a','#tapL'],['b','#tapR']]){ const z=$(sel); const ahead=lead===side, behind=lead&&lead!==side; z.classList.toggle('ahead',ahead); z.classList.toggle('behind',!!behind);
-    z.querySelector('.st').textContent= ahead?'AHEAD · TAP! +2':(behind?'BEHIND':'FLAT · WAIT'); }
+    const capped=ahead && ri>=0 && (cur.tapNoise[ri]||0)>=NOISE_TAP_CAP;
+    z.querySelector('.st').textContent= ahead?(capped?'AHEAD · CAP 80 REACHED':'AHEAD · TAP! +2'):(behind?'BEHIND':'FLAT · WAIT'); }
   arena.setDirection(ph==='FIGHT'?d/(sg*1.1):0);
   const sc=paintPips(); arena.setHurt(sc.b/ROUNDS*0.5, sc.a/ROUNDS*0.5);
   /* side meters + tally */

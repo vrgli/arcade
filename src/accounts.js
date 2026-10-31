@@ -16,6 +16,8 @@ export class Accounts {
       name TEXT, avatar TEXT, created TEXT NOT NULL, last_seen TEXT NOT NULL,
       UNIQUE(provider, subject)
     )`);
+    // nick_set: 1 once the player chose their own nickname (added 2026-10-31).
+    try { this.sql.exec(`ALTER TABLE accounts ADD COLUMN nick_set INTEGER DEFAULT 0`); } catch (e) {}
     this.sql.exec(`CREATE TABLE IF NOT EXISTS wallop (
       account_id TEXT PRIMARY KEY, noise INTEGER DEFAULT 0, teeth INTEGER DEFAULT 0, battles INTEGER DEFAULT 0,
       bets INTEGER DEFAULT 0, bets_won INTEGER DEFAULT 0, bonus_given INTEGER DEFAULT 0, updated TEXT
@@ -42,13 +44,14 @@ export class Accounts {
     if (p === '/upsert' && req.method === 'POST') {
       const provider = String(body.provider || ''), subject = String(body.subject || '');
       if (!provider || !subject) return bad('provider and subject required');
-      const name = cleanName(body.name) || 'Player', avatar = body.avatar ? String(body.avatar).slice(0, 512) : null, t = now();
+      // The provider's real name is never stored or shown: a player is 'Player'
+      // until they pick a nickname (#12).
+      const avatar = body.avatar ? String(body.avatar).slice(0, 512) : null, t = now();
       this.sql.exec(
         `INSERT INTO accounts (id,provider,subject,name,avatar,created,last_seen) VALUES (?,?,?,?,?,?,?)
          ON CONFLICT(provider,subject) DO UPDATE SET
-           name = CASE WHEN accounts.name IS NULL OR accounts.name='' OR accounts.name='Player' THEN excluded.name ELSE accounts.name END,
            avatar = COALESCE(excluded.avatar, accounts.avatar), last_seen = excluded.last_seen`,
-        hex16(), provider, subject, name, avatar, t, t);
+        hex16(), provider, subject, 'Player', avatar, t, t);
       return Response.json({ account: this.one(`SELECT * FROM accounts WHERE provider=? AND subject=?`, provider, subject) });
     }
 
@@ -98,9 +101,11 @@ export class Accounts {
     }
 
     if (p === '/rename' && req.method === 'POST') {
-      const id = String(body.accountId || ''), name = cleanName(body.name);
-      if (!name) return bad('empty name');
-      this.sql.exec(`UPDATE accounts SET name=? WHERE id=?`, name, id);
+      const id = String(body.accountId || ''), name = String(body.name || '').trim();
+      if (!/^[A-Za-z0-9_]{3,20}$/.test(name)) return Response.json({ error: 'invalid' });
+      const clash = this.one(`SELECT id FROM accounts WHERE lower(name)=lower(?) AND id<>?`, name, id);
+      if (clash) return Response.json({ error: 'taken' });
+      this.sql.exec(`UPDATE accounts SET name=?, nick_set=1 WHERE id=?`, name, id);
       const account = this.account(id);
       return account ? Response.json({ account }) : bad('no such account');
     }

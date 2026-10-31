@@ -75,3 +75,5 @@ body.home .hero{margin-bottom:12px}
 body.home .game .cover img{aspect-ratio:16/9;object-fit:cover;height:auto;max-height:none}
 body.home .game .t.top{padding:10px 16px 10px}
 body.home .game .t.top span{min-height:3em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+@media(max-width:640px){.wrap table{display:block;overflow-x:auto;white-space:nowrap}.wrap{padding:24px 14px 60px}h1{font-size:30px}}
