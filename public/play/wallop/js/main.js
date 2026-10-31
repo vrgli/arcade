@@ -227,7 +227,7 @@ function frame(now){
 
   /* rounds resolve on the shared clock */
   if(ph==='FIGHT'){
-    if(ct<BELL_AT+300 && arena.framing!=='fight'){ arena.newMatch(); arena.setFraming('fight'); arena.setMode('shadow'); }
+    if(arena.framing!=='fight'){ arena.newMatch(); arena.setFraming('fight'); arena.setMode('shadow'); }   /* whenever the fight is on, the fight camera is on */
     for(const r of cur.match.rounds) if(r.resolveAt<=ct && !cur.resolved.has(r.i)){
       cur.resolved.add(r.i);
       if(ct-r.resolveAt<1500){ if(r.clinch){ arena.clinch(); audio.thud(); } else arena.fire({atk:r.winner,tier:r.tier,up:r.delta>0}); }
