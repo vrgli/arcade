@@ -113,7 +113,7 @@ a{color:inherit}
 .sidebar.r .sb-fill{background:linear-gradient(180deg,#ffb0a8,var(--dn));box-shadow:0 0 14px rgba(255,111,97,.6)}
 .sb-n{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font:800 12px/1 var(--mono);color:#fff;text-shadow:0 1px 4px #000,0 0 6px #000;background:rgba(0,0,0,.55);padding:3px 4px;border-radius:5px}
 .sidebar.l .sb-n{color:var(--up)}.sidebar.r .sb-n{color:var(--dn)}
-#teethFx{position:absolute;inset:0;z-index:12;pointer-events:none;display:flex;align-items:center;justify-content:center}
+#teethFx{position:absolute;inset:0;z-index:12;pointer-events:none;display:flex;align-items:center;justify-content:center}#teethFx[hidden]{display:none}
 .tf-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(255,212,0,.55),rgba(255,212,0,0) 60%);animation:tfFlash 1.4s ease-out forwards}
 .tf-text{position:relative;display:flex;flex-direction:column;align-items:center;line-height:1;animation:tfPop 1.6s cubic-bezier(.2,1.6,.4,1) forwards;text-shadow:0 6px 30px #000,0 0 40px rgba(255,212,0,.6)}
 .tf-text b{font:900 clamp(96px,22vw,180px)/1 var(--mono);color:var(--yl)}.tf-text span{font:900 clamp(26px,5vw,44px)/1 var(--mono);letter-spacing:.3em;color:#fff;margin-top:6px}.tf-text em{font:800 14px/1 var(--mono);letter-spacing:.2em;color:#c4c8ce;font-style:normal;margin-top:12px}
