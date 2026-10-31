@@ -8,7 +8,7 @@ routes = [{ pattern = "arcade.vrg.li", custom_domain = true }]
 [assets]
 directory = "public"
 binding = "ASSETS"
-run_worker_first = ["/mp-socket", "/api/*", "/auth/*", "/leaderboard", "/leaderboard.json", "/e", "/stats", "/stats.json", "/arcade", "/arcade/", "/vs/*", "/play/tariff-wars", "/play/brux", "/play/brux/*", "/play/wallop"]
+run_worker_first = ["/mp-socket", "/api/*", "/auth/*", "/leaderboard", "/leaderboard.json", "/e", "/stats", "/stats.json", "/arcade", "/arcade/", "/vs/*", "/play/tariff-wars", "/play/brux", "/play/brux/*", "/play/wallop", "/robots.txt", "/env.js"]
 
 [[durable_objects.bindings]]
 name = "ROOMS"
@@ -33,3 +33,31 @@ class_name = "Accounts"
 [[migrations]]
 tag = "v3"
 new_sqlite_classes = ["Accounts"]
+
+# ── UAT: uat.arcade.vrg.li, deployed from the `uat` branch ──────────────────
+# Its own Worker, so its own Durable Objects (tables, accounts, statistics) and
+# its own secrets. `ARCADE_ENV` switches the UAT marker on in the pages.
+[env.uat]
+name = "vrg-arcade-uat"
+workers_dev = false
+routes = [{ pattern = "uat.arcade.vrg.li", custom_domain = true }]
+
+[env.uat.vars]
+ARCADE_ENV = "uat"
+
+[env.uat.assets]
+directory = "public"
+binding = "ASSETS"
+run_worker_first = ["/mp-socket", "/api/*", "/auth/*", "/leaderboard", "/leaderboard.json", "/e", "/stats", "/stats.json", "/arcade", "/arcade/", "/vs/*", "/play/tariff-wars", "/play/brux", "/play/brux/*", "/play/wallop", "/robots.txt", "/env.js"]
+
+[[env.uat.durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+[[env.uat.durable_objects.bindings]]
+name = "STATS"
+class_name = "Stats"
+
+[[env.uat.durable_objects.bindings]]
+name = "ACCOUNTS"
+class_name = "Accounts"

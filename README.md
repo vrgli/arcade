@@ -12,3 +12,10 @@ Deploy with `npx wrangler deploy` (Cloudflare account with Workers + Durable Obj
 ## Licence
 
 MIT plus one condition — see [LICENSE.md](LICENSE.md): any playable copy keeps a visible "A VRG game" credit linking to https://arcade.vrg.li.
+
+## UAT and production
+
+- **Production** `https://arcade.vrg.li` deploys from `main` (`npx wrangler deploy`).
+- **UAT** `https://uat.arcade.vrg.li` deploys from the `uat` branch (`scripts/deploy-uat.sh`). It is a separate Worker with its own tables, accounts, statistics and secrets, shows a yellow UAT strip at the bottom of every page, and tells search engines to stay out.
+- New games and changes land on `uat` first. When they hold up, `scripts/promote.sh` fast-forwards `main` to `uat`, deploys production and pushes both branches.
+- Sign-in on UAT needs the UAT callback URLs registered at each provider (`https://uat.arcade.vrg.li/auth/<provider>/callback`); until then that provider's button reads "soon" on UAT only.

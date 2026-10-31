@@ -41,6 +41,10 @@ export default {
     const url = new URL(req.url);
     const p = url.pathname;
 
+    // Environment marker: UAT pages show a banner and stay out of search engines.
+    if (p === '/env.js') return new Response(`window.ARCADE_ENV=${JSON.stringify(env.ARCADE_ENV || 'production')};` + (env.ARCADE_ENV === 'uat' ? `document.addEventListener('DOMContentLoaded',function(){var b=document.createElement('div');b.textContent='UAT · staging copy · nothing here is permanent';b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:2147483200;background:#ffd400;color:#111;font:800 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.14em;text-align:center;padding:5px 8px;pointer-events:none';document.body.appendChild(b);});` : ''), { headers: { 'Content-Type': 'application/javascript', 'Cache-Control': 'no-store' } });
+    if (p === '/robots.txt') return new Response(env.ARCADE_ENV === 'uat' ? 'User-agent: *\nDisallow: /\n' : 'User-agent: *\nAllow: /\n', { headers: { 'Content-Type': 'text/plain' } });
+
     if (p === '/mp-socket') {
       const code = url.searchParams.get('create') === '1' ? makeCode() : String(url.searchParams.get('room') || '').toUpperCase();
       if (!/^[A-Z2-9]{4}$/.test(code)) return new Response('bad table code', { status: 400 });

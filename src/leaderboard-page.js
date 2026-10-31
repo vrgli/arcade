@@ -9,7 +9,7 @@ export function page(title, body, app = 'Arcade') {
 <style>.av{width:24px;height:24px;border-radius:50%;object-fit:cover;background:var(--panel);border:1px solid var(--line);vertical-align:middle;margin-right:10px}
 .av.i{display:inline-flex;align-items:center;justify-content:center;font:700 11px/1 var(--mono);color:var(--yl)}
 td.p{white-space:nowrap}tr.me td{background:rgba(255,212,0,.08)}tr.me td.p{color:var(--yl)}td.n{color:var(--mute);width:36px}</style></head>
-<body><script src="/vrg-chrome.js" data-app="${esc(app)}" data-public="1"></script>
+<body><script src="/env.js"></script><script src="/vrg-chrome.js" data-app="${esc(app)}" data-public="1"></script>
 <main class="wrap"><p class="kicker">VRG · ARCADE</p><h1>${esc(title)}</h1>${body}
 <footer><a href="/">ARCADE</a><a href="/source/">SOURCE</a><a href="/stats">STATS</a><a href="/privacy">PRIVACY</a></footer></main></body></html>`;
 }
