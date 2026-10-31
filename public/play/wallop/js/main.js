@@ -70,11 +70,11 @@ function renderMarkets(){
     const st=marketState(m), pick=cur.picks[m.key], res=cur.results[m.key];
     const left=Math.max(0,lockAt(m)-ct);
     const landed = res ? (res.out==='nobody' ? (m.key==='battle'?'DRAW · NOBODY':'FLAT · NOBODY LANDED') : P[res.out].name+(m.key==='battle'?' WON':' LANDED')) : '';
-    const state = st==='won' ? `WON · +${res.teeth} TEETH` : st==='lost' ? `LOST · ${landed}` : st==='done' ? landed
+    const state = st==='won' ? `✓ WON · +${res.teeth} 🦷` : st==='lost' ? `✗ LOST · ${landed}` : st==='done' ? landed
                 : st==='locked' ? (pick?'LOCKED · PICKED':'LOCKED') : `LOCKS IN ${mmss(left)}`;
     const opt=(k,label,sub,img)=>`<button class="opt ${k}${pick===k?' on':''}${res&&res.out===k?' result':''}" data-m="${m.key}" data-k="${k}">${img?`<img src="${img}" alt="">`:''}${label}<small>${sub}</small></button>`;
-    return `<div class="mkt ${m.key==='battle'?'battle':''} ${st}">
-      <div class="m-head"><b>${m.label}</b><span>${m.cost} NOISE · PAYS ${m.pay.a}${m.key==='battle'?' / 10':' / 4'} TEETH</span><span class="state">${state}</span></div>
+    return `<div class="mkt ${m.key==='battle'?'battle':''} ${st}${pick?' pick-'+pick:''}">
+      <div class="m-head"><b>${m.label}</b><span>${m.cost} NOISE · PAYS ${m.pay.a}${m.key==='battle'?' / 10':' / 4'} 🦷</span><span class="state">${state}</span></div>
       <div class="m-opts">
         ${opt('a',P.a.name,'BTC UP',faceURL.a)}
         ${opt('nobody','NOBODY',(m.key==='battle'?'DRAW · ':'FLAT · ')+pct(m.key==='battle'?P_NOBODY.battle:P_NOBODY.round),null)}
@@ -131,7 +131,7 @@ function teethFx(n,why){
   for(let i=0;i<46;i++){ const p=document.createElement('i'); if(i%3) p.className='y'; const a=Math.random()*6.283, r=160+Math.random()*420;
     p.style.setProperty('--dx',Math.cos(a)*r+'px'); p.style.setProperty('--dy',(Math.sin(a)*r+140)+'px'); p.style.setProperty('--rot',(Math.random()*720-360)+'deg'); p.style.animationDelay=(Math.random()*.15)+'s'; parts.appendChild(p); }
   fx.hidden=true; void fx.offsetWidth; fx.hidden=false;
-  const w=$('#teeth').parentElement; w.classList.remove('pop'); void w.offsetWidth; w.classList.add('pop');
+  const w=$('#teeth').closest('.wallet'); w.classList.remove('pop'); void w.offsetWidth; w.classList.add('pop');
   arena.shake.kick(1,14,1.6);
   clearTimeout(tfT); tfT=setTimeout(()=>{ fx.hidden=true; },1700);
 }
@@ -151,9 +151,9 @@ function showCard(b){
   $('#cTitle').textContent= w ? `${P[w].name} WINS ${Math.max(s.a,s.b)}–${Math.min(s.a,s.b)}` : `NOBODY WINS ${s.a}–${s.b}`;
   const lines=MARKETS.map(m=>{ const r=b.results[m.key]; if(!r||!r.pick) return '';
     const who=r.out==='nobody'?'NOBODY':P[r.out].name, mine=r.pick==='nobody'?'NOBODY':P[r.pick].name;
-    return `<li class="${r.won?'w':'l'}"><span>${m.label} · you said ${mine}</span><span>${r.won?'+'+r.teeth+' TEETH':who}</span></li>`; }).join('');
+    return `<li class="${r.won?'w':'l'}"><span>${r.won?'✓':'✗'} ${m.label} · you said ${mine}</span><span>${r.won?'+'+r.teeth+' 🦷':who}</span></li>`; }).join('');
   $('#cLines').innerHTML=lines||'<li class="l"><span>No picks this battle.</span><span>Pick before the bell.</span></li>';
-  $('#cTotal').textContent= b.teethWon?`+${b.teethWon} TEETH THIS BATTLE`:'';
+  $('#cTotal').textContent= b.teethWon?`+${b.teethWon} 🦷 THIS BATTLE`:'';
   $('#card').hidden=false;
 }
 

@@ -18,7 +18,7 @@ a{color:inherit}
 #left{display:flex;flex-direction:column;min-width:0}
 #hud{display:flex;align-items:center;gap:14px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
 .wallet{display:flex;flex-direction:column;line-height:1}.wallet .k,#clockBox .k{font:700 9px/1 var(--mono);letter-spacing:.18em;color:var(--mut)}
-.wallet b{font:800 20px/1.1 var(--mono);font-variant-numeric:tabular-nums}
+.wallet b{font:800 20px/1.1 var(--mono);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}.wallet b i{font-style:normal;font-size:18px}
 #score{display:flex;align-items:center;gap:8px;font:800 11px/1 var(--mono);letter-spacing:.08em}
 #score .a{color:var(--up)}#score .b{color:var(--dn)}
 .pips{display:inline-flex;gap:4px}.pips i{width:16px;height:7px;border-radius:3px;background:#2a2d34;display:block}
@@ -79,11 +79,20 @@ a{color:inherit}
 .opt small{font:600 9px/1 var(--mono);letter-spacing:.1em;color:var(--mut)}
 .opt.a{color:var(--up)}.opt.b{color:var(--dn)}.opt.nobody{color:#c4c8ce}
 .opt:hover{border-color:#3b4049}
-.opt.on{border-color:var(--yl);background:#2a2408;box-shadow:inset 0 0 0 1px var(--yl)}
-.opt.on::after{content:'PICKED';font-size:8px;letter-spacing:.2em;color:var(--yl)}
+/* a pick wears its contestant's colour: green left, red right, white for nobody */
+.opt.on{box-shadow:none}
+.opt.a.on{background:var(--up);border-color:var(--up);color:#062b17}.opt.a.on small{color:#0b4a28}
+.opt.b.on{background:var(--dn);border-color:var(--dn);color:#3a0a06}.opt.b.on small{color:#5a1810}
+.opt.nobody.on{background:#e8eaed;border-color:#fff;color:#111}.opt.nobody.on small{color:#333}
+.opt.on::after{content:'YOUR PICK';font-size:8px;letter-spacing:.2em;color:inherit;opacity:.85}
+.mkt.battle .opt.a.on{background:var(--up);border-color:#062b17}.mkt.battle .opt.b.on{background:var(--dn);border-color:#3a0a06}.mkt.battle .opt.nobody.on{background:#fff;border-color:#111}
 .mkt.locked .opt{opacity:.45;pointer-events:none}.mkt.locked .opt.on{opacity:1}
 .mkt.done .opt{opacity:.45;pointer-events:none}.mkt.done .state{color:var(--mut)}
-.mkt.won{border-color:var(--yl)}.mkt.won .state{color:var(--yl)}.mkt.lost .state{color:var(--dn)}
+.m-head .state{padding:4px 8px;border-radius:6px;font-weight:800}
+.mkt.won{border-color:var(--up);box-shadow:0 0 0 1px var(--up),0 0 22px rgba(68,239,153,.25)}.mkt.won .m-head .state{background:var(--up);color:#062b17}
+.mkt.lost{border-color:#7a2a24}.mkt.lost .m-head .state{background:var(--dn);color:#3a0a06}
+.mkt.battle.won .m-head .state,.mkt.battle.lost .m-head .state{color:#111}
+.mkt.won .opt.result,.mkt.lost .opt.result,.mkt.done .opt.result{border-color:#fff;border-width:2px}
 .opt.result{border-color:#fff;opacity:1!important}
 .b-foot{margin:0;font-size:12px;color:var(--mut)}.b-foot b{color:#c4c8ce}
 #scrim{position:fixed;inset:0;background:rgba(0,0,0,.66);z-index:40}
@@ -116,7 +125,7 @@ a{color:inherit}
 #teethFx{position:absolute;inset:0;z-index:12;pointer-events:none;display:flex;align-items:center;justify-content:center}#teethFx[hidden]{display:none}
 .tf-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(255,212,0,.55),rgba(255,212,0,0) 60%);animation:tfFlash 1.4s ease-out forwards}
 .tf-text{position:relative;display:flex;flex-direction:column;align-items:center;line-height:1;animation:tfPop 1.6s cubic-bezier(.2,1.6,.4,1) forwards;text-shadow:0 6px 30px #000,0 0 40px rgba(255,212,0,.6)}
-.tf-text b{font:900 clamp(96px,22vw,180px)/1 var(--mono);color:var(--yl)}.tf-text span{font:900 clamp(26px,5vw,44px)/1 var(--mono);letter-spacing:.3em;color:#fff;margin-top:6px}.tf-text em{font:800 14px/1 var(--mono);letter-spacing:.2em;color:#c4c8ce;font-style:normal;margin-top:12px}
+.tf-text b{font:900 clamp(96px,22vw,180px)/1 var(--mono);color:var(--yl)}.tf-text span{font:900 clamp(40px,7vw,72px)/1 var(--mono);letter-spacing:.1em;color:#fff;margin-top:6px}.tf-text span small{font-size:.35em;letter-spacing:.3em;color:#c4c8ce;vertical-align:middle}.tf-text em{font:800 14px/1 var(--mono);letter-spacing:.2em;color:#c4c8ce;font-style:normal;margin-top:12px}
 .tf-parts{position:absolute;inset:0;overflow:hidden}.tf-parts i{position:absolute;left:50%;top:45%;font-size:22px;line-height:1;animation:tfPart 1.5s ease-out forwards;--dx:0px;--dy:0px;--rot:0deg}
 .tf-parts i::before{content:'🦷'}.tf-parts i.y::before{content:'';display:block;width:10px;height:14px;background:var(--yl);border-radius:2px}
 @keyframes tfFlash{0%{opacity:0}10%{opacity:1}100%{opacity:0}}
@@ -128,5 +137,4 @@ a{color:inherit}
 .mkt.battle{background:var(--yl);border-color:var(--yl);box-shadow:0 8px 30px rgba(255,212,0,.18)}
 .mkt.battle .m-head,.mkt.battle .m-head b,.mkt.battle .m-head .cost,.mkt.battle .m-head .state{color:#111}
 .mkt.battle .m-head span{color:#3a3410}
-.mkt.battle .opt{background:#141008;border-color:#5a4d10}.mkt.battle .opt.on{background:#000;border-color:#fff;box-shadow:inset 0 0 0 1px #fff}
-.mkt.battle .opt.on::after{color:#fff}.mkt.battle.won .m-head .state,.mkt.battle.lost .m-head .state{color:#111}
+.mkt.battle .opt{background:#141008;border-color:#5a4d10}.mkt.battle .opt.on::after{color:inherit}.mkt.battle.won .m-head .state,.mkt.battle.lost .m-head .state{color:#111}

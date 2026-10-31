@@ -26,10 +26,16 @@ export const battleNoOf = minute => minute-BATTLE_BASE;
 export function genMatch(seed){
   const r=mulberry(seed>>>0);
   const path=new Float64Array(STEPS+1);
-  const drift=(r()*2-1)*0.0006;
+  /* REAL SCALE. Path units are fractions of price (0.0004 = 0.04%). One 10-second
+     countdown typically moves BTC/USD by a few hundredths of a percent, a wild
+     one by a few tenths — so the step size is 1/100 of the mockup's. The round
+     decision is z = |move| / sigma, both scaled together, so which rounds land
+     and the measured NOBODY frequencies are untouched. */
+  const K=0.01;
+  const drift=(r()*2-1)*0.0006*K;
   let p=0;
-  for(let i=1;i<=STEPS;i++){ p+=drift+(r()*2-1)*0.0065; path[i]=p; }
-  const sigma=0.048*(0.8+r()*0.4);
+  for(let i=1;i<=STEPS;i++){ p+=drift+(r()*2-1)*0.0065*K; path[i]=p; }
+  const sigma=0.048*K*(0.8+r()*0.4);
   const DEAD=0.08;
   const per=ROUND_MS/STEP_MS, cd=COUNTDOWN_MS/STEP_MS;
   const rounds=[]; const score={a:0,b:0,draws:0};
