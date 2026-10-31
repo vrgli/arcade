@@ -23,6 +23,7 @@ a{color:inherit}
 #score .a{color:var(--up)}#score .b{color:var(--dn)}
 .pips{display:inline-flex;gap:4px}.pips i{width:16px;height:7px;border-radius:3px;background:#2a2d34;display:block}
 .pips i.a{background:var(--up)}.pips i.b{background:var(--dn)}.pips i.x{background:#6a6f78}
+#hud .theme2{padding:6px 9px;font-size:11px}
 #clockBox{display:flex;flex-direction:column;align-items:flex-end;line-height:1}#clockBox b{font:800 22px/1.1 var(--mono);font-variant-numeric:tabular-nums;color:var(--yl)}
 #app[data-phase="FIGHT"] #clockBox b{color:#fff}
 #arenaWrap{position:relative;width:100%;aspect-ratio:3/4;max-height:70vh;overflow:hidden;background:#05060a}
@@ -43,7 +44,11 @@ a{color:inherit}
 .lead.on{opacity:1}.lead b{font-size:18px;letter-spacing:.04em;color:#fff}.lead.up b{color:var(--up)}.lead.dn b{color:var(--dn)}
 .tapzone{position:absolute;top:0;bottom:0;width:50%;z-index:6;display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px;opacity:0;transition:opacity .25s;cursor:pointer;touch-action:manipulation;user-select:none}
 .tapzone.l{left:0}.tapzone.r{right:0}
-.tapzone span{font:800 10px/1.3 var(--mono);letter-spacing:.12em;color:#c4c8ce;background:rgba(8,10,17,.75);border:1px solid rgba(255,255,255,.1);padding:6px 9px;border-radius:7px;text-align:center;max-width:150px}
+.tapzone span{display:flex;flex-direction:column;gap:3px;font:800 12px/1.2 var(--mono);letter-spacing:.12em;color:#c4c8ce;background:rgba(8,10,17,.8);border:2px solid rgba(255,255,255,.12);padding:8px 12px;border-radius:9px;text-align:center;min-width:140px;transition:transform .12s,border-color .12s}
+.tapzone .st{font-style:normal;font-size:10px;color:var(--mut);letter-spacing:.18em}
+.tapzone.ahead span{border-color:var(--yl);box-shadow:0 0 18px rgba(255,212,0,.45);transform:scale(1.08)}.tapzone.ahead .st{color:var(--yl)}
+.tapzone.behind span{opacity:.55}
+.tapzone.hit span{transform:scale(.94)}
 .tapzone em{font-style:normal}.tapzone.l em{color:var(--up)}.tapzone.r em{color:var(--dn)}
 #app.countdown .tapzone{opacity:1}
 .tapzone.hit span{background:var(--yl);color:#111;border-color:transparent}
@@ -89,7 +94,7 @@ a{color:inherit}
 .providers a,.providers span{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:10px;font:700 12px/1 var(--mono);letter-spacing:.1em;text-decoration:none;border:1px solid var(--yl);color:#111;background:var(--yl)}
 .providers span{background:transparent;color:var(--mut);border-color:var(--line)}
 @media(min-width:900px){
-  #main{grid-template-columns:minmax(0,1.15fr) minmax(360px,.85fr);align-items:start}
+  #main{grid-template-columns:1fr 1fr;align-items:start}
   #left{position:sticky;top:52px;height:calc(100vh - 52px);align-items:center;background:#07080b}
   #hud,#tapHint{width:100%}
   #arenaWrap{flex:1;min-height:0;width:auto;max-width:100%;aspect-ratio:3/4;max-height:none;margin:0 auto;border-left:1px solid var(--line);border-right:1px solid var(--line)}
@@ -107,6 +112,16 @@ a{color:inherit}
 .sidebar.r .sb-fill{background:linear-gradient(180deg,#ffb0a8,var(--dn));box-shadow:0 0 14px rgba(255,111,97,.6)}
 .sb-n{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font:800 12px/1 var(--mono);color:#fff;text-shadow:0 1px 4px #000,0 0 6px #000;background:rgba(0,0,0,.55);padding:3px 4px;border-radius:5px}
 .sidebar.l .sb-n{color:var(--up)}.sidebar.r .sb-n{color:var(--dn)}
+#teethFx{position:absolute;inset:0;z-index:12;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.tf-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(255,212,0,.55),rgba(255,212,0,0) 60%);animation:tfFlash 1.4s ease-out forwards}
+.tf-text{position:relative;display:flex;flex-direction:column;align-items:center;line-height:1;animation:tfPop 1.6s cubic-bezier(.2,1.6,.4,1) forwards;text-shadow:0 6px 30px #000,0 0 40px rgba(255,212,0,.6)}
+.tf-text b{font:900 clamp(96px,22vw,180px)/1 var(--mono);color:var(--yl)}.tf-text span{font:900 clamp(26px,5vw,44px)/1 var(--mono);letter-spacing:.3em;color:#fff;margin-top:6px}.tf-text em{font:800 14px/1 var(--mono);letter-spacing:.2em;color:#c4c8ce;font-style:normal;margin-top:12px}
+.tf-parts{position:absolute;inset:0;overflow:hidden}.tf-parts i{position:absolute;left:50%;top:45%;font-size:22px;line-height:1;animation:tfPart 1.5s ease-out forwards;--dx:0px;--dy:0px;--rot:0deg}
+.tf-parts i::before{content:'🦷'}.tf-parts i.y::before{content:'';display:block;width:10px;height:14px;background:var(--yl);border-radius:2px}
+@keyframes tfFlash{0%{opacity:0}10%{opacity:1}100%{opacity:0}}
+@keyframes tfPop{0%{transform:scale(.3);opacity:0}18%{transform:scale(1.15);opacity:1}30%{transform:scale(1)}80%{transform:scale(1);opacity:1}100%{transform:scale(1.08) translateY(-30px);opacity:0}}
+@keyframes tfPart{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--rot));opacity:0}}
+#hud .wallet.pop b{animation:walletPop .7s cubic-bezier(.2,1.6,.4,1)}@keyframes walletPop{0%{transform:scale(1)}30%{transform:scale(1.6);color:var(--yl)}100%{transform:scale(1)}}
 #tapHint{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}#tapTally{font:700 11px/1.4 var(--mono);letter-spacing:.08em;color:var(--mut)}#tapTally b{color:var(--yl)}
 /* the battle is the pick that matters */
 .mkt.battle{background:var(--yl);border-color:var(--yl);box-shadow:0 8px 30px rgba(255,212,0,.18)}

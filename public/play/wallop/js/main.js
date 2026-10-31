@@ -26,7 +26,7 @@ let cur=null;                 /* {minute, match, no, resolved:Set, picks:{}, tap
 let prev=null;                /* last finished battle, for the card */
 function startBattle(minute){
   const match=genMatch(minute);
-  cur={ minute, match, no:battleNoOf(minute), resolved:new Set(), picks:{}, tapNoise:{}, tapBy:{}, tapTotal:0, results:{}, teethWon:0 };
+  cur={ minute, match, no:battleNoOf(minute), resolved:new Set(), picks:{}, tapNoise:{}, tapBy:{}, tapSide:{a:0,b:0}, tapTotal:0, results:{}, teethWon:0 };
   /* joined mid-fight: rounds already decided are marked, not replayed */
   for(const r of match.rounds) if(r.resolveAt<=clock.ct()) cur.resolved.add(r.i);
   arena.newMatch(); arena.setFraming('fight'); arena.setMode(clock.phase()==='FIGHT'?'shadow':'idle');
@@ -52,7 +52,8 @@ function useSkin(id){
   $('#themeName').textContent=pair.a.name+' vs '+pair.b.name;
   renderMarkets();
 }
-$('#btnTheme').onclick=()=>{ useSkin(SKIN_IDS[(SKIN_IDS.indexOf(skinId)+1)%SKIN_IDS.length]); toast(SKIN_LIBRARY[skinId].a.name+'  vs  '+SKIN_LIBRARY[skinId].b.name); };
+const cycleTheme=()=>{ useSkin(SKIN_IDS[(SKIN_IDS.indexOf(skinId)+1)%SKIN_IDS.length]); toast(SKIN_LIBRARY[skinId].a.name+'  vs  '+SKIN_LIBRARY[skinId].b.name); };
+$('#btnTheme').onclick=cycleTheme; $('#btnTheme2').onclick=cycleTheme;
 
 /* ── markets ─────────────────────────────────────────────────────────────── */
 const pair=()=>SKIN_LIBRARY[skinId];
@@ -97,7 +98,7 @@ function settle(m){
   const out=outcome(cur.match,m,clock.ct()); if(out===undefined||cur.results[m.key]) return;
   const pick=cur.picks[m.key]; const won=!!pick&&pick===out; const teeth=won?m.pay[out]:0;
   cur.results[m.key]={out,won,teeth,pick};
-  if(pick){ if(won){ me.teeth+=teeth; me.betsWon++; cur.teethWon+=teeth; toast(`+${teeth} TEETH · ${m.label}`); audio.swell(1.2); } }
+  if(pick){ if(won){ me.teeth+=teeth; me.betsWon++; cur.teethWon+=teeth; teethFx(teeth,m.label+' · '+(out==='nobody'?'NOBODY':pair()[out].name)); audio.swell(1.6); } }
   save(); paintWallet(); renderMarkets();
 }
 
@@ -111,16 +112,28 @@ function tap(side,e){
   const px=(e.clientX||r.left+r.width*(side==='a'?.3:.7))-r.left, py=(e.clientY||r.top+r.height*.6)-r.top;
   arena.tap(px*(WORLD_W/r.width), py*(WORLD_W/r.width)+arena.viewTop);
   let gain=0;
-  if(lead===side && cur.tapNoise[ri]<NOISE_TAP_CAP){ gain=NOISE_PER_TAP; cur.tapNoise[ri]+=gain; cur.tapBy[ri][side]+=gain; cur.tapTotal+=gain; me.noise+=gain; audio.tap(); }
+  if(lead===side && cur.tapNoise[ri]<NOISE_TAP_CAP){ gain=NOISE_PER_TAP; cur.tapNoise[ri]+=gain; cur.tapBy[ri][side]+=gain; cur.tapSide[side]+=gain; cur.tapTotal+=gain; me.noise+=gain; audio.tap(); }
   const d=document.createElement('span'); d.className='plus'+(gain?'':' zero'); d.textContent=gain?'+'+gain:(lead?'NOT AHEAD':'FLAT');
   d.style.left=(px-14)+'px'; d.style.top=(py-20)+'px'; $('#tapFx').appendChild(d); setTimeout(()=>d.remove(),850);
   const z=$(side==='a'?'#tapL':'#tapR'); z.classList.add('hit'); setTimeout(()=>z.classList.remove('hit'),120);
+  if(!gain) audio.blip(false);
   save(); paintWallet();
 }
 $('#tapL').addEventListener('pointerdown',e=>tap('a',e)); $('#tapR').addEventListener('pointerdown',e=>tap('b',e));
 
 /* ── DOM helpers ─────────────────────────────────────────────────────────── */
-let toastT=null;
+let toastT=null, tfT=null;
+/* a won pick: the whole arena celebrates */
+function teethFx(n,why){
+  const fx=$('#teethFx'); $('#tfN').textContent='+'+n; $('#tfWhy').textContent=why;
+  const parts=$('#tfParts'); parts.innerHTML='';
+  for(let i=0;i<46;i++){ const p=document.createElement('i'); if(i%3) p.className='y'; const a=Math.random()*6.283, r=160+Math.random()*420;
+    p.style.setProperty('--dx',Math.cos(a)*r+'px'); p.style.setProperty('--dy',(Math.sin(a)*r+140)+'px'); p.style.setProperty('--rot',(Math.random()*720-360)+'deg'); p.style.animationDelay=(Math.random()*.15)+'s'; parts.appendChild(p); }
+  fx.hidden=true; void fx.offsetWidth; fx.hidden=false;
+  const w=$('#teeth').parentElement; w.classList.remove('pop'); void w.offsetWidth; w.classList.add('pop');
+  arena.shake.kick(1,14,1.6);
+  clearTimeout(tfT); tfT=setTimeout(()=>{ fx.hidden=true; },1700);
+}
 function toast(t){ const el=$('#toast'); el.innerHTML='<span>'+t+'</span>'; el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'),1600); }
 function paintWallet(){ $('#teeth').textContent=me.teeth.toLocaleString('en-US'); $('#noise').textContent=me.noise.toLocaleString('en-US'); }
 function paintPips(){
@@ -199,6 +212,7 @@ function frame(now){
     for(const m of MARKETS) if(!cur.results[m.key]){ const out=cur.match.winner||'nobody'; const pick=cur.picks[m.key]; const won=!!pick&&pick===out; const teeth=won?m.pay[out]:0;
       cur.results[m.key]={out,won,teeth,pick}; if(won){ me.teeth+=teeth; me.betsWon++; cur.teethWon+=teeth; } }
     me.battles++; save(); paintWallet();
+    { const r=cur.results.battle; if(r&&r.won) setTimeout(()=>teethFx(r.teeth,'THE BATTLE · '+(r.out==='nobody'?'NOBODY':pair()[r.out].name)),300); }
     prev=cur; showCard(prev); cardUntil=BELL_AT-2000;
     if(prev.match.winner){ arena.setMode('idle'); arena.setFraming('betting'); arena.setResultPose(prev.match.winner); } else arena.reset();
     track('battle_end',{score:prev.teethWon,won:prev.teethWon>0,extra:{picks:Object.values(prev.picks).filter(Boolean).length}});
@@ -227,11 +241,13 @@ function frame(now){
   if(ph==='FIGHT'&&clock.inCountdown()&&!arena.busy()){ arena.setMode('shadow'); arena.setIntensity(clamp((clock.roundT()/COUNTDOWN_MS-0.35)/0.5,0,1)); }
   if(ph==='FIGHT'&&clock.inCountdown()){ lead=Math.abs(d)<sg*0.08?null:(d>0?'a':'b'); arena.setLead(lead,Math.min(2,Math.floor(Math.abs(d)/(sg*0.55)))); }
   else { lead=null; arena.setLead(null,0); }
+  for(const [side,sel] of [['a','#tapL'],['b','#tapR']]){ const z=$(sel); const ahead=lead===side, behind=lead&&lead!==side; z.classList.toggle('ahead',ahead); z.classList.toggle('behind',!!behind);
+    z.querySelector('.st').textContent= ahead?'AHEAD · TAP! +2':(behind?'BEHIND':'FLAT · WAIT'); }
   arena.setDirection(ph==='FIGHT'?d/(sg*1.1):0);
   const sc=paintPips(); arena.setHurt(sc.b/ROUNDS*0.5, sc.a/ROUNDS*0.5);
   /* side meters + tally */
-  { const t=(ri>=0&&cur.tapBy[ri])||{a:0,b:0};
-    $('#sbA').style.height=Math.min(100,t.a/NOISE_TAP_CAP*100)+'%'; $('#sbB').style.height=Math.min(100,t.b/NOISE_TAP_CAP*100)+'%';
+  { const t=cur.tapSide, cap=NOISE_TAP_CAP*ROUNDS;   /* the whole battle, not one round */
+    $('#sbA').style.height=Math.min(100,t.a/cap*100)+'%'; $('#sbB').style.height=Math.min(100,t.b/cap*100)+'%';
     $('#sbNA').textContent=t.a?'+'+t.a:'0'; $('#sbNB').textContent=t.b?'+'+t.b:'0';
     $('#tapTally').innerHTML=`<b>+${(ri>=0&&cur.tapNoise[ri])||0}</b> NOISE from taps this round · <b>+${cur.tapTotal}</b> this battle`; }
   arena.frame(dt);
