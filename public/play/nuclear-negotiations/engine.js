@@ -52,9 +52,23 @@
     g.log.push(g.moves + '. ' + line + ' -> ' + (g.over ? 'NUCLEAR WAR at ' + OUTER[w] + '/' + INNER[w] : rogues(g)));
     return { move: line, war: w };
   }
+  // Escalation: one more leader goes rogue. Never one already facing a rogue (instant war), and
+  // when possible one that still leaves the player a safe move. Returns the seat label, or null.
+  function escalate(g, r) {
+    r = r || Math.random;
+    var c = [], k;
+    for (k = 0; k < 4; k++) {
+      if (!g.rogue[g.outer[k]] && !g.rogue[g.inner[k]]) { c.push({ id: g.outer[k], lbl: OUTER[k] }); c.push({ id: g.inner[k], lbl: INNER[k] }); }
+    }
+    if (!c.length) return null;
+    var ok = c.filter(function (x) { var t = clone(g); t.rogue[x.id] = true; return legal(t).some(function (m) { return !fatal(t, m); }); });
+    var pick = (ok.length ? ok : c)[Math.floor(r() * (ok.length ? ok : c).length)];
+    g.rogue[pick.id] = true; g.log.push('escalation ' + pick.lbl + '* -> ' + rogues(g));
+    return pick;
+  }
   function clone(g) { return JSON.parse(JSON.stringify(g)); }
   function logText(g) { return ['Nuclear Negotiations · seed ' + g.seed, 'outer A ' + g.outer[0] + ' B ' + g.outer[1] + ' D ' + g.outer[2] + ' C ' + g.outer[3] + ' (now)', 'inner 1 ' + g.inner[0] + ' 2 ' + g.inner[1] + ' 4 ' + g.inner[2] + ' 3 ' + g.inner[3]].concat(g.log).join('\n'); }
 
-  var NN = { LEADERS: LEADERS, OUTER: OUTER, INNER: INNER, newGame: newGame, reveal: reveal, legal: legal, apply: apply, fatal: fatal, war: war, rogues: rogues, notation: notation, logText: logText, name: function (id) { for (var i = 0; i < LEADERS.length; i++) if (LEADERS[i].id === id) return LEADERS[i].nm; return id; } };
+  var NN = { LEADERS: LEADERS, OUTER: OUTER, INNER: INNER, newGame: newGame, reveal: reveal, escalate: escalate, legal: legal, apply: apply, fatal: fatal, war: war, rogues: rogues, notation: notation, logText: logText, name: function (id) { for (var i = 0; i < LEADERS.length; i++) if (LEADERS[i].id === id) return LEADERS[i].nm; return id; } };
   if (root.exports) root.exports = NN; else root.NN = NN;
 })(typeof module !== 'undefined' ? module : window);

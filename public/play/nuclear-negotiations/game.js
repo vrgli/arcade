@@ -7,6 +7,8 @@
   var R_OUT = 41, R_IN = 21;                      // seat ring radii, % of the table
   var IDLE = { don: 'bob', vlad: 'tilt', ursula: 'sway', zel: 'nod', modi: 'breathe', bibi: 'shake', obama: 'lean', mbs: 'float' };
   // The clock tightens as the game goes on: 5 s for the first five moves, 3 s for the next five, then 1 s.
+  // Escalation: after five moves of panic a third leader goes rogue. Add { at: 20, title: 'A FOURTH ROGUE' } to end every game.
+  var ESCALATE = [{ at: 15, title: 'A THIRD ROGUE' }];
   var STAGES = [{ upto: 5, ms: 5000, label: '5 SECONDS A MOVE' }, { upto: 10, ms: 3000, label: 'HURRY UP · 3 SECONDS A MOVE' }, { upto: Infinity, ms: 1000, label: 'PANIC · 1 SECOND A MOVE' }];
   try { best = parseInt(localStorage.getItem('nn-best'), 10) || 0; } catch (e) {}
   $('best').textContent = best;
@@ -105,10 +107,22 @@
         status(line + ' · the outer wheel turns');
         setTimeout(function () {
           if (G.over) return nuke(res);
-          busy = false; markLegal(); armClock(); status('Move ' + (G.moves + 1) + ' · rogues at ' + NN.rogues(G) + ' · tap a rogue');
+          var esc = ESCALATE.filter(function (e) { return e.at === G.moves; })[0];
+          if (esc) { var pick = NN.escalate(G); if (pick) return escalateFx(esc, pick); }
+          nextMove();
         }, 800);
       }, 150);
     }, 420);
+  }
+  function nextMove() { busy = false; markLegal(); armClock(); status('Move ' + (G.moves + 1) + ' · rogues at ' + NN.rogues(G) + ' · tap a rogue'); }
+  function escalateFx(esc, pick) {
+    render(G); SND.play('reveal'); paintLog();
+    Array.prototype.forEach.call(document.querySelectorAll('.seat.rogue'), function (el) { el.classList.add('ignite'); });
+    $('table').classList.add('shake'); setTimeout(function () { $('table').classList.remove('shake'); }, 500);
+    banner(esc.title, NN.name(pick.id).toUpperCase() + ' HAS GONE ROGUE');
+    status(esc.title + ' · ' + NN.name(pick.id) + ' joins the rogues');
+    if (window.vgTrack) vgTrack('nn_escalate', { moves: G.moves, seed: G.seed });
+    setTimeout(nextMove, 1300);
   }
   function nuke(res) {
     var k = res.war, w = $('nkWhy'); w.innerHTML = '';
