@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var $ = function (id) { return document.getElementById(id); };
-  var G = null, rot = 0, busy = true, best = 0;
+  var G = null, rot = 0, busy = true, best = 0, MOVE_MS = 3000, tick = null, deadline = 0;
   var ANG = [225, 315, 45, 135];                 // positions 0..3 clockwise from top-left, degrees (0 = right, 90 = down)
   var R_OUT = 41, R_IN = 21;                      // seat ring radii, % of the table
   try { best = parseInt(localStorage.getItem('nn-best'), 10) || 0; } catch (e) {}
@@ -40,6 +40,17 @@
     Array.prototype.forEach.call(document.querySelectorAll('.seat.rogue'), function (el) { if (L.indexOf(+el.dataset.k) >= 0) el.classList.add('can'); });
   }
   function status(t) { $('statusTxt').textContent = t; }
+  // Three seconds a move. When the clock runs out a random legal move is made for the player.
+  function armClock() {
+    clearInterval(tick); deadline = Date.now() + MOVE_MS; $('centre').classList.add('clock'); paintClock();
+    tick = setInterval(function () {
+      if (busy || !G || G.over) { clearInterval(tick); return; }
+      if (Date.now() >= deadline) { clearInterval(tick); var L = NN.legal(G); play(L[Math.floor(Math.random() * L.length)], true); return; }
+      paintClock();
+    }, 50);
+  }
+  function paintClock() { var left = Math.max(0, deadline - Date.now()); $('centre').textContent = (left / 1000).toFixed(1); $('centre').classList.toggle('hot', left < 1000); }
+  function stopClock() { clearInterval(tick); $('centre').classList.remove('clock', 'hot'); $('centre').textContent = ''; }
   function paintLog() {
     var lines = G ? G.log : [];
     $('log').innerHTML = lines.map(function (l) { return /NUCLEAR/.test(l) ? '<span class="war">' + l + '</span>' : l; }).join('\n') || '—';
@@ -49,7 +60,7 @@
 
   function deal() {
     var seed = null, m = location.search.match(/[?&]seed=(\d+)/); if (m) seed = +m[1];
-    G = NN.newGame(seed); rot = 0; busy = true;
+    G = NN.newGame(seed); rot = 0; busy = true; stopClock();
     $('seed').textContent = G.seed; $('nuke').hidden = true; $('btnAgain').hidden = true; $('centre').textContent = ''; $('centre').classList.remove('btn');
     $('scrim').hidden = true; $('start').hidden = true;
     render(G); paintLog();
@@ -67,27 +78,27 @@
     Array.prototype.forEach.call(document.querySelectorAll('.seat.rogue'), function (el) { el.classList.add('ignite'); });
     $('table').classList.add('shake'); setTimeout(function () { $('table').classList.remove('shake'); }, 500);
     paintLog(); status('ROGUE REVEAL · ' + rogueNames() + ' have gone rogue. Tap a rogue to swap.');
-    setTimeout(function () { busy = false; markLegal(); }, 700);
+    setTimeout(function () { busy = false; markLegal(); armClock(); }, 700);
   }
   function rogueNames() { return Object.keys(G.rogue).map(NN.name).join(' and '); }
 
-  function play(k) {
+  function play(k, timeout) {
     if (busy || !G || G.over || NN.legal(G).indexOf(k) < 0) return;
-    busy = true;
+    busy = true; stopClock();
     // 1. show the swap in place
     var tmp = JSON.parse(JSON.stringify(G)); var t = tmp.outer[k]; tmp.outer[k] = tmp.inner[k]; tmp.inner[k] = t;
     var line = NN.notation(G, k);
     Array.prototype.forEach.call(document.querySelectorAll('.seat[data-k="' + k + '"]'), function (el) { el.classList.add('swap'); el.classList.remove('can'); });
-    status(line + ' · swapping…');
+    status(line + (timeout ? ' · TIME IS UP, the table moves for you' : ' · swapping…'));
     setTimeout(function () {
       var saved = G; G = tmp; render(G); G = saved;   // paint the swapped table, not yet turned
       // 2. the outer wheel turns one seat clockwise
       setTimeout(function () {
-        var res = NN.apply(G, k); rot += 90; render(G); paintLog();
+        var res = NN.apply(G, k); if (timeout) G.log[G.log.length - 1] += ' (timeout)'; rot += 90; render(G); paintLog();
         status(line + ' · the outer wheel turns');
         setTimeout(function () {
           if (G.over) return nuke(res);
-          busy = false; markLegal(); status('Move ' + (G.moves + 1) + ' · rogues at ' + NN.rogues(G) + ' · tap a rogue');
+          busy = false; markLegal(); armClock(); status('Move ' + (G.moves + 1) + ' · rogues at ' + NN.rogues(G) + ' · tap a rogue');
         }, 800);
       }, 150);
     }, 420);

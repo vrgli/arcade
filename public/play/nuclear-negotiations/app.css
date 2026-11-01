@@ -64,3 +64,5 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .sheet .x{position:absolute;right:10px;top:8px;font-size:22px;color:var(--mute)}
 .sheet .credit{margin:14px 0 0;font:600 11px/1.4 var(--mono);letter-spacing:.12em;color:var(--mute);text-align:center}.sheet .credit a{color:var(--yl);text-decoration:none}
 #labels,.ring-line{pointer-events:none}
+#centre.clock{font:900 clamp(26px,6vw,44px)/1 var(--mono);color:var(--yl);border:3px solid var(--yl);letter-spacing:0;animation:none}
+#centre.hot{color:#fff;background:var(--red);border-color:#ffb347}
