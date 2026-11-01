@@ -142,9 +142,36 @@ img.px{image-rendering:pixelated;display:block}
 .sheet .logo{display:block;width:min(260px,70%);margin:0 auto 6px;border-radius:14px;border:1px solid var(--line)}.sheet h1.sr{position:absolute;left:-9999px}
 .help{text-align:left}.help h3{color:var(--gold);font-size:15px;margin:1rem 0 .3rem}.help p{margin:.2rem 0}.help .ex{display:flex;gap:8px;justify-content:center;margin:.6rem 0;--pw:96px}
 #arena-note{position:fixed;bottom:2px;left:2px;font-size:10px;color:#2a3345}
+
+/* ── phone layout (#13): one column, the page scrolls, everything readable at 390px ── */
+@media (max-width:900px){
+  #app{height:auto;min-height:100dvh;overflow:visible;grid-template-rows:auto auto}
+  .main{grid-template-columns:1fr;grid-template-rows:none;gap:8px;padding:8px}
+  .leftcol{order:2;grid-template-rows:auto auto}
+  .rightcol{order:1;grid-template-rows:auto auto auto}
+  .box{overflow:visible}.bc{overflow:visible}
+  .seats{grid-template-columns:repeat(2,1fr);gap:8px}
+  .seat{padding:8px 10px;gap:6px}.seat .ava{width:40px;height:40px}.seat .nm{font-size:15px}.seat .hand .bag{width:44px;height:32px;font-size:16px}.seat .hand b{font-size:18px}
+  #b3{padding:8px}.felt{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-height:180px}
+  .played .lbl{font-size:11px}
+  .center{max-width:100%}.chips{gap:8px}.chip{width:46px;height:46px;font-size:1rem}
+  .fan{gap:6px;min-height:auto}
+  .dealrow{gap:10px;--pw:72px;flex-wrap:wrap;justify-content:center}.trumpface{width:64px;height:64px}.idle{width:96px;height:56px;font-size:22px}
+  .sthead,.srow{grid-template-columns:110px 1fr 70px}.who .ava{width:40px;height:40px}.who .nm{font-size:14px}.score{font-size:20px}.pip{width:30px;height:30px;font-size:15px}
+  .settle .line{grid-template-columns:repeat(2,1fr)}
+  .sheet{max-width:calc(100vw - 20px)!important;max-height:calc(100dvh - 20px);overflow:auto}
+  .ah-topbar .ah-center{display:none}
+  html{overflow-x:hidden}
+  body{overflow:visible!important}
+  .ah-topbar{display:flex!important;flex-wrap:wrap;height:auto!important;min-height:0;padding:6px 8px;gap:6px;align-items:center;position:relative}
+  .ah-topbar .ah-left{flex:1 1 auto}
+  .ah-topbar .ah-right{flex:1 1 100%;flex-wrap:wrap;gap:6px;justify-content:flex-start}
+  #tbr{flex-wrap:wrap;gap:6px!important}.ah-ctlgroup{flex-wrap:wrap;gap:6px!important}
+  .stat,.step,.ah-ctl{font-size:11px;padding:4px 8px}
+}
 </style>
 <link rel="stylesheet" href="arcade-header.css" />
-<link rel="icon" href="/favicon.ico"><script src="/vg.js" data-game="tariff-wars"></script>
+<link rel="icon" href="/favicon.ico"><script src="/env.js"></script><script src="/vg.js" data-game="tariff-wars"></script>
 </head>
 <body><div id="app">
  <header id="topbar" class="ah-topbar" style="--hdr-accent:#e8c15a;">
@@ -269,7 +296,8 @@ img.px{image-rendering:pixelated;display:block}
  }
  function sizeCards(){ // my hand: as wide as fits all N proposals on one row, within 110–170px
   var w=($('b1').clientWidth||1300)-8,n=Math.max(G.size,1);
-  var pw=Math.max(84,Math.min(120,Math.floor((w-10*(n-1))/n)));
+  var narrow=window.innerWidth<=900, rows=narrow?Math.ceil(n/5):1, per=Math.ceil(n/rows);
+  var pw=Math.max(narrow?56:84,Math.min(120,Math.floor((w-10*(per-1))/per)));
   document.documentElement.style.setProperty('--pw',pw+'px'); }
  function dir(){var s=G.sizes,i=G.ri,mx=Math.max.apply(null,s),left=s.length-(i+1),lbl;
   if(i>0&&s[i]<s[i-1])lbl='▼ coming down';else if(s[i]===mx)lbl='— peak';else lbl='▲ climbing';
@@ -618,7 +646,8 @@ import { startMultiplayer } from './mp-client.js';
   if (room) boot('join', room);
 })();
 </script>
-<script>(function(){var sh=document.querySelector("#startOv .sheet");if(sh){var c=document.createElement("p");c.style.cssText="margin:14px 0 0;font:600 11px/1.4 ui-monospace,Menlo,monospace;letter-spacing:.12em;color:#8b9098;text-align:center";c.innerHTML='A VRG GAME · <a href="/source/" style="color:#ffd400;text-decoration:none">FREE TO COPY AND REMIX</a>';sh.appendChild(c);var n=document.createElement("div");n.id="vg-acct";n.style.cssText="margin:12px 0 0;padding:10px 12px;border:1px solid #3a3410;border-radius:10px;background:#1a1808;font:600 12px/1.5 system-ui,sans-serif;color:#c4c8ce;text-align:center";n.textContent="Playing as a guest.";sh.insertBefore(n,c);fetch("/api/me",{credentials:"same-origin"}).then(function(r){return r.json();}).then(function(d){if(d.account){n.innerHTML="Signed in as <b style=\"color:#ffd400\">"+String(d.account.name||"you").replace(/[<>]/g,"")+"</b> · your wins count on the <a href=\"/leaderboard\" style=\"color:#ffd400\">leaderboard</a>.";return;}var P=[["google","Google"],["apple","Apple"],["discord","Discord"],["github","GitHub"]],on=P.filter(function(x){return d.providers&&d.providers[x[0]];});n.innerHTML="Playing as a guest: this score is not kept. <b style=\"color:#ffd400\">Sign in</b> to keep your wins and join the <a href=\"/leaderboard\" style=\"color:#ffd400\">leaderboard</a>."+(on.length?"<div style=\"margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap\">"+on.map(function(x){return "<a href=\"/auth/"+x[0]+"?next="+encodeURIComponent(location.pathname)+"\" style=\"background:#ffd400;color:#111;padding:6px 10px;border-radius:7px;text-decoration:none;font-weight:800\">"+x[1]+"</a>";}).join("")+"</div>":"<div style=\"margin-top:6px;color:#8b9098\">Sign-in opens soon.</div>");}).catch(function(){});}})();</script>
+<script>(function(){var sh=document.querySelector("#startOv .sheet");if(sh){var c=document.createElement("p");c.style.cssText="margin:14px 0 0;font:600 11px/1.4 ui-monospace,Menlo,monospace;letter-spacing:.12em;color:#8b9098;text-align:center";c.innerHTML='A VRG GAME · <a href="/source/" style="color:#ffd400;text-decoration:none">FREE TO COPY AND REMIX</a>';sh.appendChild(c);var n=document.createElement("div");n.id="vg-acct";n.style.cssText="margin:12px 0 0;padding:10px 12px;border:1px solid #3a3410;border-radius:10px;background:#1a1808;font:600 12px/1.5 system-ui,sans-serif;color:#c4c8ce;text-align:center";n.textContent="Playing as a guest.";sh.insertBefore(n,c);fetch("/api/me",{credentials:"same-origin"}).then(function(r){return r.json();}).then(function(d){if(d.account){n.innerHTML="Signed in as <b style=\"color:#ffd400\">"+String(d.account.name||"you").replace(/[<>]/g,"")+"</b> · your wins count on the <a href=\"/leaderboard\" style=\"color:#ffd400\">leaderboard</a>.";return;}var P=[["google","Google"],["github","GitHub"],["discord","Discord"]],on=P.filter(function(x){return d.providers&&d.providers[x[0]];});n.innerHTML="Playing as a guest: this score is not kept. <b style=\"color:#ffd400\">Sign in</b> to keep your wins and join the <a href=\"/leaderboard\" style=\"color:#ffd400\">leaderboard</a>."+(on.length?"<div style=\"margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap\">"+on.map(function(x){return "<a href=\"/auth/"+x[0]+"?next="+encodeURIComponent(location.pathname)+"\" style=\"background:#ffd400;color:#111;padding:6px 10px;border-radius:7px;text-decoration:none;font-weight:800\">"+x[1]+"</a>";}).join("")+"</div>":"<div style=\"margin-top:6px;color:#8b9098\">Sign-in opens soon.</div>");}).catch(function(){});}})();</script>
+<script src="/nick.js"></script>
 <script src="arcade-header.js"></script>
 <script>
 (function(){
