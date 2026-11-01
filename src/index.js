@@ -116,6 +116,7 @@ export default {
     // Wallop used to be BRUX.
     if (p === '/play/brux' || p.startsWith('/play/brux/')) return Response.redirect(url.origin + '/play/wallop/' + url.search, 301);
     if (p === '/play/wallop') return Response.redirect(url.origin + '/play/wallop/' + url.search, 301);
+    if (p === '/play/nuclear-negotiations') return Response.redirect(url.origin + '/play/nuclear-negotiations/' + url.search, 301);
 
     return env.ASSETS.fetch(req);
   },
