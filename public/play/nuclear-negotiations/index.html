@@ -13,36 +13,25 @@
   <a class="back" href="/">← ARCADE</a>
   <span class="brand">NUCLEAR NEGOTIATIONS</span>
   <span class="mode">SOLO · STANDARD</span>
+  <span class="hud"><span class="k">MOVES</span><b id="moves">0</b><span class="k">BEST</span><b id="best">0</b></span>
   <span class="sp"></span>
+  <button id="btnLog" class="ctl" title="Move log">LOG</button>
   <button id="btnHow" class="ctl" title="How it works">?</button>
+  <button id="btnSound" class="ctl" title="Sound">🔊</button>
   <button id="btnNew" class="ctl" title="New table">NEW TABLE</button>
 </header>
 
 <main id="main">
-  <section id="tableWrap">
-    <div id="table">
-      <div class="ring-line outer"></div><div class="ring-line inner"></div>
-      <div id="labels"></div>
-      <div id="outer" class="ring"></div>
-      <div id="inner" class="ring"></div>
-      <div id="centre"><span id="centreTxt">DEAL</span></div>
-      <div id="countdown" hidden><b id="cdNum">3</b><span>ROGUE REVEAL</span></div>
-      <div id="nuke" hidden><div class="flash"></div><div class="cloud" id="cloud"></div><div class="nk-text"><b>NUCLEAR WAR</b><span id="nkWhy">The rogues met.</span></div></div>
-    </div>
-    <div id="status"><span id="statusTxt">Press DEAL to seat the leaders.</span></div>
-  </section>
-
-  <aside id="side">
-    <div class="hud">
-      <div class="w"><span class="k">MOVES</span><b id="moves">0</b></div>
-      <div class="w"><span class="k">BEST</span><b id="best">0</b></div>
-      <div class="w"><span class="k">SEED</span><b id="seed">—</b></div>
-    </div>
-    <p class="kicker">MOVE LOG</p>
-    <pre id="log"></pre>
-    <div class="row"><button id="btnCopy" class="ghost">COPY LOG</button><button id="btnAgain" class="go" hidden>PLAY AGAIN</button></div>
-    <p class="foot">Outer seats A B C D, inner 1 2 3 4, clockwise from the top left. <b>A*&lt;-&gt;1</b> swaps the rogue at A with whoever sits at 1; then the outer wheel turns one seat clockwise.</p>
-  </aside>
+  <div id="table">
+    <div class="wood outer"></div><div class="wood inner"></div><div class="wood centre"></div>
+    <div id="outer" class="ring"></div>
+    <div id="inner" class="ring"></div>
+    <div id="centre"><span id="centreTxt"></span></div>
+    <div id="countdown" hidden><b id="cdNum">3</b><span>ROGUE REVEAL</span></div>
+    <div id="banner" hidden><b id="bannerTxt">ROGUE REVEAL</b><span id="bannerSub"></span></div>
+    <div id="nuke" hidden><div class="flash"></div><div class="cloud" id="cloud"></div><div class="nk-text"><b>NUCLEAR WAR</b><span id="nkWhy"></span><span class="nk-row"><button id="btnAgain" class="go">PLAY AGAIN</button><button id="btnLog2" class="ghost">SEE THE LOG</button></span></div></div>
+  </div>
+  <div id="status"><span id="statusTxt">Press DEAL to seat the leaders.</span></div>
 </main>
 
 <div id="scrim" hidden></div>
@@ -50,7 +39,7 @@
   <p class="kicker">A VRG GAME · SOLO</p>
   <h1>Nuclear Negotiations</h1>
   <p>Eight leaders sit at a table of two wheels. After the <b>Rogue Reveal</b>, two of them burn red. Each turn you must <b>swap a rogue leader</b> with the leader facing them on the other wheel; then the outer wheel <b>turns one seat clockwise</b>.</p>
-  <p>If the turn leaves the two rogues <b>facing each other</b>, that is nuclear war, and the move that caused it loses. You have <b>three seconds</b> a move; when the clock runs out the table moves for you, and it does not care where. Survive as many moves as you can.</p>
+  <p>If the turn leaves the two rogues <b>facing each other</b>, that is nuclear war, and the move that caused it loses. The clock gives you <b>five seconds</b> a move, then three, then one. Survive as many moves as you can.</p>
   <div class="row"><button id="btnDeal" class="go">DEAL THE TABLE</button></div>
   <p class="credit">A VRG GAME · <a href="/source/">FREE TO COPY AND REMIX</a></p>
 </section>
@@ -59,17 +48,24 @@
   <p class="kicker">HOW IT WORKS</p>
   <h2>Keep the rogues apart.</h2>
   <ul>
-    <li>Four leaders on the <b>outer</b> wheel (seats A B C D), four on the <b>inner</b> wheel (seats 1 2 3 4). A faces 1, B faces 2, C faces 3, D faces 4.</li>
+    <li>Four leaders on the <b>outer</b> wheel, four on the <b>inner</b> wheel. Each outer seat faces one inner seat.</li>
     <li>Three seconds in, the <b>Rogue Reveal</b> turns one leader on each wheel fiery red. They never start facing each other.</li>
     <li>A move: tap a <b>rogue</b> leader. They swap seats with the leader facing them. Both rogues may end up on the same wheel; that is allowed.</li>
     <li>After every move the <b>outer wheel turns one seat clockwise</b>. The inner wheel stays.</li>
-    <li><b>Three seconds</b> a move. Run out of time and a random legal move is made for you.</li>
+    <li>The clock: <b>5 seconds</b> a move for the first five moves, <b>3 seconds</b> for the next five, then <b>1 second</b> until the end. Run out of time and a random legal move is made for you.</li>
     <li>If the two rogues now <b>face each other</b>, the table goes up in a mushroom cloud and the game is over.</li>
   </ul>
-  <p>Solo mode counts how many moves you survive. The log on the right uses the notation <b>A*&lt;-&gt;1</b>: the seat letters and numbers are fixed to the table, the star marks the rogue.</p>
+  <p>The log (LOG button) uses the notation <b>A*&lt;-&gt;1</b>: outer seats A B C D, inner 1 2 3 4, clockwise from the top left, fixed to the table; the star marks the rogue.</p>
   <button class="ghost" data-close>Back to the table</button>
 </section>
+<section id="logSheet" class="sheet" hidden>
+  <button class="x" data-close>×</button>
+  <p class="kicker">MOVE LOG · SEED <span id="seed">—</span></p>
+  <pre id="log">—</pre>
+  <div class="row"><button id="btnCopy" class="ghost">COPY LOG</button><button class="ghost" data-close>CLOSE</button></div>
+  <p class="foot">Outer seats A B C D, inner 1 2 3 4, clockwise from the top left. <b>A*&lt;-&gt;1</b> swaps the rogue at A with whoever sits at 1; then the outer wheel turns one seat clockwise.</p>
+</section>
 
-<script src="engine.js"></script><script src="sprites.js"></script><script src="game.js"></script>
+<script src="engine.js"></script><script src="sprites.js"></script><script src="sound.js"></script><script src="game.js"></script>
 <script>(function(){var sh=document.querySelector("#start");if(sh){var n=document.createElement("div");n.id="vg-acct";n.style.cssText="margin:12px 0 0;padding:10px 12px;border:1px solid #3a3410;border-radius:10px;background:#1a1808;font:600 12px/1.5 system-ui,sans-serif;color:#c4c8ce;text-align:center";n.textContent="Playing as a guest.";sh.insertBefore(n,sh.querySelector(".credit"));fetch("/api/me",{credentials:"same-origin"}).then(function(r){return r.json();}).then(function(d){if(d.account){n.innerHTML="Signed in as <b style=\"color:#ffd400\">"+String(d.account.name||"you").replace(/[<>]/g,"")+"</b>.";return;}var P=[["google","Google"],["github","GitHub"],["discord","Discord"]],on=P.filter(function(x){return d.providers&&d.providers[x[0]];});n.innerHTML="Playing as a guest: your best is kept in this browser only. <b style=\"color:#ffd400\">Sign in</b> to keep it with your account."+(on.length?"<div style=\"margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap\">"+on.map(function(x){return "<a href=\"/auth/"+x[0]+"?next="+encodeURIComponent(location.pathname)+"\" style=\"background:#ffd400;color:#111;padding:6px 10px;border-radius:7px;text-decoration:none;font-weight:800\">"+x[1]+"</a>";}).join("")+"</div>":"");}).catch(function(){});}})();</script>
 </body></html>
