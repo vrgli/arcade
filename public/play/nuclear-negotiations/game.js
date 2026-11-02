@@ -6,7 +6,6 @@
   var ANG = [225, 315, 45, 135];                 // positions 0..3 clockwise from top-left, degrees (0 = right, 90 = down)
   var R_OUT = 41, R_IN = 21;                      // seat ring radii, % of the table
   var IDLE = { don: 'bob', vlad: 'tilt', ursula: 'sway', zel: 'nod', modi: 'breathe', bibi: 'shake', obama: 'lean', mbs: 'float' };
-  var ESCALATE = NN.ESCALATE, STAGES = NN.STAGES;   // the clock and the escalations are rules: engine.js
   var dealing = false;
   try { best = parseInt(localStorage.getItem('nn-best'), 10) || 0; } catch (e) {}
   $('best').textContent = best;
@@ -47,10 +46,11 @@
   }
 
   // ── the clock ──
-  function stageFor(m) { for (var i = 0; i < STAGES.length; i++) if (m < STAGES[i].upto) return i; return STAGES.length - 1; }
+  // The phases and their clock are rules (engine.js). The first HURRY UP is announced here;
+  // ESCALATION and the return to HURRY UP are announced by escalateFx / calmFx.
   function armClock() {
-    var s = stageFor(G.moves), ms = STAGES[s].ms;
-    if (s !== stage) { stage = s; if (s > 0) { banner(s === 1 ? 'HURRY UP' : 'PANIC', STAGES[s].label); SND.play('hurry'); } }
+    var ms = NN.clockMs(G.moves);
+    if (G.moves === NN.SPELL && stage !== G.moves) { stage = G.moves; banner('HURRY UP', '1 SECOND A MOVE'); SND.play('hurry'); }
     clearInterval(tick); deadline = Date.now() + ms; $('centre').classList.add('clock'); paintClock();
     var lastTick = -1;
     tick = setInterval(function () {
@@ -116,21 +116,28 @@
         status(line + ' · the outer wheel turns');
         setTimeout(function () {
           if (G.over) return nuke(res);
-          var esc = ESCALATE.filter(function (e) { return e.at === G.moves; })[0];
-          if (esc) { var pick = NN.escalate(G); if (pick) return escalateFx(esc, pick); }
+          var ev = NN.after(G);
+          if (ev && ev.escalate) return escalateFx(ev.escalate);
+          if (ev && ev.calm) return calmFx(ev.calm);
           nextMove();
         }, 800);
       }, 150);
     }, 420);
   }
   function nextMove() { busy = false; markLegal(); armClock(); status('Move ' + (G.moves + 1) + ' · rogues at ' + NN.rogues(G) + ' · tap a rogue'); }
-  function escalateFx(esc, pick) {
+  function escalateFx(pick) {
     render(G); SND.play('reveal'); paintLog();
     Array.prototype.forEach.call(document.querySelectorAll('.seat.rogue'), function (el) { el.classList.add('ignite'); });
     $('table').classList.add('shake'); setTimeout(function () { $('table').classList.remove('shake'); }, 500);
-    banner(esc.title, NN.name(pick.id).toUpperCase() + ' HAS GONE ROGUE');
-    status(esc.title + ' · ' + NN.name(pick.id) + ' joins the rogues');
+    banner('ESCALATION', NN.name(pick.id).toUpperCase() + ' HAS GONE ROGUE');
+    status('ESCALATION · ' + NN.name(pick.id) + ' joins the rogues for ' + NN.SPELL + ' moves');
     if (window.vgTrack) vgTrack('nn_escalate', { moves: G.moves, seed: G.seed });
+    setTimeout(nextMove, 1300);
+  }
+  function calmFx(id) {
+    render(G); SND.play('hurry'); paintLog();
+    banner('HURRY UP', NN.name(id).toUpperCase() + ' STANDS DOWN');
+    status('HURRY UP · ' + NN.name(id) + ' is no longer rogue');
     setTimeout(nextMove, 1300);
   }
   function nuke(res) {

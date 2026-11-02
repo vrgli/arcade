@@ -10,15 +10,13 @@ import NN from '../public/play/nuclear-negotiations/engine.js';
 const hex16 = () => Array.from(crypto.getRandomValues(new Uint8Array(8)), (b) => b.toString(16).padStart(2, '0')).join('');
 
 // How long a Nuclear Negotiations run of n moves can take, from the deal to the nuke. game.js
-// spends 3.9 s on the countdown and reveal and about 1.4 s animating each move, plus 1.3 s per
-// escalation; on top of that each move has its clock. The bounds are loose on purpose: the floor
-// stops a run that was never played, the ceiling stops one worked out at leisure off the clock.
-const nnEscalations = (n) => NN.ESCALATE.filter((e) => e.at < n).length;
-const nnClock = (m) => NN.STAGES.find((s) => m < s.upto).ms;
+// spends 3.9 s on the countdown and reveal and about 1.4 s animating each move, plus 1.3 s when
+// a rogue joins or stands down; on top of that each move has its clock. The bounds are loose on
+// purpose: the floor stops a run that was never played, the ceiling one worked out off the clock.
 const nnMinMs = (n) => 3000 + 1000 * n;
 function nnMaxMs(n) {
-  let t = 3900 + 1300 * nnEscalations(n) + 60_000;
-  for (let m = 0; m < n; m++) t += nnClock(m) + 2500;
+  let t = 3900 + 60_000;
+  for (let m = 0; m < n; m++) t += NN.clockMs(m) + 3800;
   return t;
 }
 
