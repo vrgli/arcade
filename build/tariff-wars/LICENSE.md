@@ -12,7 +12,7 @@ the Game is furnished to do so, subject to the following conditions:
    copies or substantial portions of the Game.
 2. Any playable copy, fork or derivative must keep a visible credit reading
    "A VRG game" (or "Based on a VRG game" for modified versions) with a link to
-   https://arcade.vrg.li, somewhere a player can see it — a start screen, an about
+   https://play.vrg.li, somewhere a player can see it — a start screen, an about
    page or a footer is enough.
 
 THE GAME IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
