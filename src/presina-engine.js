@@ -24,7 +24,8 @@
 // decide(state, seat) → { type, args:[seat, ...] } is the AI used for empty seats.
 
 // ---- Pure rules (ported verbatim in spirit from games/presina/engine.js KL) ---
-const SUIT_EMOJI = ['💎', '🐸', '🍄', '🌙'];
+const SUIT_EMOJI = ['🌾', '🍷', '🚗', '💾'];
+const SUIT_NAME = ['Grain', 'Wine', 'Cars', 'Chips'];
 const N_SEATS = 4;
 const DECK = 40; // 4 suits × ranks 1..10
 
@@ -114,7 +115,34 @@ function aiPlay(ctx) {
   if (ctx.need > 0) return winners.length ? lowest(winners, trump) : lowest(losers.length ? losers : legal, trump);
   return losers.length ? highest(losers, trump) : lowest(legal, trump);
 }
-const roundScore = (bid, won) => (bid === won ? 10 + 2 * won : -2 * Math.abs(bid - won));
+// ---- Scoring: Deal Points + the GRAMS bribe pot (mirrors public/play/tariff-wars/engine.js)
+// Guess right: +1 Deal Point per deal closed. Guess wrong: -1 per deal off and
+// GRAMS_FEE into the pot. The pot pays POT_SPLIT by final place; the house keeps the rest.
+const GRAMS_FEE = 5, POT_SPLIT = [0.5, 0.3, 0.15, 0], TIEBREAK_CAP = 19;
+const roundDeal = (bid, won) => (bid === won ? { dp: won, fee: 0 } : { dp: -Math.abs(bid - won), fee: GRAMS_FEE });
+const leaderTied = (totals) => { const m = Math.max(...totals); return totals.filter((t) => t === m).length > 1; };
+function nextTiebreakSize(sizes) {
+  const mn = Math.min(...sizes), mx = Math.max(...sizes), n = sizes.length;
+  const last = sizes[n - 1], prev = n > 1 ? sizes[n - 2] : last;
+  if (mn === mx) return last;
+  const dir = last < prev ? -1 : 1;
+  let next = last + dir;
+  if (next > mx || next < mn) next = last - dir;
+  return next;
+}
+const r2 = (x) => Math.round(x * 100) / 100;
+function settlePot(totals, pot) {
+  const order = [0, 1, 2, 3].sort((a, b) => totals[b] - totals[a] || a - b);
+  const pay = [0, 0, 0, 0], place = [0, 0, 0, 0];
+  let i = 0;
+  while (i < 4) {
+    let j = i; while (j + 1 < 4 && totals[order[j + 1]] === totals[order[i]]) j++;
+    let share = 0; for (let k = i; k <= j; k++) share += POT_SPLIT[k];
+    for (let k = i; k <= j; k++) { pay[order[k]] = r2(pot * share / (j - i + 1)); place[order[k]] = i; }
+    i = j + 1;
+  }
+  return { pay, place, house: r2(pot - pay.reduce((a, b) => a + b, 0)) };
+}
 
 // ---------------------------------------------------------------------------
 
@@ -139,6 +167,10 @@ class Presina {
 
     this.ri = 0;                       // round index into sizes
     this.totals = [0, 0, 0, 0];
+    this.baseRounds = this.sizes.length; // the mode's ladder; anything past it is a tie break
+    this.tiebreak = 0;                   // tie-break rounds started so far
+    this.pot = 0;                        // GRAMS in the bribe pot
+    this.paid = [0, 0, 0, 0];            // GRAMS each seat has put in
     this.history = [];
     // Public play-by-play, mirroring the solo game's own log rows so the LOG
     // sheet reads the same online as offline: { who, msg } or { round:true, msg }.
@@ -181,9 +213,9 @@ class Presina {
     this.leader = this.start;      // who leads the first trick this hand
     this.phase = 1;                // 1 pledge · 2 play · (3 settle handled inline)
     this.current = this.start;     // first pledger == the opener
-    this._logRound(`Round ${this.ri + 1}/${this.sizes.length} · ${size}-card · `
-      + `${this._nm(this.start)} opens the hand`
-      + (this.trumpCard ? ` · trump ${SUIT_EMOJI[this.trumpCard.s]}` : ' · no trump'));
+    this._logRound((this.tiebreak ? `TIE BREAK ${this.tiebreak}` : `Round ${this.ri + 1}/${this.baseRounds}`)
+      + ` · ${size}-card · ${this._nm(this.start)} opens the hand`
+      + (this.trumpCard ? ` · Trump ${SUIT_NAME[this.trumpCard.s]}` : ' · no Trump'));
   }
 
   // ---- Log ------------------------------------------------------------------
@@ -210,7 +242,11 @@ class Presina {
       leader: this.leader,
       opener: this.start,
       firstStarter: this.firstStarter,
-      round: { ri: this.ri, size: this.size, total: this.sizes.length },
+      round: { ri: this.ri, size: this.size, total: this.baseRounds },
+      sizes: this.sizes.slice(),
+      tiebreak: this.tiebreak,
+      pot: this.pot,
+      paid: this.paid.slice(),
       trump: this.trump,
       trumpCard: this.trumpCard ? { ...this.trumpCard } : null,
       trumpEmoji: this.trump != null ? SUIT_EMOJI[this.trump] : null,
@@ -240,7 +276,7 @@ class Presina {
         won: this.won[p.id],
       })),
       totals: this.totals.slice(),
-      history: this.history.map((h) => ({ ...h, deltas: h.deltas.slice(), totals: h.totals.slice(), bids: h.bids.slice(), won: h.won.slice() })),
+      history: this.history.map((h) => ({ ...h, deltas: h.deltas.slice(), fees: h.fees.slice(), totals: h.totals.slice(), bids: h.bids.slice(), won: h.won.slice() })),
       result: this.result ? JSON.parse(JSON.stringify(this.result)) : null,
     };
   }
@@ -284,7 +320,7 @@ class Presina {
     const played = hand.splice(idx, 1)[0];
     if (this.led === null) this.led = played.s;
     this.trick.push({ seat, card: played });
-    this._log(seat, `plays ${SUIT_EMOJI[played.s]} ${played.r}`
+    this._log(seat, `plays ${SUIT_NAME[played.s]} ${played.r * 10}%`
       + (this.trump !== null && played.s === this.trump ? ' (trump).' : '.'));
 
     if (this.trick.length < N_SEATS) {
@@ -335,18 +371,30 @@ class Presina {
   }
 
   _settleRound() {
-    const deltas = [0, 0, 0, 0];
-    for (let p = 0; p < N_SEATS; p++) { deltas[p] = roundScore(this.bids[p], this.won[p]); this.totals[p] += deltas[p]; }
-    this.history.push({ ri: this.ri, size: this.size, deltas, totals: this.totals.slice(), bids: this.bids.slice(), won: this.won.slice() });
+    const deltas = [0, 0, 0, 0], fees = [0, 0, 0, 0];
+    for (let p = 0; p < N_SEATS; p++) {
+      const d = roundDeal(this.bids[p], this.won[p]);
+      deltas[p] = d.dp; fees[p] = d.fee;
+      this.totals[p] += d.dp; this.paid[p] += d.fee; this.pot += d.fee;
+    }
+    this.history.push({ ri: this.ri, size: this.size, tiebreak: this.tiebreak, deltas, fees, totals: this.totals.slice(), bids: this.bids.slice(), won: this.won.slice() });
     for (let p = 0; p < N_SEATS; p++) {
       const hit = this.bids[p] === this.won[p];
-      this._log(p, `pledged ${this.bids[p]}, won ${this.won[p]} — `
-        + `${hit ? 'hit' : 'missed'} ${deltas[p] >= 0 ? '+' : ''}${deltas[p]} (total ${this.totals[p]}).`);
+      this._log(p, `opened ${this.bids[p]}, closed ${this.won[p]} — `
+        + `${hit ? 'right' : 'wrong'} ${deltas[p] >= 0 ? '+' : ''}${deltas[p]} DP`
+        + (fees[p] ? `, ${fees[p]} GRAMS to the pot` : '') + ` (total ${this.totals[p]}).`);
     }
     this.ri += 1;
     this.start = (this.start + 1) % N_SEATS; // lead passes to the next seat each hand
-    if (this.ri >= this.sizes.length) this._finish();
-    else this._startRound();
+    if (this.ri >= this.sizes.length) {
+      // Ladder done. A tied lead plays on, one round at a time, until one leader stands alone.
+      if (leaderTied(this.totals) && this.tiebreak < TIEBREAK_CAP) {
+        this.sizes.push(nextTiebreakSize(this.sizes));
+        this.tiebreak += 1;
+        this._logSys(`Tie at the top — TIE BREAK ${this.tiebreak}: everyone plays on.`);
+        this._startRound();
+      } else this._finish();
+    } else this._startRound();
   }
 
   _finish() {
@@ -357,13 +405,19 @@ class Presina {
     this.size = this.sizes[this.ri];
     let winner = 0;
     for (let p = 1; p < N_SEATS; p++) if (this.totals[p] > this.totals[winner]) winner = p;
-    this._logSys(`${this._nm(winner)} wins the game with ${this.totals[winner]} points.`);
+    const pot = settlePot(this.totals, this.pot);
+    this._logSys(`${this._nm(winner)} wins the game with ${this.totals[winner]} Deal Points`
+      + ` and ${pot.pay[winner]} GRAMS from a ${this.pot} GRAMS pot.`);
     this.result = {
       winner,
       seed: this.seed,
       mode: this.mode,
-      hands: this.sizes.length,   // ladder length — the arcade's turns_taken signal
-      players: this.players.map((p) => ({ playerId: p.id, name: p.name, isAI: p.isAI, finalScore: this.totals[p.id] })),
+      hands: this.sizes.length,   // ladder length incl. tie breaks — the arcade's turns_taken signal
+      tiebreaks: this.tiebreak,
+      pot: this.pot,
+      house: pot.house,
+      players: this.players.map((p) => ({ playerId: p.id, name: p.name, isAI: p.isAI, finalScore: this.totals[p.id],
+        place: pot.place[p.id], paid: this.paid[p.id], payout: pot.pay[p.id] })),
     };
   }
 }
@@ -387,4 +441,4 @@ function decide(state, seat) {
   return { type: 'playCard', args: [seat, card] };
 }
 
-export { Presina, decide, modeSizes };
+export { Presina, decide, modeSizes, settlePot, nextTiebreakSize, roundDeal };

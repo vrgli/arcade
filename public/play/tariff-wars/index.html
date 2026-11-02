@@ -31,15 +31,36 @@ img.px{image-rendering:pixelated;display:block}
 .hbtn{background:#2a2f40;color:var(--gold);border:1px solid var(--line);padding:3px 10px;border-radius:7px;font:inherit;font-size:11px;font-weight:700;cursor:pointer}.hbtn:hover{background:#37456b}
 .bc{padding:10px 14px;min-height:0;flex:1;display:flex;flex-direction:column;gap:8px;overflow:hidden}
 /* ===== PROPOSAL CARDS (horizontal) ===== */
-.pc{position:relative;width:var(--pw);height:var(--pw);border-radius:14px;background:var(--gc,#5a6178);border:3px solid var(--gb,#5a6178);display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:4px;flex:0 0 auto;color:var(--gt,#fff);box-shadow:0 3px 10px #0006;transition:transform .1s,box-shadow .1s}
-.pc .g{display:flex;align-items:center;justify-content:center;line-height:1}.pc .g i{font-style:normal;font-size:calc(var(--pw)*.42);line-height:1;filter:drop-shadow(0 2px 2px #0005)}
-.pc .t{font-size:calc(var(--pw)*.27);font-weight:900;line-height:1;letter-spacing:-1px;text-shadow:0 2px 3px #0004}
-.pc.fruit{--gc:var(--fruit);--gb:#f3cf63;--gt:#2a1f05}.pc.wine{--gc:var(--wine);--gb:#c06ec0;--gt:#fff}.pc.cars{--gc:var(--cars);--gb:#f07070;--gt:#fff}.pc.tech{--gc:var(--tech);--gb:#7fb0f0;--gt:#fff}
+.pc{position:relative;width:var(--pw);height:var(--pw);border-radius:14px;background:#15171d;border:2px solid var(--gb,#5a6178);display:grid;grid-template-rows:minmax(0,1fr) auto;gap:calc(var(--pw)*.05);padding:calc(var(--pw)*.06) calc(var(--pw)*.07) calc(var(--pw)*.08);flex:0 0 auto;color:#fff;box-shadow:0 3px 10px #0006;transition:transform .1s,box-shadow .1s;overflow:hidden}
+.pc .art{position:relative;min-height:0;min-width:0}
+.pc .art img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+.pc .bar{position:relative;width:100%;height:calc(var(--pw)*.24);border-radius:calc(var(--pw)*.08);border:2px solid #d4d6db;background:#1f2329;overflow:hidden}
+.pc .bar .f{position:absolute;left:0;top:0;bottom:0}
+.pc .bar span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:calc(var(--pw)*.16);letter-spacing:-.5px;color:var(--bt,#fff);text-shadow:0 1px 2px #000,0 0 5px #000c;font-variant-numeric:tabular-nums}
+.pc.g-grain{--gb:#8f7a34}.pc.g-wine{--gb:#7d4a84}.pc.g-cars{--gb:#8f3c3c}.pc.g-chips{--gb:#3c5f90}
+img.gi{width:1.5em;height:auto;vertical-align:-.3em;display:inline-block}
 .pc.leg{--gb:var(--dealb);box-shadow:0 0 0 2px var(--dealb),0 4px 12px #0007}.pc.play{cursor:pointer}.pc.play:hover{transform:translateY(-6px);box-shadow:0 0 0 2px var(--dealb),0 0 18px rgba(57,192,124,.8)}
 .pc.dim{opacity:.35;filter:saturate(.4)}.pc.win{--gb:var(--good);box-shadow:0 0 0 2px var(--good),0 0 18px rgba(57,192,124,.7)}.pc.trumpc{--gb:var(--gold);box-shadow:0 0 0 2px var(--gold),0 3px 10px #0006}
 .pc.ph{border:2px dashed #5a6178;background:transparent;box-shadow:none;align-items:center;justify-content:center;color:var(--mut);font-size:13px;font-weight:700;text-align:center}
 .pc.pw{border-style:dashed;background:transparent;opacity:.5}
 .back{width:var(--pw);height:var(--pw);border-radius:12px;background:repeating-linear-gradient(45deg,#2b3350,#2b3350 6px,#222a42 6px,#222a42 12px);border:2px solid #3b4260;flex:0 0 auto}
+/* ===== BRIBE POT ===== */
+.potbar{display:flex;align-items:center;gap:14px;border-top:1px solid var(--line);padding-top:10px}
+.potv{font-size:30px;font-weight:900;color:var(--gold);line-height:1;white-space:nowrap}.potv small{font-size:12px;color:var(--mut);font-weight:800;letter-spacing:.5px}
+.potsplit{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex:1}
+.potsplit span{background:var(--pan2);border:1px solid var(--line);border-radius:8px;padding:5px 4px;text-align:center;font-size:12px;font-weight:800;white-space:nowrap}.potsplit span i{display:block;font-style:normal;font-size:10px;color:var(--mut);letter-spacing:.5px}
+.potsplit span.house{opacity:.6}
+.stat.pot b{color:var(--gold)}
+.stat.tb{background:#3a1820;border-color:var(--bad);color:#ffc9cb;animation:tbpulse 1.4s ease-in-out infinite}.stat.tb b{color:#fff}
+@keyframes tbpulse{50%{box-shadow:0 0 14px rgba(255,107,125,.7)}}
+body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear-gradient(90deg,rgba(255,107,125,.12),rgba(255,107,125,.24));border-color:rgba(255,107,125,.6)}
+/* ===== TIE BREAK banner ===== */
+.tbsheet{border:2px solid var(--bad);box-shadow:0 0 50px rgba(255,107,125,.35);max-width:680px}
+.tbtag{display:inline-block;font:900 13px/1 ui-monospace,Menlo,monospace;letter-spacing:.25em;color:#20160a;background:var(--bad);padding:8px 14px;border-radius:8px;animation:tbpulse 1.2s ease-in-out infinite}
+.tbsheet h1{font-size:1.7rem;margin:.8rem 0 .3rem}
+.rseat .rsc{font-size:22px;font-weight:900;color:var(--ink)}.rseat.tied{opacity:1;border-color:var(--bad);box-shadow:0 0 18px rgba(255,107,125,.5)}.rseat.tied .rname{color:#ffc9cb}
+.sheet td.g,.sheet th.g{text-align:right;font-variant-numeric:tabular-nums}.sheet td.g.up{color:var(--good)}.sheet td.g.dn{color:var(--bad)}
+.potline{margin:.5rem 0 0;font-size:.92rem;color:var(--mut)}.potline b{color:var(--gold)}
 /* ===== THE DEAL ===== */
 .dealrow{display:flex;align-items:center;gap:16px;--pw:96px}
 .trumpface{width:88px;height:88px;border-radius:50%;background:#2a2e3c;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 0 18px rgba(232,193,90,.3)}
@@ -70,7 +91,7 @@ img.px{image-rendering:pixelated;display:block}
 .pip .eye{position:absolute;top:-8px;right:-8px;font-size:13px;background:#0e1118;border:1px solid var(--line);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1}
 .pip .eye:hover{border-color:var(--gold)}
 .pips .none{font-size:12px;color:var(--mut);font-style:italic}
-.score{text-align:right;font-weight:900;font-size:26px;display:flex;align-items:baseline;justify-content:flex-end;gap:8px}.score .d{font-size:13px;font-weight:800}.score .d.up{color:var(--good)}.score .d.dn{color:var(--bad)}.score .md{font-size:16px}
+.score{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px}.score .sv{font-weight:900;font-size:26px;display:flex;align-items:baseline;justify-content:flex-end;gap:8px}.score .sg{font-size:11px;font-weight:800;color:var(--mut);white-space:nowrap}.score .sg.paid{color:#f7b0b8}.score .d{font-size:13px;font-weight:800}.score .d.up{color:var(--good)}.score .d.dn{color:var(--bad)}.score .md{font-size:16px}
 .revealrow{position:absolute;left:4px;right:4px;top:4px;bottom:4px;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(14,17,24,.96);z-index:6;padding:4px 8px;border-radius:10px;border:1px solid var(--gold);cursor:pointer;--pw:60px}
 .scorelead{margin-left:auto;font-size:12px;font-weight:800;color:var(--gold)}
 /* ===== SEATS ===== */
@@ -160,7 +181,8 @@ img.px{image-rendering:pixelated;display:block}
   .center{max-width:100%}.chips{gap:8px}.chip{width:46px;height:46px;font-size:1rem}
   .fan{gap:6px;min-height:auto}
   .dealrow{gap:10px;--pw:72px;flex-wrap:wrap;justify-content:center}.trumpface{width:64px;height:64px}.idle{width:96px;height:56px;font-size:22px}
-  .sthead,.srow{grid-template-columns:110px 1fr 70px}.who .ava{width:40px;height:40px}.who .nm{font-size:14px}.score{font-size:20px}.pip{width:30px;height:30px;font-size:15px}
+  .sthead,.srow{grid-template-columns:110px 1fr 70px}.who .ava{width:40px;height:40px}.who .nm{font-size:14px}.score .sv{font-size:20px}
+  .potbar{flex-wrap:wrap}.potsplit{grid-template-columns:repeat(2,1fr)}.pip{width:30px;height:30px;font-size:15px}
   .settle .line{grid-template-columns:repeat(2,1fr)}
   .sheet{max-width:calc(100vw - 20px)!important;max-height:calc(100dvh - 20px);overflow:auto}
   .ah-topbar .ah-center{display:flex;order:3;flex:1 1 100%}#flash{min-width:0;padding:5px 10px}
@@ -209,7 +231,7 @@ img.px{image-rendering:pixelated;display:block}
 </div>
 <div class="overlay" id="histOv" hidden><div class="sheet" style="max-width:640px"><h1 style="font-size:1.3rem">📊 Score history</h1><div class="histwrap" id="histBody"></div><div style="margin-top:1.2rem"><button class="btn" id="histClose">Close</button></div></div></div>
 <div class="overlay" id="logOv" hidden><div class="sheet" style="max-width:560px;text-align:left"><h1 style="font-size:1.3rem;text-align:center">📜 Game log</h1><div class="logwrap" id="logBody"></div><div style="margin-top:1.2rem;text-align:center"><button class="btn" id="logClose">Close</button></div></div></div>
-<div class="overlay" id="startOv"><div class="sheet"><img src="logo.png" alt="Tariff Wars" class="logo"><h1 class="sr">Tariff Wars</h1><p>Donald Trump is auctioning off trade deals among four great leaders. Each round you declare how many deals you'll close, then fight for them proposal by proposal — <b>the highest tariff wins</b>. Score big only if you close exactly what you opened.</p>
+<div class="overlay" id="startOv"><div class="sheet"><img src="logo.png" alt="Tariff Wars" class="logo"><h1 class="sr">Tariff Wars</h1><p>Donald Trump is auctioning off trade deals among four great leaders. Each round you declare how many deals you'll close, then fight for them proposal by proposal — <b>the highest tariff wins</b>. Guess right to bank Deal Points. Guess wrong and you pay a bribe into the pot that the top three share at the end.</p>
 <p><b>Choose your leader:</b></p><div class="leaders" id="leaders"></div>
 <p><span id="mode-heading"><b>Choose a game mode:</b></span></p><div class="modes">
   <button class="modebtn" data-mode="full"><span class="mn">Full game</span><span class="mseq">1 → 10 → 1</span><span class="mh">19 rounds</span></button>
@@ -219,14 +241,15 @@ img.px{image-rendering:pixelated;display:block}
   <button class="modebtn hot" data-mode="extreme"><span class="mn">🔥 Even more intense</span><span class="mseq">8 → 10 → 8</span><span class="mh">only 5 rounds</span></button>
 </div></div></div>
 <div class="overlay" id="rouletteOv" hidden><div class="sheet" style="max-width:640px"><h1 style="font-size:1.3rem">🎲 Who makes the first proposal?</h1><p style="margin-top:-.3rem">The opener is drawn at random. It passes to the next leader each round.</p><div class="rseats" id="rouletteSeats"></div><div class="rresult" id="rouletteResult">&nbsp;</div></div></div>
+<div class="overlay" id="tbOv" hidden><div class="sheet tbsheet"><span class="tbtag">⚔ TIE BREAK <span id="tbN"></span></span><h1 id="tbTitle"></h1><p id="tbBody"></p><div class="rseats" id="tbSeats"></div><div style="margin-top:1rem"><button class="btn" id="tbGo" style="background:var(--bad);color:#2a0a10">Play the tie break →</button></div></div></div>
 <div class="overlay" id="endOv" hidden><div class="sheet" id="endSheet" style="max-width:560px"></div></div>
-<div class="overlay" id="helpOv" hidden><div class="sheet help" style="max-width:640px"><h1 style="font-size:1.3rem;text-align:center">🍌🍾🚗📱 How to Play — Tariff Wars</h1>
+<div class="overlay" id="helpOv" hidden><div class="sheet help" style="max-width:640px"><h1 style="font-size:1.3rem;text-align:center">How to Play — Tariff Wars</h1>
 <h3>The story</h3>
 <p>Donald Trump is holding an auction. Four leaders — <b>Vlad</b>, <b>Ursula</b>, <b>Modi</b> and <b>Xi</b> — compete to walk away with the most trade deals. You play one of them; the other three are at the table too, as AI or as friends online.</p>
 <h3>Objective</h3>
-<p>Most points across all rounds wins the auction. There is no target to reach — just finish with the highest score.</p>
+<p>Most <b>Deal Points</b> across all rounds wins the auction, and the biggest share of the bribe pot. There is no target to reach — just finish on top.</p>
 <h3>Your proposals</h3>
-<p>Your cards are <b>💰 Proposals</b>: a tariff of 10% to 100% on one of four goods — 🍌 Fruit, 🍾 Wine, 🚗 Cars, 📱 Tech. Forty proposals in all, ten per good. <b>The highest tariff wins.</b></p>
+<p>Your cards are <b>💰 Proposals</b>: a tariff of 10% to 100% on one of four goods — <span id="helpGoods"></span>. The bar under each good shows its tariff: the fuller and brighter, the stronger. Forty proposals in all, ten per good. <b>The highest tariff wins.</b></p>
 <div class="ex" id="helpEx"></div>
 <h3>A round, step by step</h3>
 <p>You pick a mode first, so a game runs 5 to 19 rounds. The number of proposals each leader holds changes every round — from 1 up to 10. Each round: look at your proposals, <b>open your deals</b>, then <b>negotiate</b> them one at a time.</p>
@@ -237,15 +260,26 @@ img.px{image-rendering:pixelated;display:block}
 <h3>The Trump Card</h3>
 <p>Each round the Auctioneer flips one proposal; its good becomes <b>Trump</b> for the round. Any Trump proposal beats any proposal on another good. The exception is the 10-proposal round: every proposal is dealt, so nothing is left to flip — no Trump that round. The 💰 Idle Proposals box shows how many proposals stayed out of play.</p>
 <h3>Scoring</h3>
-<p>Close <b>exactly</b> the deals you opened and you score <b>+10, plus 2 per deal</b> (opening 0 and closing 0 still pays +10). Miss it — over or under, punished the same — and you lose <b>2 for every deal you are off</b>. Your 🤝 Won Deals and the running score are in the panel on the left; tap 👀 to review the last deal a leader closed.</p>
+<p><b>Guess right</b> — close exactly the deals you opened — and you bank <b>1 Deal Point per deal closed</b>. Opening 0 and closing 0 is right, but worth 0.</p>
+<p><b>Guess wrong</b> — over or under, punished the same — and you lose <b>1 Deal Point per deal you are off</b>, and pay a <b>5 GRAMS bribe</b> into the pot.</p>
+<h3>The bribe pot</h3>
+<p>At the end the pot is shared by final place: <b>1st 50%</b>, <b>2nd 30%</b>, <b>3rd 15%</b>, 4th nothing; the house keeps 5%. Leaders tied on 2nd, 3rd or 4th split those places' prizes evenly. The pot and its split are shown under the Trump Card all game.</p>
+<h3>Tie break</h3>
+<p>If two or more leaders are tied for 1st when the last round ends, <b>the auction goes on</b>. The rounds keep climbing and falling along the same ladder — after a full game's last 1-proposal round come 2, 3, 4… — one round at a time until a single leader stands on top. Everyone plays every tie-break round, so the leader in 3rd can still steal the win. Wrong guesses keep feeding the pot.</p>
+<p>Your 🤝 Won Deals and the running Deal Points are in the panel on the left; tap 👀 to review the last deal a leader closed.</p>
 <div style="text-align:center;margin-top:1.4rem"><button class="btn" id="helpClose">Close</button></div></div></div>
 <div id="arena-note"></div>
-<script src="engine.js"></script><script src="sprites.js"></script><script src="arcade-bridge.js"></script>
+<script src="engine.js"></script><script src="sprites.js"></script><script src="goods.js"></script><script src="arcade-bridge.js"></script>
 <script>
 (function(){
  var AUTOTEST=new URLSearchParams(location.search).has('autotest');
  var LEADERS=[{id:'vlad',nm:'Vlad'},{id:'ursula',nm:'Ursula'},{id:'modi',nm:'Modi'},{id:'xi',nm:'Xi'}];
- var GOODS=[{e:'🍌',n:'Fruit',c:'fruit'},{e:'🍾',n:'Wine',c:'wine'},{e:'🚗',n:'Cars',c:'cars'},{e:'📱',n:'Tech',c:'tech'}]; // engine suit idx 0-3
+ // engine suit idx 0-3. e = small inline pixel icon (HTML only); plain-text messages use n.
+ var GOODS=TWG.GOODS.map(function(g,i){return {e:TWG.icon(i),n:g.n,c:g.c};});
+ function gm(x){return Math.round(x*100)/100;} // GRAMS, at most 2 decimals
+ function isTB(){return G&&G.baseLen&&G.ri>=G.baseLen;}
+ function tbNo(){return G.ri-G.baseLen+1;}
+ function rlabel(){return isTB()?'Tie break '+tbNo():'Round '+(G.ri+1)+'/'+G.baseLen;}
  var FAST=new URLSearchParams(location.search).has('fast');
  var PLAY_MS=FAST?40:1000,TRICK_MS=FAST?80:1900,DECL_MS=FAST?20:560;
  var G=null,$=function(id){return document.getElementById(id);};
@@ -261,10 +295,10 @@ img.px{image-rendering:pixelated;display:block}
  function nmYou(p){return p===0?'You':NAMES[p];}
  // --- online multiplayer (rvr = real-vs-real) -----------------------------
  var rvr=false,net=null,mySeat=0,lastServerState=null,mpResultShown=false;
- var mpReveal=-1,mpLastTrickSeq=0;
+ var mpReveal=-1,mpLastTrickSeq=0,mpLastTb=0;
  function sleep(ms){return AUTOTEST?Promise.resolve():new Promise(function(r){setTimeout(r,ms);});}
  function card(c,o){o=o||{};var g=GOODS[c.s];
-  return '<div class="pc '+g.c+(o.win?' win':'')+(o.dim?' dim':'')+(o.trump?' trumpc':'')+(o.leg?' leg':'')+(o.play?' play':'')+'" title="'+g.n+' '+(c.r*10)+'%" data-i="'+(o.i!=null?o.i:'')+'"><div class="g"><i>'+g.e+'</i></div><div class="t">'+(c.r*10)+'%</div></div>';}
+  return '<div class="pc '+g.c+(o.win?' win':'')+(o.dim?' dim':'')+(o.trump?' trumpc':'')+(o.leg?' leg':'')+(o.play?' play':'')+'" title="'+g.n+' '+(c.r*10)+'%" data-i="'+(o.i!=null?o.i:'')+'"><div class="art"><img src="'+TWG.art(c.s,c.r)+'" alt="'+g.n+'"></div><div class="bar"><div class="f" style="width:'+(c.r*10)+'%;background:'+TWG.barColor(c.s,c.r)+'"></div><span style="--bt:'+(c.r<=4?TWG.GOODS[c.s].hot:'#fff')+'">'+(c.r*10)+'%</span></div></div>';}
  function flash(who,msg){$('flash-who').textContent=who;$('flash-msg').textContent=msg;}
  function logPush(entry){if(!G)return;G.log=G.log||[];G.log.push(entry);if(!$('logOv').hidden)renderLog();}
  function setAction(msg,who){flash(who||'Tariff Wars',msg);logPush({who:who||'Tariff Wars',msg:msg});}
@@ -290,11 +324,12 @@ img.px{image-rendering:pixelated;display:block}
   return s;}
  function startGame(mode){mode=mode||G&&G.mode||'full';
   setSeats(myLeader);
-  G={mode:mode,sizes:modeSizes(mode),totals:[0,0,0,0],ri:0,start:0,bids:[null,null,null,null],won:[0,0,0,0],hands:[[],[],[],[]],
+  G={mode:mode,sizes:modeSizes(mode),totals:[0,0,0,0],pot:0,paid:[0,0,0,0],ri:0,start:0,bids:[null,null,null,null],won:[0,0,0,0],hands:[[],[],[],[]],
      startedAt:Date.now(),
      trump:null,trumpCard:null,size:0,phase:1,_active:-1,_decl:[false,false,false,false],_trick:[],_led:null,_win:-1,_leader:0,
      wonPiles:[[],[],[],[]],reveal:-1,history:[],log:[],lastDeltas:null,awaitCard:null,status:'playing',seed:(AUTOTEST?12345:(Date.now()%1e9)),
      rng:KL.mulberry32(AUTOTEST?12345:((Date.now()^Math.floor(Math.random()*1e9))>>>0))};
+  G.baseLen=G.sizes.length;
   G.start=Math.floor(G.rng()*4);G.firstStarter=G.start;
   $('startOv').hidden=true;$('endOv').hidden=true;playGame();
  }
@@ -307,8 +342,11 @@ img.px{image-rendering:pixelated;display:block}
   if(i>0&&s[i]<s[i-1])lbl='▼ coming down';else if(s[i]===mx)lbl='— peak';else lbl='▲ climbing';
   return [lbl,left];}
  function drawTop(){
-  var d=dir();
-  $('tbr').innerHTML='<span class="stat" title="'+MODE_NAMES[G.mode]+' · '+d[1]+' round'+(d[1]===1?'':'s')+' left after this one · '+nm(G.start)+' opens this round">Round <b>'+(G.ri+1)+'</b>/'+G.sizes.length+' <span class="dn">'+d[0]+'</span> · <b>'+(G.phase>=2?'Negotiate':'Open deals')+'</b></span>';
+  var d=dir(),tb=isTB(),ph='<b>'+(G.phase>=2?'Negotiate':'Open deals')+'</b>';
+  document.body.classList.toggle('tb',!!tb);
+  $('tbr').innerHTML=(tb?'<span class="stat tb" title="Leaders tied for 1st: the auction goes on until one stands alone">⚔ TIE BREAK <b>'+tbNo()+'</b> · '+G.size+'-proposal · '+ph+'</span>'
+   :'<span class="stat" title="'+MODE_NAMES[G.mode]+' · '+d[1]+' round'+(d[1]===1?'':'s')+' left after this one · '+nm(G.start)+' opens this round">Round <b>'+(G.ri+1)+'</b>/'+G.baseLen+' <span class="dn">'+d[0]+'</span> · '+ph+'</span>')+
+   '<span class="stat pot" title="Bribe pot: 5 GRAMS per wrong guess, shared by the top three at the end">💰 Pot <b>'+(G.pot||0)+'</b> GRAMS</span>';
   $('boxDeal').classList.toggle('active',G.phase===1);
   $('boxPlay').classList.toggle('active',G.phase>=2);
  }
@@ -343,8 +381,12 @@ img.px{image-rendering:pixelated;display:block}
   $('b5').innerHTML='<div class="dealrow"><div><div class="tl">THE AUCTIONEER</div><div class="trumpface">'+img('trump',5)+'</div></div>'+
    '<div><div class="tl">TRUMP CARD</div>'+trump+'</div>'+
    '<div><div class="tl mut">💰 IDLE PROPOSALS</div><div class="idle'+(idle<=0?' empty':'')+'">💰 <small>×</small>'+idle+'</div></div></div>'+
+   potHtml()+
    '<div class="counter"><div class="tl mut">DEAL PROPOSALS COUNTER · <b style="color:var(--ink)">'+sum+'</b> opened of '+N+'</div><div class="dots" style="--gdot:'+Math.max(34,Math.min(46,Math.round(430/N)))+'px">'+dots+'</div><div class="cstat '+st+'">'+tx+'</div></div>';
  }
+ function potHtml(){var pot=G.pot||0;
+  return '<div class="potbar"><div><div class="tl" style="text-align:left">💰 BRIBE POT</div><div class="potv">'+pot+' <small>GRAMS</small></div></div>'+
+   '<div class="potsplit"><span><i>1ST · 50%</i>'+gm(pot*.5)+'</span><span><i>2ND · 30%</i>'+gm(pot*.3)+'</span><span><i>3RD · 15%</i>'+gm(pot*.15)+'</span><span class="house"><i>HOUSE · 5%</i>'+gm(pot*.05)+'</span></div></div>';}
  function renderTable(){
   var h='';
   if(G.phase===1){
@@ -380,11 +422,11 @@ img.px{image-rendering:pixelated;display:block}
   var sorted=[0,1,2,3].map(function(p){return {p:p,t:G.totals[p]};}).sort(function(a,b){return b.t-a.t||a.p-b.p;});
   var rankOf={};sorted.forEach(function(r,i){rankOf[r.p]=i;});
   var margin=sorted[0].t-sorted[1].t,tied=margin===0,started=G.history.length>0;
-  var h='<div class="sthead"><span>LEADER</span><span>OPEN DEALS · this round</span><span>SCORE</span></div>';
+  var h='<div class="sthead"><span>LEADER</span><span>OPEN DEALS · this round</span><span>DEAL POINTS</span></div>';
   for(var p=0;p<4;p++){var turn=G._active===p,lead=started&&rankOf[p]===0&&!tied,d=G.lastDeltas?G.lastDeltas[p]:null;
    h+='<div class="srow'+(turn?' turn':'')+(lead?' lead':'')+'" data-p="'+p+'"><div class="who'+(p===0?' you':'')+'">'+ava(p,3)+'<div style="min-width:0"><div class="nm">'+nm(p)+'</div><div class="sub">('+SUBS[p]+')</div></div></div>'+
     '<div class="pips">'+pips(G.bids[p],G.won[p],p)+(turn?'<span class="turnpill" style="margin-left:6px">'+(G.phase===1?'OPENING':'PROPOSING')+'</span>':'')+'</div>'+
-    '<div class="score">'+(lead?'<span class="md">🥇</span>':'')+G.totals[p]+(d!=null?'<span class="d '+(d>=0?'up':'dn')+'">'+(d>=0?'+':'')+d+'</span>':'')+'</div>';
+    '<div class="score"><div class="sv">'+(lead?'<span class="md">🥇</span>':'')+G.totals[p]+(d!=null?'<span class="d '+(d>=0?'up':'dn')+'">'+(d>=0?'+':'')+d+'</span>':'')+'</div><div class="sg'+((G.paid&&G.paid[p])?' paid':'')+'">'+((G.paid&&G.paid[p])?'bribed '+G.paid[p]+' G':'no bribes')+'</div></div>';
    if(G.reveal===p&&G.wonPiles[p].length){var last=G.wonPiles[p][G.wonPiles[p].length-1];h+='<div class="revealrow" data-hide="'+p+'">'+last.map(function(c){return card(c.card,{win:c.win});}).join('')+'</div>';}
    h+='</div>';}
   $('b2').innerHTML=h;
@@ -395,9 +437,10 @@ img.px{image-rendering:pixelated;display:block}
  function medal(i){return ['🥇','🥈','🥉','4️⃣'][i];}
  function openHistory(){
   var head='<th>Round</th>'+[0,1,2,3].map(function(p){return '<th>'+nmYou(p)+'</th>';}).join('');
-  var body=G.history.map(function(h){return '<tr><td>R'+(h.ri+1)+' <small>'+h.size+'p</small></td>'+[0,1,2,3].map(function(p){
-    return '<td><b style="color:'+(h.deltas[p]>=0?'var(--good)':'var(--bad)')+'">'+(h.deltas[p]>=0?'+':'')+h.deltas[p]+'</b> <small>'+h.totals[p]+'</small></td>';}).join('')+'</tr>';}).join('');
-  var tot='<tr class="tot"><td>Total</td>'+[0,1,2,3].map(function(p){return '<td>'+G.totals[p]+'</td>';}).join('')+'</tr>';
+  var body=G.history.map(function(h){return '<tr><td>'+(h.ri>=G.baseLen?'⚔ TB'+(h.ri-G.baseLen+1):'R'+(h.ri+1))+' <small>'+h.size+'p</small></td>'+[0,1,2,3].map(function(p){var f=h.fees?h.fees[p]:0;
+    return '<td><b style="color:'+(h.deltas[p]>=0?'var(--good)':'var(--bad)')+'">'+(h.deltas[p]>=0?'+':'')+h.deltas[p]+'</b> <small>'+h.totals[p]+'</small>'+(f?' <small style="color:#f7b0b8">💰'+f+'</small>':'')+'</td>';}).join('')+'</tr>';}).join('');
+  var tot='<tr class="tot"><td>Deal Points</td>'+[0,1,2,3].map(function(p){return '<td>'+G.totals[p]+'</td>';}).join('')+'</tr>'+
+   '<tr><td>Bribes paid</td>'+[0,1,2,3].map(function(p){return '<td>'+((G.paid&&G.paid[p])||0)+' G</td>';}).join('')+'</tr>';
   $('histBody').innerHTML='<table class="htab"><thead><tr>'+head+'</tr></thead><tbody>'+(body||'<tr><td colspan="5" style="text-align:center;color:var(--mut)">No rounds completed yet.</td></tr>')+tot+'</tbody></table>';
   $('histOv').hidden=false;
  }
@@ -451,11 +494,13 @@ img.px{image-rendering:pixelated;display:block}
    step();
   });
  }
- async function playGame(){try{await startRoulette(G.firstStarter);logPush({who:'Deal',msg:nmYou(G.firstStarter)+' won the draw to open the auction.'});for(G.ri=0;G.ri<G.sizes.length;G.ri++){await playRound();}endGame();}catch(e){if(AUTOTEST)$('arena-note').textContent='ERROR:'+(e&&e.message||e);else throw e;}}
+ async function playGame(){try{await startRoulette(G.firstStarter);logPush({who:'Deal',msg:nmYou(G.firstStarter)+' won the draw to open the auction.'});for(G.ri=0;G.ri<G.sizes.length;G.ri++){await playRound();
+   if(G.ri===G.sizes.length-1&&KL.leaderTied(G.totals)&&G.sizes.length-G.baseLen<KL.TIEBREAK_CAP){G.sizes.push(KL.nextTiebreakSize(G.sizes));await showTieBreak(G.sizes.length-G.baseLen,G.sizes[G.sizes.length-1],false);}}
+  endGame();}catch(e){if(AUTOTEST)$('arena-note').textContent='ERROR:'+(e&&e.message||e);else throw e;}}
  async function playRound(){
   G.size=G.sizes[G.ri];sizeCards();var d=KL.dealRound(G.size,G.rng);G.hands=d.hands;G.trump=d.trump;G.trumpCard=d.trumpCard;
   G.bids=[null,null,null,null];G.won=[0,0,0,0];G._decl=[false,false,false,false];G.wonPiles=[[],[],[],[]];G.reveal=-1;G._trick=[];G._led=null;G._win=-1;G.phase=1;G._active=-1;G._leader=G.start;G.trickHold=false;
-  logPush({round:true,msg:'Round '+(G.ri+1)+'/'+G.sizes.length+' · '+G.size+'-proposal · '+nmYou(G.start)+' open'+(G.start===0?'':'s')+' the round'+(G.trumpCard?' · Trump '+GOODS[G.trumpCard.s].e+' '+GOODS[G.trumpCard.s].n:' · no Trump')});
+  logPush({round:true,msg:(isTB()?'⚔ TIE BREAK '+tbNo():'Round '+(G.ri+1)+'/'+G.baseLen)+' · '+G.size+'-proposal · '+nmYou(G.start)+' open'+(G.start===0?'':'s')+' the round'+(G.trumpCard?' · Trump '+GOODS[G.trumpCard.s].n:' · no Trump')});
   renderAll();snd('deal',Math.min(G.size,6));setAction('Open your deals — how many will you close this round?','Deal');
   for(var n=0;n<4;n++){var p=(G.start+n)%4;G._active=p;drawTop();renderSeats();renderStandings();renderTable();
    var bid;
@@ -468,7 +513,7 @@ img.px{image-rendering:pixelated;display:block}
    G._trick=[];var led=null;G._win=-1;G._leader=leader;
    for(var m=0;m<4;m++){var pl=(leader+m)%4;G._active=pl;G._led=led;drawTop();renderSeats();renderTable();renderHand(false,led);renderStandings();
     var c;
-    if(pl===0&&!AUTOTEST){setAction((led==null?'Your turn — lead with any proposal.':'Your turn — follow '+GOODS[led].e+' '+GOODS[led].n+' if you can.'),'You');renderHand(true,led);c=await new Promise(function(res){G.awaitCard=res;});renderHand(false,led);}
+    if(pl===0&&!AUTOTEST){setAction((led==null?'Your turn — lead with any proposal.':'Your turn — follow '+GOODS[led].n+' if you can.'),'You');renderHand(true,led);c=await new Promise(function(res){G.awaitCard=res;});renderHand(false,led);}
     else{c=KL.aiPlay({hand:G.hands[pl],trick:G._trick,led:led,trump:G.trump,need:G.bids[pl]-G.won[pl]});await sleep(PLAY_MS);}
     var idx=G.hands[pl].findIndex(function(x){return KL.sameCard(x,c);});G.hands[pl].splice(idx,1);
     if(led==null)led=c.s;G._led=led;G._trick.push({player:pl,card:c});snd('play');
@@ -476,31 +521,53 @@ img.px{image-rendering:pixelated;display:block}
    }
    var w=G._win;G.won[w]++;var trickData=G._trick.map(function(x){return {card:x.card,win:x.player===w};});
    snd(w===0?'reward':'draw');
-   G.trickHold=true;G._active=-1;renderTable();renderSeats();setAction(nm(w)+(w===0?' (you) close':' closes')+' the deal with '+GOODS[G._trick.filter(function(x){return x.player===w;})[0].card.s].e+' '+(G._trick.filter(function(x){return x.player===w;})[0].card.r*10)+'%.',nmYou(w));
+   G.trickHold=true;G._active=-1;renderTable();renderSeats();setAction(nm(w)+(w===0?' (you) close':' closes')+' the deal with '+GOODS[G._trick.filter(function(x){return x.player===w;})[0].card.s].n+' '+(G._trick.filter(function(x){return x.player===w;})[0].card.r*10)+'%.',nmYou(w));
    await animateWin(w,trickData);
    G.trickHold=false;renderStandings();renderTable();
    leader=w;
   }
-  G.phase=3;var deltas=[];for(var q=0;q<4;q++){deltas[q]=KL.roundScore(G.bids[q],G.won[q]);G.totals[q]+=deltas[q];}
-  G.lastDeltas=deltas.slice();G.history.push({ri:G.ri,size:G.size,deltas:deltas.slice(),totals:G.totals.slice(),bids:G.bids.slice(),won:G.won.slice()});
+  G.phase=3;var deltas=[],fees=[];for(var q=0;q<4;q++){var rd=KL.roundDeal(G.bids[q],G.won[q]);deltas[q]=rd.dp;fees[q]=rd.fee;G.totals[q]+=rd.dp;G.paid[q]+=rd.fee;G.pot+=rd.fee;}
+  G.lastDeltas=deltas.slice();G.history.push({ri:G.ri,size:G.size,deltas:deltas.slice(),fees:fees.slice(),totals:G.totals.slice(),bids:G.bids.slice(),won:G.won.slice()});
+  renderTrumpDeal();
   G._active=-1;drawTop();renderSeats();renderStandings();renderHand(false,null);
-  var line=[0,1,2,3].map(function(p){var hit=G.bids[p]===G.won[p];return '<div class="sl">'+ava(p,2)+'<div class="r"><b style="color:var(--ink)">'+nm(p)+'</b> '+(hit?'closed the deals':'missed')+'<br>'+G.won[p]+' won / '+G.bids[p]+' open</div><div class="d '+(deltas[p]>=0?'up':'dn')+'">'+(deltas[p]>=0?'+':'')+deltas[p]+'</div></div>';}).join('');
-  $('tableHead').innerHTML='🤝 THE TABLE · round '+(G.ri+1)+' settled';
-  $('b3').innerHTML='<div class="felt st"><div class="center settle"><div class="bigask">Round '+(G.ri+1)+' settled<small>close exactly what you open: +10, plus 2 per deal · miss by any margin: −2 per deal off</small></div><div class="line">'+line+'</div><button class="btn" id="cont">'+(G.ri<G.sizes.length-1?'Next round →':'Final result →')+'</button></div></div>';
-  setAction('Round settled — scores updated.','Deal');
+  var line=[0,1,2,3].map(function(p){var hit=G.bids[p]===G.won[p];return '<div class="sl">'+ava(p,2)+'<div class="r"><b style="color:var(--ink)">'+nm(p)+'</b> '+(hit?'guessed right':'guessed wrong')+'<br>'+G.won[p]+' won / '+G.bids[p]+' open</div><div class="d '+(deltas[p]>0?'up':deltas[p]<0?'dn':'')+'">'+(deltas[p]>=0?'+':'')+deltas[p]+' <small style="font-size:12px">DP</small></div><div class="r" style="color:'+(fees[p]?'#f7b0b8':'var(--mut)')+'">'+(fees[p]?'💰 '+fees[p]+' GRAMS to the pot':'no bribe')+'</div></div>';}).join('');
+  var last=G.ri===G.sizes.length-1,goTB=last&&KL.leaderTied(G.totals)&&G.sizes.length-G.baseLen<KL.TIEBREAK_CAP;
+  $('tableHead').innerHTML='🤝 THE TABLE · '+rlabel().toLowerCase()+' settled';
+  $('b3').innerHTML='<div class="felt st"><div class="center settle"><div class="bigask">'+rlabel()+' settled · pot '+G.pot+' GRAMS<small>guess right: +1 DP per deal closed · guess wrong: −1 DP per deal off and 5 GRAMS into the bribe pot</small></div><div class="line">'+line+'</div><button class="btn" id="cont"'+(goTB?' style="background:var(--bad);color:#2a0a10"':'')+'>'+(goTB?'⚔ Tied at the top — tie break →':last?'Final result →':'Next round →')+'</button></div></div>';
+  setAction(goTB?'Tied at the top — the auction goes on!':'Round settled — Deal Points updated.','Deal');
   await new Promise(function(res){if(AUTOTEST){res();return;}$('cont').onclick=res;});
   G.start=(G.start+1)%4;
  }
  function pickCard(i){if(!G.awaitCard)return;var c=G.hands[0][i],led=G._led;
   if(!legalOf(led).some(function(x){return KL.sameCard(x,c);}))return;var r=G.awaitCard;G.awaitCard=null;r(c);}
- function endGame(){G.status='done';var order=[0,1,2,3].map(function(p){return {p:p,nm:nm(p),t:G.totals[p]};}).sort(function(a,b){return b.t-a.t;});
-  var place=order.findIndex(function(o){return o.p===0;})+1;G.place=['1st','2nd','3rd','4th'][place-1];G.won0=order[0].p===0;
+ function endGame(){G.status='done';var sp=KL.settlePot(G.totals,G.pot);
+  var order=[0,1,2,3].map(function(p){return {p:p,nm:nm(p),t:G.totals[p],place:sp.place[p],paid:G.paid[p],pay:sp.pay[p]};}).sort(function(a,b){return a.place-b.place||a.p-b.p;});
+  G.place=['1st','2nd','3rd','4th'][sp.place[0]];G.won0=sp.place[0]===0&&sp.place.filter(function(x){return x===0;}).length===1;G.payout=sp.pay[0];
   snd(G.won0?'reward':'draw');
   if(AUTOTEST){$('arena-note').textContent='DONE winner='+order[0].nm+' totals='+G.totals.join(',')+' you='+G.place;return;}
   var deals=[0,0,0,0];G.history.forEach(function(h){for(var p=0;p<4;p++)deals[p]+=h.won[p];});
-  $('endSheet').innerHTML='<h1>'+(G.won0?'🏆 You win the auction!':order[0].nm+' wins the auction')+'</h1><div style="color:var(--mut);font-size:.9rem;margin:-.3rem 0 .2rem">'+MODE_NAMES[G.mode]+' · '+G.sizes.length+' rounds</div><table><tr><th style="text-align:left">Final standing</th><th>Deals closed</th><th>Points</th></tr>'+order.map(function(o,i){return '<tr'+(o.p===0?' class="me"':'')+'><td class="name">'+medal(i)+' '+ava(o.p,2)+o.nm+(o.p===0?' (you)':'')+'</td><td>'+deals[o.p]+' 🤝</td><td><b>'+o.t+'</b></td></tr>';}).join('')+'</table><div style="margin-top:1.2rem;display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn" id="again">Play Again</button><button class="btn alt" id="changemode">Change mode</button><button class="btn alt" id="backarcade">← Back to Arcade</button></div>';
+  var tbs=G.sizes.length-G.baseLen;
+  var co=order.filter(function(o){return o.place===0;});
+  $('endSheet').innerHTML='<h1>'+(co.length>1?'🤝 '+co.map(function(o){return o.p===0?'You':o.nm;}).join(' and ')+' share the win':G.won0?'🏆 You win the auction!':order[0].nm+' wins the auction')+'</h1><div style="color:var(--mut);font-size:.9rem;margin:-.3rem 0 .2rem">'+MODE_NAMES[G.mode]+' · '+G.baseLen+' rounds'+(tbs?' + <b style="color:var(--bad)">'+tbs+' tie break'+(tbs>1?'s':'')+'</b>':'')+'</div>'+endTable(order.map(function(o){return {nm:o.nm+(o.p===0?' (you)':''),ava:ava(o.p,2),me:o.p===0,dp:o.t,deals:deals[o.p],place:o.place,paid:o.paid,pay:o.pay};}),G.pot,sp.house)+'<div style="margin-top:1.2rem;display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn" id="again">Play Again</button><button class="btn alt" id="changemode">Change mode</button><button class="btn alt" id="backarcade">← Back to Arcade</button></div>';
   $('endOv').hidden=false;$('again').onclick=function(){$('endOv').hidden=true;startGame(G.mode);};$('changemode').onclick=function(){$('endOv').hidden=true;$('startOv').hidden=false;};
   $('backarcade').onclick=function(){var url=(window.ArcadeHeader&&ArcadeHeader.isKktShell&&ArcadeHeader.isKktShell())?'/arcade':'/arcade';try{window.top.location.href=url;}catch(e){location.href=url;}};}
+ // Final table: place, Deal Points, bribes paid, pot share and net GRAMS per leader.
+ function endTable(rows,pot,house){
+  return '<table><tr><th style="text-align:left">Final standing</th>'+(rows[0].deals!=null?'<th class="g">Deals</th>':'')+'<th class="g">Deal pts</th><th class="g">Bribed</th><th class="g">Pot share</th><th class="g">Net</th></tr>'+
+   rows.map(function(o){var net=gm(o.pay-o.paid);return '<tr'+(o.me?' class="me"':'')+'><td class="name">'+medal(o.place)+' '+o.ava+o.nm+'</td>'+(o.deals!=null?'<td class="g">'+o.deals+' 🤝</td>':'')+'<td class="g"><b>'+o.dp+'</b></td><td class="g">'+o.paid+'</td><td class="g">'+gm(o.pay)+'</td><td class="g '+(net>0?'up':net<0?'dn':'')+'"><b>'+(net>0?'+':'')+net+'</b></td></tr>';}).join('')+'</table>'+
+   '<p class="potline">💰 Bribe pot <b>'+pot+' GRAMS</b> · 1st 50% · 2nd 30% · 3rd 15% · house kept <b>'+gm(house)+'</b> · amounts in GRAMS</p>';}
+ // Tie-break banner. Solo waits for the button; online it clears itself (the server moves on).
+ function showTieBreak(n,size,online){
+  if(AUTOTEST)return Promise.resolve();
+  var top=Math.max.apply(null,G.totals),tied=[0,1,2,3].filter(function(p){return G.totals[p]===top;});
+  $('tbN').textContent=n>1?n:'';
+  $('tbTitle').textContent=(n>1?'Still tied: ':'')+tied.map(nmYou).join(' and ').replace(/ and (?=[^ ]* and )/g,', ')+' share the lead on '+top;
+  $('tbBody').innerHTML='The auction goes on with a <b>'+size+'-proposal round</b>, one round at a time, until a single leader stands on top. <b>Everyone plays</b>: whoever is behind can still climb past the leaders. Wrong guesses keep feeding the pot.';
+  $('tbSeats').innerHTML=[0,1,2,3].map(function(p){return '<div class="rseat on'+(tied.indexOf(p)>=0?' tied':'')+'">'+ava(p,4)+'<div class="rname">'+nmYou(p)+'</div><div class="rsc">'+G.totals[p]+'</div></div>';}).join('');
+  $('tbGo').style.display=online?'none':'';
+  $('tbOv').hidden=false;snd('reward');
+  return new Promise(function(res){var done=function(){$('tbOv').hidden=true;res();};
+   if(online)setTimeout(done,4200);else $('tbGo').onclick=done;});}
  // Score bridge contract (same as Presina): status 'done' + won/place + the XP signals.
  window.__kl={game:{getState:function(){if(rvr)return{seed:'mp',status:'playing',score:0};if(!G)return{seed:'none',status:'playing',score:0};return {seed:G.seed,status:G.status,score:G.totals?G.totals[0]:0,faction:LEADERS[myLeader].nm,place:G.place||'',won:!!G.won0,mode:G.mode?MODE_NAMES[G.mode]:'',
    duration_seconds:G.startedAt?Math.round((Date.now()-G.startedAt)/1000):null,turns_taken:G.ri||0,players:4,margin:(G.totals?Math.max(0,G.totals[0]-Math.max(G.totals[1],G.totals[2],G.totals[3])):0)};}}};
@@ -509,7 +576,8 @@ img.px{image-rendering:pixelated;display:block}
   Array.prototype.forEach.call(document.querySelectorAll('#leaders .ld'),function(b){b.onclick=function(){myLeader=+b.dataset.l;try{localStorage.setItem('tw-leader',myLeader);}catch(e){}renderLeaders();};});}
  try{var sv=parseInt(localStorage.getItem('tw-leader'),10);if(sv>=0&&sv<4)myLeader=sv;}catch(e){}
  renderLeaders();
- $('helpEx').innerHTML=card({s:0,r:4})+card({s:0,r:9},{win:true})+card({s:2,r:10},{dim:true});
+ $('helpEx').innerHTML=card({s:2,r:1})+card({s:2,r:9},{win:true})+card({s:3,r:10},{dim:true});
+ $('helpGoods').innerHTML=GOODS.map(function(g){return g.e+' '+g.n;}).join(', ');
  $('btn-newgame').onclick=function(){$('endOv').hidden=true;$('startOv').hidden=false;};
  Array.prototype.forEach.call(document.querySelectorAll('#startOv .modebtn'),function(b){b.onclick=function(){startGame(b.dataset.mode);};});
  $('histBtn').onclick=function(){if(G)openHistory();};
@@ -529,7 +597,8 @@ img.px{image-rendering:pixelated;display:block}
   for(var i=0;i<4;i++){SEATLDR[i]=toServer(i);NAMES[i]=LEADERS[SEATLDR[i]].nm;SUBS[i]=i===0?'you':(lp[i].isAI?'AI':(lp[i].name||('P'+(lp[i].id!=null?lp[i].id:'?'))));}
   myLeader=SEATLDR[0];
   if(!G)G={};
-  G.mode=state.mode; G.sizes=modeSizes(state.mode);
+  G.mode=state.mode; G.sizes=state.sizes||modeSizes(state.mode); G.baseLen=state.round.total||G.sizes.length;
+  G.pot=state.pot||0; G.paid=[0,1,2,3].map(function(i){return (state.paid||[0,0,0,0])[toServer(i)];});
   G.ri=state.round.ri; G.size=state.round.size;
   G.start=toLocal(state.opener);
   G.phase=state.phase; G.trump=state.trump; G.trumpCard=state.trumpCard;
@@ -553,6 +622,7 @@ img.px{image-rendering:pixelated;display:block}
   if(!$('logOv').hidden)renderLog();
   G.history=(state.history||[]).map(function(h){return {ri:h.ri,size:h.size,
     deltas:[0,1,2,3].map(function(i){return h.deltas[toServer(i)];}),
+    fees:[0,1,2,3].map(function(i){return (h.fees||[0,0,0,0])[toServer(i)];}),
     totals:[0,1,2,3].map(function(i){return h.totals[toServer(i)];}),
     bids:[0,1,2,3].map(function(i){return h.bids[toServer(i)];}),
     won:[0,1,2,3].map(function(i){return h.won[toServer(i)];})};});
@@ -568,10 +638,11 @@ img.px{image-rendering:pixelated;display:block}
    mpLastTrickSeq=pt.seq;
    var wl=toLocal(pt.winner);
    var wc=(pt.plays.filter(function(x){return x.seat===pt.winner;})[0]||{}).card;
-   flash(nmYou(wl),(wl===0?'You close':nm(wl)+' closes')+' the deal'+(wc?' with '+GOODS[wc.s].e+' '+(wc.r*10)+'%':'')+'.');
+   flash(nmYou(wl),(wl===0?'You close':nm(wl)+' closes')+' the deal'+(wc?' with '+GOODS[wc.s].n+' '+(wc.r*10)+'%':'')+'.');
    snd(wl===0?'reward':'play');
    var b3=$('boxPlay');if(b3){b3.classList.remove('trickwon');void b3.offsetWidth;b3.classList.add('trickwon');}
   }
+  if((state.tiebreak||0)>mpLastTb&&state.status==='playing'){mpLastTb=state.tiebreak;showTieBreak(state.tiebreak,state.round.size,true);}
   if(state.status==='finished'&&state.result)mpShowResult(state.result);
  }
  function mpDecide(state,seat){
@@ -582,13 +653,14 @@ img.px{image-rendering:pixelated;display:block}
  }
  function mpShowResult(result){
   if(mpResultShown)return; mpResultShown=true;
-  var order=result.players.map(function(p){return {seat:p.playerId,score:p.finalScore,name:LEADERS[p.playerId%4].nm+(p.playerId===mySeat?' (you)':(p.isAI?'':' · '+(p.name||'')))};}).sort(function(a,b){return b.score-a.score;});
-  var youWon=result.winner===mySeat;
+  var order=result.players.map(function(p){return {seat:p.playerId,score:p.finalScore,place:p.place!=null?p.place:0,paid:p.paid||0,pay:p.payout||0,name:LEADERS[p.playerId%4].nm+(p.playerId===mySeat?' (you)':(p.isAI?'':' · '+(p.name||'')))};}).sort(function(a,b){return a.place-b.place||b.score-a.score;});
+  var co=order.filter(function(o){return o.place===0;});
+  var youWon=co.length===1&&result.winner===mySeat;
   var backBtn='<button class="btn alt" id="mpback">← Back to Arcade</button>';
   var againBtn=window.__presinaRematch?'<button class="btn" id="mpagain" style="background:var(--gold);color:#20160a;font-weight:800">🔄 Play again</button>':'';
-  $('endSheet').innerHTML='<h1>'+(youWon?'🏆 You win the auction!':order[0].name+' wins the auction')+'</h1>'+
-    '<div style="color:var(--mut);font-size:.9rem;margin:-.3rem 0 .2rem">'+(MODE_NAMES[result.mode]||result.mode)+' · online</div>'+
-    '<table><tr><th style="text-align:left">Final standing</th><th>Points</th></tr>'+order.map(function(o,i){return '<tr'+(o.seat===mySeat?' class="me"':'')+'><td class="name">'+medal(i)+' <div class="ava">'+img(LEADERS[o.seat%4].id,2)+'</div>'+o.name+'</td><td><b>'+o.score+'</b></td></tr>';}).join('')+'</table>'+
+  $('endSheet').innerHTML='<h1>'+(co.length>1?'🤝 '+co.map(function(o){return o.name;}).join(' and ')+' share the win':youWon?'🏆 You win the auction!':order[0].name+' wins the auction')+'</h1>'+
+    '<div style="color:var(--mut);font-size:.9rem;margin:-.3rem 0 .2rem">'+(MODE_NAMES[result.mode]||result.mode)+' · online'+(result.tiebreaks?' · <b style="color:var(--bad)">'+result.tiebreaks+' tie break'+(result.tiebreaks>1?'s':'')+'</b>':'')+'</div>'+
+    endTable(order.map(function(o){return {nm:o.name,ava:'<div class="ava">'+img(LEADERS[o.seat%4].id,2)+'</div>',me:o.seat===mySeat,dp:o.score,place:o.place,paid:o.paid,pay:o.pay};}),result.pot||0,result.house||0)+
     '<div style="margin-top:1.2rem;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">'+againBtn+backBtn+'</div>';
   $('endOv').hidden=false;snd(youWon?'reward':'draw');
   if($('mpagain'))$('mpagain').onclick=function(){var b=$('mpagain');b.disabled=true;b.textContent='Restarting the table…';
@@ -599,7 +671,7 @@ img.px{image-rendering:pixelated;display:block}
  // (Kept under the __presina name: the relay host and the testbed are shared with Presina.)
  window.__presina={
   attachNet:function(n){net=n;},
-  setStarted:function(seat){mySeat=seat;rvr=true;mpResultShown=false;mpReveal=-1;mpLastTrickSeq=0;$('startOv').hidden=true;$('endOv').hidden=true;$('rouletteOv').hidden=true;},
+  setStarted:function(seat){mySeat=seat;rvr=true;mpResultShown=false;mpReveal=-1;mpLastTrickSeq=0;mpLastTb=0;$('startOv').hidden=true;$('endOv').hidden=true;$('rouletteOv').hidden=true;},
   applyServerState:mpApply,
   onFinished:function(result){if(result)mpShowResult(result);},
   onRematch:function(){mpResultShown=false;$('endOv').hidden=true;},
