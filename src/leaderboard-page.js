@@ -32,7 +32,8 @@ export function leaderboardPage(data, account) {
     ? `<p class="you">Playing as <b>${esc(account.name)}</b><button class="fork" data-nick-edit="${esc(account.name)}">CHANGE NICKNAME</button></p><script src="/nick.js"></script>`
     : account ? '<script src="/nick.js"></script>' : '';
   const body = `<p class="lead">Top 50 per game. Sign in from any game to get on the board.</p>${you}
+${board('Tariff Wars', data.tariff_wars, [['won', 'GAMES WON'], ['margin_total', 'MARGIN OVER RUNNER-UP'], ['games', 'GAMES']], me)}
 ${board('Wallop', data.wallop, [['teeth', 'TEETH'], ['noise', 'NOISE'], ['battles', 'BATTLES']], me)}
-${board('Tariff Wars', data.tariff_wars, [['won', 'GAMES WON'], ['margin_total', 'MARGIN OVER RUNNER-UP'], ['games', 'GAMES']], me)}`;
+${board('Nuclear Negotiations', data.nuclear_negotiations, [['best', 'LONGEST RUN (MOVES)'], ['games', 'GAMES']], me)}`;
   return page('Leaderboard', body, 'Arcade · leaderboard');
 }

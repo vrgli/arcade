@@ -28,12 +28,16 @@ export class Accounts {
       account_id TEXT PRIMARY KEY, games INTEGER DEFAULT 0, won INTEGER DEFAULT 0,
       margin_total INTEGER DEFAULT 0, best_margin INTEGER DEFAULT 0, updated TEXT
     )`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS nuclear_negotiations (
+      account_id TEXT PRIMARY KEY, best INTEGER DEFAULT 0, games INTEGER DEFAULT 0, updated TEXT
+    )`);
   }
 
   one(q, ...a) { return this.sql.exec(q, ...a).toArray()[0] || null; }
   account(id) { return this.one(`SELECT * FROM accounts WHERE id=?`, id); }
   wallop(id) { return this.one(`SELECT * FROM wallop WHERE account_id=?`, id); }
   tw(id) { return this.one(`SELECT * FROM tariff_wars WHERE account_id=?`, id); }
+  nn(id) { return this.one(`SELECT * FROM nuclear_negotiations WHERE account_id=?`, id); }
 
   async fetch(req) {
     const url = new URL(req.url);
@@ -60,7 +64,7 @@ export class Accounts {
     if (p === '/account') {
       const id = url.searchParams.get('id') || '';
       const account = this.account(id);
-      return Response.json(account ? { account, wallop: this.wallop(id), tariff_wars: this.tw(id) } : { account: null });
+      return Response.json(account ? { account, wallop: this.wallop(id), tariff_wars: this.tw(id), nuclear_negotiations: this.nn(id) } : { account: null });
     }
 
     // Wallop is a client-side simulation; the reported balances are taken as-is
@@ -92,6 +96,18 @@ export class Accounts {
       return Response.json({ tariff_wars: this.tw(id) });
     }
 
+    // One finished Nuclear Negotiations run: moves survived before the nuke.
+    if (p === '/nn/result' && req.method === 'POST') {
+      const id = String(body.accountId || '');
+      if (!this.account(id)) return bad('no such account');
+      const moves = int(body.moves);
+      this.sql.exec(
+        `INSERT INTO nuclear_negotiations (account_id,best,games,updated) VALUES (?,?,1,?)
+         ON CONFLICT(account_id) DO UPDATE SET games=games+1, best=MAX(best, excluded.best), updated=excluded.updated`,
+        id, moves, now());
+      return Response.json({ nuclear_negotiations: this.nn(id) });
+    }
+
     if (p === '/leaderboard') {
       const rows = (q) => this.sql.exec(q).toArray();
       return Response.json({
@@ -99,6 +115,8 @@ export class Accounts {
                       ORDER BY w.teeth DESC, w.noise DESC LIMIT 50`),
         tariff_wars: rows(`SELECT a.id, a.name, a.avatar, t.won, t.margin_total, t.games FROM tariff_wars t JOIN accounts a ON a.id=t.account_id
                            ORDER BY t.won DESC, t.margin_total DESC LIMIT 50`),
+        nuclear_negotiations: rows(`SELECT a.id, a.name, a.avatar, n.best, n.games FROM nuclear_negotiations n JOIN accounts a ON a.id=n.account_id
+                                    WHERE n.best>0 ORDER BY n.best DESC, n.updated ASC LIMIT 50`),
       });
     }
 

@@ -89,7 +89,7 @@ export default {
     if (p === '/api/me') {
       const s = await getSession(req, env);
       const d = s ? await acct(env, '/account?id=' + s.accountId) : { account: null };
-      return Response.json({ account: d.account || null, wallop: d.wallop || null, tariff_wars: d.tariff_wars || null, providers: providers(env) }, { headers: { 'Cache-Control': 'no-store' } });
+      return Response.json({ account: d.account || null, wallop: d.wallop || null, tariff_wars: d.tariff_wars || null, nuclear_negotiations: d.nuclear_negotiations || null, providers: providers(env) }, { headers: { 'Cache-Control': 'no-store' } });
     }
     if (p === '/api/wallop/sync' && req.method === 'POST') {
       const s = await getSession(req, env);
@@ -103,6 +103,12 @@ export default {
       const b = await req.json().catch(() => ({}));
       return Response.json(await acct(env, '/tw/result', { accountId: s.accountId, won: !!b.won, margin: b.margin }));
     }
+    if (p === '/api/nn/result' && req.method === 'POST') {
+      const s = await getSession(req, env);
+      if (!s) return Response.json({ error: 'sign in first' }, { status: 401 });
+      const b = await req.json().catch(() => ({}));
+      return Response.json(await acct(env, '/nn/result', { accountId: s.accountId, moves: b.moves }));
+    }
     if (p === '/api/rename' && req.method === 'POST') {
       const s = await getSession(req, env);
       if (!s) return Response.json({ error: 'sign in first' }, { status: 401 });
@@ -113,7 +119,7 @@ export default {
       const data = await acct(env, '/leaderboard');
       if (p === '/leaderboard.json') {
         const strip = (rows) => rows.map(({ id, ...r }) => r);
-        return Response.json({ wallop: strip(data.wallop), tariff_wars: strip(data.tariff_wars) });
+        return Response.json({ wallop: strip(data.wallop), tariff_wars: strip(data.tariff_wars), nuclear_negotiations: strip(data.nuclear_negotiations || []) });
       }
       const s = await getSession(req, env);
       const me = s ? (await acct(env, '/account?id=' + s.accountId)).account : null;

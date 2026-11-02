@@ -12,6 +12,8 @@
   var STAGES = [{ upto: 5, ms: 5000, label: '5 SECONDS A MOVE' }, { upto: 10, ms: 3000, label: 'HURRY UP · 3 SECONDS A MOVE' }, { upto: Infinity, ms: 1000, label: 'PANIC · 1 SECOND A MOVE' }];
   try { best = parseInt(localStorage.getItem('nn-best'), 10) || 0; } catch (e) {}
   $('best').textContent = best;
+  // Signed in: the account's longest run wins over this browser's if it is longer.
+  try { fetch('/api/me', { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (d) { var b = d.nuclear_negotiations && d.nuclear_negotiations.best; if (b > best) { best = b; $('best').textContent = best; try { localStorage.setItem('nn-best', best); } catch (e) {} } }).catch(function () {}); } catch (e) {}
   $('btnSound').textContent = SND.on ? '🔊' : '🔇';
 
   function pos(el, r, deg) { var a = deg * Math.PI / 180; el.style.left = (50 + r * Math.cos(a)) + '%'; el.style.top = (50 + r * Math.sin(a)) + '%'; }
@@ -134,6 +136,8 @@
     if (G.moves > best) { best = G.moves; $('best').textContent = best; try { localStorage.setItem('nn-best', best); } catch (e) {} }
     status('');
     if (window.vgTrack) vgTrack('nn_over', { moves: G.moves, seed: G.seed });
+    // Signed in: the run counts on the leaderboard. Guests get a 401 and keep the local best only.
+    try { fetch('/api/nn/result', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ moves: G.moves }) }).catch(function () {}); } catch (e) {}
   }
 
   // ── chrome ──
