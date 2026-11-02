@@ -1,0 +1,22 @@
+# The arcade's old address. Once the play.vrg.li sign-in callbacks are registered,
+# this Worker takes the arcade.vrg.li custom domains over from vrg-arcade and
+# sends every visitor to play.vrg.li. Deploy from this directory:
+#   npx wrangler deploy --env uat   (uat.arcade.vrg.li -> uat.play.vrg.li)
+#   npx wrangler deploy             (arcade.vrg.li -> play.vrg.li)
+# and drop the matching arcade.vrg.li route from ../wrangler.toml in the same change.
+name = "vrg-arcade-legacy"
+main = "index.js"
+compatibility_date = "2026-01-01"
+workers_dev = false
+routes = [{ pattern = "arcade.vrg.li", custom_domain = true }]
+
+[vars]
+TARGET = "https://play.vrg.li"
+
+[env.uat]
+name = "vrg-arcade-legacy-uat"
+workers_dev = false
+routes = [{ pattern = "uat.arcade.vrg.li", custom_domain = true }]
+
+[env.uat.vars]
+TARGET = "https://uat.play.vrg.li"

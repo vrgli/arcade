@@ -5,7 +5,7 @@ const esc = (v) => String(v == null ? '' : v).replace(/[&<>"]/g, (c) => ({ '&': 
 // Bare branded page shell, shared with the sign-in notices in auth.js.
 export function page(title, body, app = 'Arcade') {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(title)} · arcade.vrg.li</title><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/arcade.css">
+<title>${esc(title)} · play.vrg.li</title><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/arcade.css">
 <style>.av{width:24px;height:24px;border-radius:50%;object-fit:cover;background:var(--panel);border:1px solid var(--line);vertical-align:middle;margin-right:10px}
 .av.i{display:inline-flex;align-items:center;justify-content:center;font:700 11px/1 var(--mono);color:var(--yl)}
 td.p{white-space:nowrap}tr.me td{background:rgba(255,212,0,.08)}tr.me td.p{color:var(--yl)}td.n{color:var(--mute);width:36px}</style></head>

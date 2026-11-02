@@ -1,4 +1,4 @@
-/* arcade.vrg.li — VRG brand: near-black, yellow, plain sans, mono labels. */
+/* play.vrg.li — VRG brand: near-black, yellow, plain sans, mono labels. */
 :root{--bg:#0f1115;--panel:#16191f;--line:#23262d;--ink:#e8eaed;--mute:#8b9098;--yl:#ffd400;--sans:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Helvetica,Arial,sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans)}
 a{color:inherit}

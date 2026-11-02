@@ -3,7 +3,7 @@ main = "src/index.js"
 compatibility_date = "2026-01-01"
 workers_dev = false
 
-routes = [{ pattern = "arcade.vrg.li", custom_domain = true }]
+routes = [{ pattern = "play.vrg.li", custom_domain = true }, { pattern = "play.vrg.li", custom_domain = true }]
 
 [assets]
 directory = "public"
@@ -34,13 +34,13 @@ class_name = "Accounts"
 tag = "v3"
 new_sqlite_classes = ["Accounts"]
 
-# ── UAT: uat.arcade.vrg.li, deployed from the `uat` branch ──────────────────
+# ── UAT: uat.play.vrg.li, deployed from the `uat` branch ──────────────────
 # Its own Worker, so its own Durable Objects (tables, accounts, statistics) and
 # its own secrets. `ARCADE_ENV` switches the UAT marker on in the pages.
 [env.uat]
 name = "vrg-arcade-uat"
 workers_dev = false
-routes = [{ pattern = "uat.arcade.vrg.li", custom_domain = true }]
+routes = [{ pattern = "uat.play.vrg.li", custom_domain = true }, { pattern = "uat.play.vrg.li", custom_domain = true }]
 
 [env.uat.vars]
 ARCADE_ENV = "uat"

@@ -11,7 +11,7 @@ for g in tariff-wars wallop nuclear-negotiations; do
 # $g — a VRG game
 
 Free to copy, remix and republish under LICENSE.md. The one condition: keep a visible
-"A VRG game" credit linking to https://arcade.vrg.li.
+"A VRG game" credit linking to https://play.vrg.li.
 
 - \`game/\` is the browser client; open \`game/index.html\` from any static server.
 $( [ "$g" = tariff-wars ] && echo '- `relay/` is the multiplayer table server (a Cloudflare Durable Object over plain WebSockets); the client expects it at `/mp-socket`.' )

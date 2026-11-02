@@ -41,7 +41,7 @@ export async function getSession(req, env) {
 // user(token, form) → { subject, name, avatar }. `form` is the callback's POST
 // body (Apple only). Fetch errors propagate and become the 'failed' page.
 const get = async (u, token, extra = {}) => {
-  const r = await fetch(u, { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json', 'User-Agent': 'arcade.vrg.li', ...extra } });
+  const r = await fetch(u, { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json', 'User-Agent': 'play.vrg.li', ...extra } });
   if (!r.ok) throw new Error(`${u} → ${r.status}`);
   return r.json();
 };
@@ -131,7 +131,7 @@ export async function handleAuth(req, env, url) {
 
   try {
     const body = new URLSearchParams({ client_id: clientId(env, name), client_secret: await clientSecret(env, name), code: form.code, grant_type: 'authorization_code', redirect_uri: callback });
-    const r = await fetch(prov.token, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json', 'User-Agent': 'arcade.vrg.li' }, body });
+    const r = await fetch(prov.token, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json', 'User-Agent': 'play.vrg.li' }, body });
     const tok = await r.json();
     if (!r.ok || tok.error) throw new Error(tok.error_description || tok.error || `token ${r.status}`);
     const u = await prov.user(tok, form);

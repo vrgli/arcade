@@ -1,4 +1,4 @@
-// arcade.vrg.li play statistics — pseudonymous, no cookies, no account.
+// play.vrg.li play statistics — pseudonymous, no cookies, no account.
 // What it sends is listed on /privacy. A random id lives in localStorage so
 // returning players can be told apart; clearing site data resets it.
 (function () {

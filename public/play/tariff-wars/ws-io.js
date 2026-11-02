@@ -1,4 +1,4 @@
-// Socket.IO-shaped client over a plain WebSocket, for the arcade.vrg.li relay.
+// Socket.IO-shaped client over a plain WebSocket, for the play.vrg.li relay.
 // mp-client.js calls io(), socket.on(ev, fn) and socket.emit(ev, data, ack) — that
 // is the whole surface it needs. The connection is opened lazily on the first
 // mp:create / mp:join, because the table code decides which server object the

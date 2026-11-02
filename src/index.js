@@ -1,4 +1,4 @@
-// arcade.vrg.li — a personal arcade on Cloudflare Workers.
+// play.vrg.li — a personal arcade on Cloudflare Workers.
 // Static client from ./public (Workers Assets); multiplayer tables are Durable
 // Objects (see room.js), one per 4-letter table code.
 import { Room } from './room.js';
@@ -30,6 +30,11 @@ async function record(env, req, e) {
   await env.STATS.get(env.STATS.idFromName('arcade')).fetch('https://stats/ingest', { method: 'POST', body: JSON.stringify(ev) });
 }
 
+// The arcade moved from arcade.vrg.li to play.vrg.li. The old host (legacy/)
+// hands a browser's saved settings over in the fragment #vgcarry=<base64 JSON>;
+// keys already set here win, then the fragment is wiped from the address bar.
+const CARRY_IN = `(function(){try{var m=location.hash.match(/(^#|&)vgcarry=([^&]*)/);if(!m)return;var d=JSON.parse(decodeURIComponent(escape(atob(m[2].replace(/-/g,'+').replace(/_/g,'/')))));for(var k in d)if(localStorage.getItem(k)===null)localStorage.setItem(k,d[k]);var h=location.hash.replace(m[0],'').replace(/^#&/,'#');history.replaceState(null,'',location.pathname+location.search+(h==='#'?'':h));}catch(e){}})();`;
+
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O, 1/I
 function makeCode() {
   const b = crypto.getRandomValues(new Uint8Array(4));
@@ -42,7 +47,7 @@ export default {
     const p = url.pathname;
 
     // Environment marker: UAT pages show a banner and stay out of search engines.
-    if (p === '/env.js') return new Response(`window.ARCADE_ENV=${JSON.stringify(env.ARCADE_ENV || 'production')};` + (env.ARCADE_ENV === 'uat' ? `document.addEventListener('DOMContentLoaded',function(){var b=document.createElement('div');b.textContent='UAT · staging copy · nothing here is permanent';b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:2147483200;background:#ffd400;color:#111;font:800 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.14em;text-align:center;padding:5px 8px;pointer-events:none';document.body.appendChild(b);});` : ''), { headers: { 'Content-Type': 'application/javascript', 'Cache-Control': 'no-store' } });
+    if (p === '/env.js') return new Response(`window.ARCADE_ENV=${JSON.stringify(env.ARCADE_ENV || 'production')};` + CARRY_IN + (env.ARCADE_ENV === 'uat' ? `document.addEventListener('DOMContentLoaded',function(){var b=document.createElement('div');b.textContent='UAT · staging copy · nothing here is permanent';b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:2147483200;background:#ffd400;color:#111;font:800 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.14em;text-align:center;padding:5px 8px;pointer-events:none';document.body.appendChild(b);});` : ''), { headers: { 'Content-Type': 'application/javascript', 'Cache-Control': 'no-store' } });
     if (p === '/robots.txt') return new Response(env.ARCADE_ENV === 'uat' ? 'User-agent: *\nDisallow: /\n' : 'User-agent: *\nAllow: /\n', { headers: { 'Content-Type': 'text/plain' } });
 
     if (p === '/mp-socket') {
