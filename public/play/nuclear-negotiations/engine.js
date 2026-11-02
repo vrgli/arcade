@@ -16,6 +16,10 @@
     { id: 'modi', nm: 'Modi' }, { id: 'bibi', nm: 'Bibi' }, { id: 'obama', nm: 'Obama' }, { id: 'mbs', nm: 'MBS' },
   ];
   var OUTER = ['A', 'B', 'D', 'C'], INNER = ['1', '2', '4', '3'];
+  // The clock tightens as the game goes on: 5 s for the first five moves, 3 s for the next five, then 1 s.
+  var STAGES = [{ upto: 5, ms: 5000, label: '5 SECONDS A MOVE' }, { upto: 10, ms: 3000, label: 'HURRY UP · 3 SECONDS A MOVE' }, { upto: Infinity, ms: 1000, label: 'PANIC · 1 SECOND A MOVE' }];
+  // Escalation: after five moves of panic a third leader goes rogue. Add { at: 20, title: 'A FOURTH ROGUE' } to end every game.
+  var ESCALATE = [{ at: 15, title: 'A THIRD ROGUE' }];
 
   // Small seeded PRNG (mulberry32) so a game can be replayed from its seed.
   function rng(seed) { var a = seed >>> 0; return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
@@ -25,7 +29,7 @@
     var r = rng(seed), ids = LEADERS.map(function (l) { return l.id; });
     for (var i = ids.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = ids[i]; ids[i] = ids[j]; ids[j] = t; }
     var ro = Math.floor(r() * 4), ri = Math.floor(r() * 3); if (ri >= ro) ri++;   // never facing
-    return { seed: seed, outer: ids.slice(0, 4), inner: ids.slice(4, 8), rogue: {}, rogueOuter: ro, rogueInner: ri, moves: 0, log: [], over: false, turns: 0 };
+    return { seed: seed, outer: ids.slice(0, 4), inner: ids.slice(4, 8), rogue: {}, rogueOuter: ro, rogueInner: ri, moves: 0, ks: [], log: [], over: false, turns: 0 };
   }
   // Rogue reveal: fix which two leaders are rogue (the leaders carry it, not the seats).
   function reveal(g) { g.rogue[g.outer[g.rogueOuter]] = true; g.rogue[g.inner[g.rogueInner]] = true; g.log.push('reveal ' + rogues(g)); return g; }
@@ -47,15 +51,16 @@
     var line = notation(g, k);
     var t = g.outer[k]; g.outer[k] = g.inner[k]; g.inner[k] = t;             // the swap
     g.outer = [g.outer[3], g.outer[0], g.outer[1], g.outer[2]];               // outer turns one seat clockwise
-    g.turns++; g.moves++;
+    g.turns++; g.moves++; g.ks.push(k);
     var w = war(g); g.over = w >= 0;
     g.log.push(g.moves + '. ' + line + ' -> ' + (g.over ? 'NUCLEAR WAR at ' + OUTER[w] + '/' + INNER[w] : rogues(g)));
     return { move: line, war: w };
   }
   // Escalation: one more leader goes rogue. Never one already facing a rogue (instant war), and
   // when possible one that still leaves the player a safe move. Returns the seat label, or null.
+  // The pick is seeded by the game and the move number, so a replay picks the same leader.
   function escalate(g, r) {
-    r = r || Math.random;
+    r = r || rng((g.seed ^ Math.imul(g.moves + 1, 0x9E3779B1)) >>> 0);
     var c = [], k;
     for (k = 0; k < 4; k++) {
       if (!g.rogue[g.outer[k]] && !g.rogue[g.inner[k]]) { c.push({ id: g.outer[k], lbl: OUTER[k] }); c.push({ id: g.inner[k], lbl: INNER[k] }); }
@@ -66,9 +71,20 @@
     g.rogue[pick.id] = true; g.log.push('escalation ' + pick.lbl + '* -> ' + rogues(g));
     return pick;
   }
+  // Replay a finished game from its seed and the positions played (g.ks). Returns the final
+  // state, or null if a move was illegal, the game went on after the war, or never ended.
+  function replay(seed, ks) {
+    if (!Array.isArray(ks)) return null;
+    var g = reveal(newGame(seed >>> 0));
+    for (var i = 0; i < ks.length; i++) {
+      if (g.over || !apply(g, ks[i])) return null;
+      if (!g.over && ESCALATE.some(function (e) { return e.at === g.moves; })) escalate(g);
+    }
+    return g.over ? g : null;
+  }
   function clone(g) { return JSON.parse(JSON.stringify(g)); }
   function logText(g) { return ['Nuclear Negotiations · seed ' + g.seed, 'outer A ' + g.outer[0] + ' B ' + g.outer[1] + ' D ' + g.outer[2] + ' C ' + g.outer[3] + ' (now)', 'inner 1 ' + g.inner[0] + ' 2 ' + g.inner[1] + ' 4 ' + g.inner[2] + ' 3 ' + g.inner[3]].concat(g.log).join('\n'); }
 
-  var NN = { LEADERS: LEADERS, OUTER: OUTER, INNER: INNER, newGame: newGame, reveal: reveal, escalate: escalate, legal: legal, apply: apply, fatal: fatal, war: war, rogues: rogues, notation: notation, logText: logText, name: function (id) { for (var i = 0; i < LEADERS.length; i++) if (LEADERS[i].id === id) return LEADERS[i].nm; return id; } };
+  var NN = { LEADERS: LEADERS, OUTER: OUTER, INNER: INNER, STAGES: STAGES, ESCALATE: ESCALATE, newGame: newGame, replay: replay, reveal: reveal, escalate: escalate, legal: legal, apply: apply, fatal: fatal, war: war, rogues: rogues, notation: notation, logText: logText, name: function (id) { for (var i = 0; i < LEADERS.length; i++) if (LEADERS[i].id === id) return LEADERS[i].nm; return id; } };
   if (root.exports) root.exports = NN; else root.NN = NN;
 })(typeof module !== 'undefined' ? module : window);

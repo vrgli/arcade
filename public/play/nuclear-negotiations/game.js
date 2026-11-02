@@ -6,10 +6,8 @@
   var ANG = [225, 315, 45, 135];                 // positions 0..3 clockwise from top-left, degrees (0 = right, 90 = down)
   var R_OUT = 41, R_IN = 21;                      // seat ring radii, % of the table
   var IDLE = { don: 'bob', vlad: 'tilt', ursula: 'sway', zel: 'nod', modi: 'breathe', bibi: 'shake', obama: 'lean', mbs: 'float' };
-  // The clock tightens as the game goes on: 5 s for the first five moves, 3 s for the next five, then 1 s.
-  // Escalation: after five moves of panic a third leader goes rogue. Add { at: 20, title: 'A FOURTH ROGUE' } to end every game.
-  var ESCALATE = [{ at: 15, title: 'A THIRD ROGUE' }];
-  var STAGES = [{ upto: 5, ms: 5000, label: '5 SECONDS A MOVE' }, { upto: 10, ms: 3000, label: 'HURRY UP · 3 SECONDS A MOVE' }, { upto: Infinity, ms: 1000, label: 'PANIC · 1 SECOND A MOVE' }];
+  var ESCALATE = NN.ESCALATE, STAGES = NN.STAGES;   // the clock and the escalations are rules: engine.js
+  var dealing = false;
   try { best = parseInt(localStorage.getItem('nn-best'), 10) || 0; } catch (e) {}
   $('best').textContent = best;
   // Signed in: the account's longest run wins over this browser's if it is longer.
@@ -67,10 +65,19 @@
   function stopClock() { clearInterval(tick); $('centre').classList.remove('clock', 'hot'); $('centre').textContent = ''; }
 
   // ── the game ──
+  // Signed in, the server deals the seed and later replays the moves before a run reaches the
+  // leaderboard. Guests, a ?seed= practice table or a failed call play unranked with a local seed.
   function deal() {
+    if (dealing) return; dealing = true;
     SND.unlock(); SND.play('deal');
-    var seed = null, m = location.search.match(/[?&]seed=(\d+)/); if (m && !G) seed = +m[1];
-    G = NN.newGame(seed); rot = 0; busy = true; stage = -1; stopClock();
+    var m = location.search.match(/[?&]seed=(\d+)/);
+    if (m && !G) return begin(+m[1], false);
+    fetch('/api/nn/start', { method: 'POST', credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { begin(d && d.seed != null ? d.seed : null, !!(d && d.seed != null)); }, function () { begin(null, false); });
+  }
+  function begin(seed, ranked) {
+    dealing = false;
+    G = NN.newGame(seed); G.ranked = ranked; rot = 0; busy = true; stage = -1; stopClock();
     $('seed').textContent = G.seed; $('nuke').hidden = true; $('banner').hidden = true;
     closeSheets(); $('start').hidden = true;
     render(G); paintLog();
@@ -136,8 +143,8 @@
     if (G.moves > best) { best = G.moves; $('best').textContent = best; try { localStorage.setItem('nn-best', best); } catch (e) {} }
     status('');
     if (window.vgTrack) vgTrack('nn_over', { moves: G.moves, seed: G.seed });
-    // Signed in: the run counts on the leaderboard. Guests get a 401 and keep the local best only.
-    try { fetch('/api/nn/result', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ moves: G.moves }) }).catch(function () {}); } catch (e) {}
+    // A ranked run sends the positions played; the server replays them from the seed it dealt.
+    if (G.ranked) fetch('/api/nn/result', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ks: G.ks }) }).catch(function () {});
   }
 
   // ── chrome ──

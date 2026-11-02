@@ -6,7 +6,21 @@ const LIMIT = 10_000_000;
 const now = () => new Date().toISOString();
 const int = (v) => Math.min(LIMIT, Math.max(0, Number.isFinite(Number(v)) ? Math.trunc(Number(v)) : 0));
 const cleanName = (v) => String(v == null ? '' : v).replace(/[<>]/g, '').trim().slice(0, 24);
+import NN from '../public/play/nuclear-negotiations/engine.js';
 const hex16 = () => Array.from(crypto.getRandomValues(new Uint8Array(8)), (b) => b.toString(16).padStart(2, '0')).join('');
+
+// How long a Nuclear Negotiations run of n moves can take, from the deal to the nuke. game.js
+// spends 3.9 s on the countdown and reveal and about 1.4 s animating each move, plus 1.3 s per
+// escalation; on top of that each move has its clock. The bounds are loose on purpose: the floor
+// stops a run that was never played, the ceiling stops one worked out at leisure off the clock.
+const nnEscalations = (n) => NN.ESCALATE.filter((e) => e.at < n).length;
+const nnClock = (m) => NN.STAGES.find((s) => m < s.upto).ms;
+const nnMinMs = (n) => 3000 + 1000 * n;
+function nnMaxMs(n) {
+  let t = 3900 + 1300 * nnEscalations(n) + 60_000;
+  for (let m = 0; m < n; m++) t += nnClock(m) + 2500;
+  return t;
+}
 
 export class Accounts {
   constructor(state) {
@@ -31,13 +45,16 @@ export class Accounts {
     this.sql.exec(`CREATE TABLE IF NOT EXISTS nuclear_negotiations (
       account_id TEXT PRIMARY KEY, best INTEGER DEFAULT 0, games INTEGER DEFAULT 0, updated TEXT
     )`);
+    // The seed dealt for the account's game in progress and when (ms). One at a time per account.
+    try { this.sql.exec(`ALTER TABLE nuclear_negotiations ADD COLUMN pending_seed INTEGER`); } catch (e) {}
+    try { this.sql.exec(`ALTER TABLE nuclear_negotiations ADD COLUMN pending_at INTEGER`); } catch (e) {}
   }
 
   one(q, ...a) { return this.sql.exec(q, ...a).toArray()[0] || null; }
   account(id) { return this.one(`SELECT * FROM accounts WHERE id=?`, id); }
   wallop(id) { return this.one(`SELECT * FROM wallop WHERE account_id=?`, id); }
   tw(id) { return this.one(`SELECT * FROM tariff_wars WHERE account_id=?`, id); }
-  nn(id) { return this.one(`SELECT * FROM nuclear_negotiations WHERE account_id=?`, id); }
+  nn(id) { return this.one(`SELECT account_id, best, games, updated FROM nuclear_negotiations WHERE account_id=?`, id); }
 
   async fetch(req) {
     const url = new URL(req.url);
@@ -96,11 +113,31 @@ export class Accounts {
       return Response.json({ tariff_wars: this.tw(id) });
     }
 
-    // One finished Nuclear Negotiations run: moves survived before the nuke.
-    if (p === '/nn/result' && req.method === 'POST') {
+    // Nuclear Negotiations: the server deals the seed, so a run can be replayed and timed.
+    if (p === '/nn/start' && req.method === 'POST') {
       const id = String(body.accountId || '');
       if (!this.account(id)) return bad('no such account');
-      const moves = int(body.moves);
+      const seed = crypto.getRandomValues(new Uint32Array(1))[0];
+      this.sql.exec(
+        `INSERT INTO nuclear_negotiations (account_id,pending_seed,pending_at) VALUES (?,?,?)
+         ON CONFLICT(account_id) DO UPDATE SET pending_seed=excluded.pending_seed, pending_at=excluded.pending_at`,
+        id, seed, Date.now());
+      return Response.json({ seed });
+    }
+
+    // One finished run: the positions played (ks). Replayed from the dealt seed; it counts only
+    // if every move was legal, it ended in war, and it took a humanly possible amount of time.
+    if (p === '/nn/result' && req.method === 'POST') {
+      const id = String(body.accountId || '');
+      const row = this.one(`SELECT pending_seed, pending_at FROM nuclear_negotiations WHERE account_id=?`, id);
+      if (!row || row.pending_seed == null) return bad('no game dealt');
+      this.sql.exec(`UPDATE nuclear_negotiations SET pending_seed=NULL, pending_at=NULL WHERE account_id=?`, id);
+      const ks = Array.isArray(body.ks) && body.ks.length <= 5000 ? body.ks : null;
+      const g = ks && NN.replay(row.pending_seed, ks);
+      if (!g) return bad('replay failed');
+      const took = Date.now() - row.pending_at;
+      if (took < nnMinMs(g.moves) || took > nnMaxMs(g.moves)) return bad('timing');
+      const moves = g.moves;
       this.sql.exec(
         `INSERT INTO nuclear_negotiations (account_id,best,games,updated) VALUES (?,?,1,?)
          ON CONFLICT(account_id) DO UPDATE SET games=games+1, best=MAX(best, excluded.best), updated=excluded.updated`,

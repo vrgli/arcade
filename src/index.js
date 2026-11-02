@@ -103,11 +103,16 @@ export default {
       const b = await req.json().catch(() => ({}));
       return Response.json(await acct(env, '/tw/result', { accountId: s.accountId, won: !!b.won, margin: b.margin }));
     }
+    if (p === '/api/nn/start' && req.method === 'POST') {
+      const s = await getSession(req, env);
+      if (!s) return Response.json({ error: 'sign in first' }, { status: 401 });
+      return Response.json(await acct(env, '/nn/start', { accountId: s.accountId }));
+    }
     if (p === '/api/nn/result' && req.method === 'POST') {
       const s = await getSession(req, env);
       if (!s) return Response.json({ error: 'sign in first' }, { status: 401 });
       const b = await req.json().catch(() => ({}));
-      return Response.json(await acct(env, '/nn/result', { accountId: s.accountId, moves: b.moves }));
+      return Response.json(await acct(env, '/nn/result', { accountId: s.accountId, ks: b.ks }));
     }
     if (p === '/api/rename' && req.method === 'POST') {
       const s = await getSession(req, env);
