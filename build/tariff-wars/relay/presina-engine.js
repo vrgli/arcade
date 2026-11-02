@@ -381,8 +381,8 @@ class Presina {
     for (let p = 0; p < N_SEATS; p++) {
       const hit = this.bids[p] === this.won[p];
       this._log(p, `opened ${this.bids[p]}, closed ${this.won[p]} — `
-        + `${hit ? 'right' : 'wrong'} ${deltas[p] >= 0 ? '+' : ''}${deltas[p]} DP`
-        + (fees[p] ? `, ${fees[p]} GRAMS to the pot` : '') + ` (total ${this.totals[p]}).`);
+        + `${hit ? 'right' : 'wrong'} ${deltas[p] >= 0 ? '+' : ''}${deltas[p]} deal${Math.abs(deltas[p]) === 1 ? '' : 's'}`
+        + (fees[p] ? `, 💰 ${fees[p]} Bribe` : '') + ` (total ${this.totals[p]}).`);
     }
     this.ri += 1;
     this.start = (this.start + 1) % N_SEATS; // lead passes to the next seat each hand
@@ -406,7 +406,7 @@ class Presina {
     let winner = 0;
     for (let p = 1; p < N_SEATS; p++) if (this.totals[p] > this.totals[winner]) winner = p;
     const pot = settlePot(this.totals, this.pot);
-    this._logSys(`${this._nm(winner)} wins the game with ${this.totals[winner]} Deal Points`
+    this._logSys(`${this._nm(winner)} wins the game with ${this.totals[winner]} deals`
       + ` and ${pot.pay[winner]} GRAMS from a ${this.pot} GRAMS pot.`);
     this.result = {
       winner,

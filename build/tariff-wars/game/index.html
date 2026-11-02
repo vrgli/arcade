@@ -45,7 +45,7 @@ img.gi{width:1.5em;height:auto;vertical-align:-.3em;display:inline-block}
 .pc.pw{border-style:dashed;background:transparent;opacity:.5}
 .back{width:var(--pw);height:var(--pw);border-radius:12px;background:repeating-linear-gradient(45deg,#2b3350,#2b3350 6px,#222a42 6px,#222a42 12px);border:2px solid #3b4260;flex:0 0 auto}
 /* ===== BRIBE POT ===== */
-.potbar{display:flex;align-items:center;gap:14px;border-top:1px solid var(--line);padding-top:10px}
+.potbar{display:flex;align-items:center;gap:12px;border-top:1px solid var(--line);padding-top:10px}.potbar .tl{margin:0;white-space:nowrap}
 .potv{font-size:30px;font-weight:900;color:var(--gold);line-height:1;white-space:nowrap}.potv small{font-size:12px;color:var(--mut);font-weight:800;letter-spacing:.5px}
 .potsplit{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;flex:1}
 .potsplit span{background:var(--pan2);border:1px solid var(--line);border-radius:8px;padding:5px 4px;text-align:center;font-size:12px;font-weight:800;white-space:nowrap}.potsplit span i{display:block;font-style:normal;font-size:10px;color:var(--mut);letter-spacing:.5px}
@@ -67,6 +67,11 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
 .tl{font-size:11px;letter-spacing:.6px;font-weight:800;color:var(--gold);text-align:center;margin-bottom:6px}.tl.mut{color:var(--mut)}
 .idle{width:118px;height:70px;border-radius:12px;border:2px solid #5a6178;background:var(--pan2);display:flex;align-items:center;justify-content:center;gap:6px;font-weight:900;font-size:28px}
 .idle small{font-size:16px;color:var(--mut);font-weight:700}.idle.empty{opacity:.4}
+.idle.potbox{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 10%,var(--pan2));color:var(--gold);min-width:118px;width:auto;padding:0 12px}.idle.potbox small{font-size:11px;letter-spacing:.5px;color:var(--gold);opacity:.8}
+/* card-back icon: stands for proposals (💰 is reserved for the bribe pot) */
+.cbk{display:inline-block;position:relative;width:1em;height:1.1em;vertical-align:-.18em;margin-right:.3em}
+.cbk::before,.cbk::after{content:'';position:absolute;width:.7em;height:.95em;border-radius:.13em;background:repeating-linear-gradient(45deg,#3d4a78 0 .1em,#262e4c .1em .2em);border:.07em solid #9aa6d0;box-sizing:border-box}
+.cbk::before{left:0;top:0}.cbk::after{left:.3em;top:.15em}
 .counter{border-top:1px solid var(--line);padding-top:10px}
 .dots{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;padding:4px 0}
 .dot{width:var(--gdot,46px);height:var(--gdot,46px);border-radius:50%;border:2px dotted var(--line);display:flex;align-items:center;justify-content:center;font-size:calc(var(--gdot,46px)*.52)}
@@ -116,8 +121,13 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
 .chip{width:54px;height:54px;border-radius:12px;border:1px solid var(--line);background:var(--pan2);color:var(--ink);font-weight:800;cursor:pointer;font-size:1.2rem}.chip:hover{border-color:var(--gold);background:#2d2a1e}
 .btn{background:var(--good);color:#053;border:0;padding:.7rem 1.4rem;border-radius:10px;font-weight:800;cursor:pointer;font-size:1rem}.btn.alt{background:#2a2f40;color:var(--ink)}
 .settle{width:100%;gap:10px!important}.settle .bigask{font-size:18px}.felt.st{overflow-y:auto;align-items:safe center}.settle .line{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:100%}
-.settle .sl{background:var(--pan2);border:1px solid var(--line);border-radius:12px;padding:6px 8px;display:flex;flex-direction:column;align-items:center;gap:6px}
-.settle .sl .r{font-size:13px;color:var(--mut)}.settle .sl .d{font-weight:900;font-size:22px}.d.up{color:var(--good)}.d.dn{color:var(--bad)}
+.settle .sl{background:var(--pan2);border:1px solid var(--line);border-top:3px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;align-items:stretch;gap:8px;min-width:0}
+.settle .sl.ok{border-top-color:var(--good)}.settle .sl.ko{border-top-color:var(--bad)}
+.settle .slh{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0}.settle .slh .ava{width:34px;height:34px}.settle .slh b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.settle .vd{font-size:10px;font-weight:900;letter-spacing:.7px;padding:2px 8px;border-radius:20px;white-space:nowrap}.settle .vd.ok{background:var(--good);color:#053}.settle .vd.ko{background:var(--bad);color:#2a0a10}
+.settle .slm{display:grid;grid-template-columns:1fr 1fr;gap:6px}.settle .slm span{background:#0e1118;border:1px solid var(--line);border-radius:8px;padding:4px 2px;font-weight:900;font-size:18px;text-align:center;line-height:1.1}.settle .slm i{display:block;font-style:normal;font-size:9px;font-weight:800;letter-spacing:.7px;color:var(--mut)}
+.settle .sl .d{font-weight:900;font-size:28px;text-align:center;line-height:1}.settle .sl .d small{font-size:12px;letter-spacing:.7px;margin-left:4px}.d.up{color:var(--good)}.d.dn{color:var(--bad)}
+.settle .slb{font-size:13px;font-weight:800;text-align:center;padding:5px 4px;border-radius:8px;white-space:nowrap;color:var(--mut);background:#0e1118}.settle .slb.ko{color:#ffc9cb;background:rgba(255,107,125,.14)}
 #boxPlay.trickwon{animation:trickwon 1.9s ease-out}
 @keyframes trickwon{0%{box-shadow:inset 0 0 0 0 rgba(232,193,90,0)}12%{box-shadow:inset 0 0 0 3px rgba(232,193,90,.95),inset 0 0 46px rgba(232,193,90,.28)}100%{box-shadow:inset 0 0 0 0 rgba(232,193,90,0)}}
 /* ===== MY PROPOSALS ===== */
@@ -225,13 +235,13 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
   <div class="rightcol">
    <div class="seats" id="seats"></div>
    <div class="box" id="boxPlay"><div class="bh" id="tableHead">🤝 THE TABLE</div><div class="bc" id="b3"></div></div>
-   <div class="box" id="boxHand"><div class="bh" id="handHead">💰 MY PROPOSALS</div><div class="fan" id="b1"></div></div>
+   <div class="box" id="boxHand"><div class="bh" id="handHead"><i class="cbk"></i>MY PROPOSALS</div><div class="fan" id="b1"></div></div>
   </div>
  </div>
 </div>
 <div class="overlay" id="histOv" hidden><div class="sheet" style="max-width:640px"><h1 style="font-size:1.3rem">📊 Score history</h1><div class="histwrap" id="histBody"></div><div style="margin-top:1.2rem"><button class="btn" id="histClose">Close</button></div></div></div>
 <div class="overlay" id="logOv" hidden><div class="sheet" style="max-width:560px;text-align:left"><h1 style="font-size:1.3rem;text-align:center">📜 Game log</h1><div class="logwrap" id="logBody"></div><div style="margin-top:1.2rem;text-align:center"><button class="btn" id="logClose">Close</button></div></div></div>
-<div class="overlay" id="startOv"><div class="sheet"><img src="logo.png" alt="Tariff Wars" class="logo"><h1 class="sr">Tariff Wars</h1><p>Donald Trump is auctioning off trade deals among four great leaders. Each round you declare how many deals you'll close, then fight for them proposal by proposal — <b>the highest tariff wins</b>. Guess right to bank Deal Points. Guess wrong and you pay a bribe into the pot that the top three share at the end.</p>
+<div class="overlay" id="startOv"><div class="sheet"><img src="logo.png" alt="Tariff Wars" class="logo"><h1 class="sr">Tariff Wars</h1><p>Donald Trump is auctioning off trade deals among four great leaders. Each round you declare how many deals you'll close, then fight for them proposal by proposal — <b>the highest tariff wins</b>. Guess right to bank deals. Guess wrong and you pay a bribe into the pot that the top three share at the end.</p>
 <p><b>Choose your leader:</b></p><div class="leaders" id="leaders"></div>
 <p><span id="mode-heading"><b>Choose a game mode:</b></span></p><div class="modes">
   <button class="modebtn" data-mode="full"><span class="mn">Full game</span><span class="mseq">1 → 10 → 1</span><span class="mh">19 rounds</span></button>
@@ -247,9 +257,9 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
 <h3>The story</h3>
 <p>Donald Trump is holding an auction. Four leaders — <b>Vlad</b>, <b>Ursula</b>, <b>Modi</b> and <b>Xi</b> — compete to walk away with the most trade deals. You play one of them; the other three are at the table too, as AI or as friends online.</p>
 <h3>Objective</h3>
-<p>Most <b>Deal Points</b> across all rounds wins the auction, and the biggest share of the bribe pot. There is no target to reach — just finish on top.</p>
+<p>Most <b>deals</b> across all rounds wins the auction, and the biggest share of the bribe pot. There is no target to reach — just finish on top.</p>
 <h3>Your proposals</h3>
-<p>Your cards are <b>💰 Proposals</b>: a tariff of 10% to 100% on one of four goods — <span id="helpGoods"></span>. The bar under each good shows its tariff: the fuller and brighter, the stronger. Forty proposals in all, ten per good. <b>The highest tariff wins.</b></p>
+<p>Your cards are <b><i class="cbk"></i>Proposals</b>: a tariff of 10% to 100% on one of four goods — <span id="helpGoods"></span>. The bar under each good shows its tariff: the fuller and brighter, the stronger. Forty proposals in all, ten per good. <b>The highest tariff wins.</b></p>
 <div class="ex" id="helpEx"></div>
 <h3>A round, step by step</h3>
 <p>You pick a mode first, so a game runs 5 to 19 rounds. The number of proposals each leader holds changes every round — from 1 up to 10. Each round: look at your proposals, <b>open your deals</b>, then <b>negotiate</b> them one at a time.</p>
@@ -258,15 +268,15 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
 <h3>Negotiating</h3>
 <p>The opener puts a proposal on the table; its good is the one being negotiated. You must play a proposal on the <b>same good</b> if you have one — if you don't, play anything. The highest tariff on the negotiated good takes the deal — unless a proposal on the Trump good is played: then the highest Trump proposal wins. Whoever closes a deal makes the first proposal of the next one.</p>
 <h3>The Trump Card</h3>
-<p>Each round the Auctioneer flips one proposal; its good becomes <b>Trump</b> for the round. Any Trump proposal beats any proposal on another good. The exception is the 10-proposal round: every proposal is dealt, so nothing is left to flip — no Trump that round. The 💰 Idle Proposals box shows how many proposals stayed out of play.</p>
+<p>Each round the Auctioneer flips one proposal; its good becomes <b>Trump</b> for the round. Any Trump proposal beats any proposal on another good. The exception is the 10-proposal round: every proposal is dealt, so nothing is left to flip — no Trump that round. The <b><i class="cbk"></i>Out of play</b> box shows how many proposals stay face down, unused, this round.</p>
 <h3>Scoring</h3>
-<p><b>Guess right</b> — close exactly the deals you opened — and you bank <b>1 Deal Point per deal closed</b>. Opening 0 and closing 0 is right, but worth 0.</p>
-<p><b>Guess wrong</b> — over or under, punished the same — and you lose <b>1 Deal Point per deal you are off</b>, and pay a <b>5 GRAMS bribe</b> into the pot.</p>
+<p><b>Guess right</b> — close exactly the deals you opened — and you bank <b>+1 deal for every deal closed</b>. Opening 0 and closing 0 is right, but worth 0.</p>
+<p><b>Guess wrong</b> — over or under, punished the same — you lose <b>1 deal for every deal you are off</b>, and pay a <b>💰 5 GRAMS bribe</b> into the pot.</p>
 <h3>The bribe pot</h3>
 <p>At the end the pot is shared by final place: <b>1st 50%</b>, <b>2nd 30%</b>, <b>3rd 15%</b>, 4th nothing; the house keeps 5%. Leaders tied on 2nd, 3rd or 4th split those places' prizes evenly. The pot and its split are shown under the Trump Card all game.</p>
 <h3>Tie break</h3>
 <p>If two or more leaders are tied for 1st when the last round ends, <b>the auction goes on</b>. The rounds keep climbing and falling along the same ladder — after a full game's last 1-proposal round come 2, 3, 4… — one round at a time until a single leader stands on top. Everyone plays every tie-break round, so the leader in 3rd can still steal the win. Wrong guesses keep feeding the pot.</p>
-<p>Your 🤝 Won Deals and the running Deal Points are in the panel on the left; tap 👀 to review the last deal a leader closed.</p>
+<p>Your 🤝 Won Deals and the running deals score are in the panel on the left; tap 👀 to review the last deal a leader closed.</p>
 <div style="text-align:center;margin-top:1.4rem"><button class="btn" id="helpClose">Close</button></div></div></div>
 <div id="arena-note"></div>
 <script src="engine.js"></script><script src="sprites.js"></script><script src="goods.js"></script><script src="arcade-bridge.js"></script>
@@ -356,13 +366,13 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
   for(var p=0;p<4;p++){var turn=G._active===p,opens=G.phase===1&&p===G.start,leads=G.phase===2&&p===G._leader,win=G.phase===2&&G._win===p;
    h+='<div class="seat'+(p===0?' you':'')+(turn?' turn':'')+(win?' win':'')+'"><div class="top">'+ava(p,4)+'<div style="min-width:0"><div class="nm">'+nm(p)+'</div><div class="sub">'+SUBS[p]+'</div></div></div>'+
     '<div class="pills">'+(opens?'<span class="firstseat" title="Opens this round">▶ OPENS</span>':'')+(leads?'<span class="firstpill" title="Leads this deal">★ LEADS</span>':'')+(turn?'<span class="turnpill">'+(G.phase===1?(p===0?'YOU OPEN':'OPENING'):(p===0?'YOUR TURN':'TO PLAY'))+'</span>':'')+'</div>'+
-    '<div class="hand"><div class="bag">💰</div><b>×'+G.hands[p].length+'</b><small>proposals<br>in hand</small></div></div>';}
+    '<div class="hand"><div class="bag"><i class="cbk"></i></div><b>×'+G.hands[p].length+'</b><small>proposals<br>in hand</small></div></div>';}
   $('seats').innerHTML=h;
  }
  function renderHand(playable,led){
   var legal=legalOf(led);
   var cap=G.phase===1?G.size+' proposal'+(G.size===1?'':'s')+' this round':(playable?(led!=null?'follow '+GOODS[led].e+' '+GOODS[led].n+' — off-good proposals are dimmed':'your lead — any proposal'):(G.hands[0].length?G.hands[0].length+' proposal'+(G.hands[0].length===1?'':'s')+' left':'all played'));
-  $('handHead').innerHTML='💰 MY PROPOSALS · <span style="color:var(--mut);font-weight:600">'+cap+'</span>';
+  $('handHead').innerHTML='<i class="cbk"></i>MY PROPOSALS · <span style="color:var(--mut);font-weight:600">'+cap+'</span>';
   $('b1').innerHTML=G.hands[0].length?G.hands[0].map(function(c,i){var lg=legal.some(function(x){return KL.sameCard(x,c);});return card(c,{i:i,leg:playable&&lg,dim:playable&&!lg,play:playable&&lg});}).join(''):'<div class="empty">no proposals left this round</div>';
   if(playable){Array.prototype.forEach.call(document.querySelectorAll('#b1 .pc.play'),function(el){el.onclick=function(){pickCard(+el.dataset.i);};});}
  }
@@ -380,12 +390,13 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
   else {st='under';tx='Short of '+(N-sum)+' 🤝 Deal'+(N-sum>1?'s':'');}
   $('b5').innerHTML='<div class="dealrow"><div><div class="tl">THE AUCTIONEER</div><div class="trumpface">'+img('trump',5)+'</div></div>'+
    '<div><div class="tl">TRUMP CARD</div>'+trump+'</div>'+
-   '<div><div class="tl mut">💰 IDLE PROPOSALS</div><div class="idle'+(idle<=0?' empty':'')+'">💰 <small>×</small>'+idle+'</div></div></div>'+
+   '<div title="Proposals left face down this round"><div class="tl mut"><i class="cbk"></i>OUT OF PLAY</div><div class="idle'+(idle<=0?' empty':'')+'"><i class="cbk"></i><small>×</small>'+idle+'</div></div>'+
+   '<div title="5 GRAMS per wrong guess, shared by the top three at the end"><div class="tl">💰 BRIBE POT</div><div class="idle potbox">'+(G.pot||0)+'<small>GRAMS</small></div></div></div>'+
    potHtml()+
    '<div class="counter"><div class="tl mut">DEAL PROPOSALS COUNTER · <b style="color:var(--ink)">'+sum+'</b> opened of '+N+'</div><div class="dots" style="--gdot:'+Math.max(34,Math.min(46,Math.round(430/N)))+'px">'+dots+'</div><div class="cstat '+st+'">'+tx+'</div></div>';
  }
  function potHtml(){var pot=G.pot||0;
-  return '<div class="potbar"><div><div class="tl" style="text-align:left">💰 BRIBE POT</div><div class="potv">'+pot+' <small>GRAMS</small></div></div>'+
+  return '<div class="potbar"><div class="tl mut">POT SPLIT<br>IF IT ENDED NOW</div>'+
    '<div class="potsplit"><span><i>1ST · 50%</i>'+gm(pot*.5)+'</span><span><i>2ND · 30%</i>'+gm(pot*.3)+'</span><span><i>3RD · 15%</i>'+gm(pot*.15)+'</span><span class="house"><i>HOUSE · 5%</i>'+gm(pot*.05)+'</span></div></div>';}
  function renderTable(){
   var h='';
@@ -422,11 +433,11 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
   var sorted=[0,1,2,3].map(function(p){return {p:p,t:G.totals[p]};}).sort(function(a,b){return b.t-a.t||a.p-b.p;});
   var rankOf={};sorted.forEach(function(r,i){rankOf[r.p]=i;});
   var margin=sorted[0].t-sorted[1].t,tied=margin===0,started=G.history.length>0;
-  var h='<div class="sthead"><span>LEADER</span><span>OPEN DEALS · this round</span><span>DEAL POINTS</span></div>';
+  var h='<div class="sthead"><span>LEADER</span><span>OPEN DEALS · this round</span><span>DEALS</span></div>';
   for(var p=0;p<4;p++){var turn=G._active===p,lead=started&&rankOf[p]===0&&!tied,d=G.lastDeltas?G.lastDeltas[p]:null;
    h+='<div class="srow'+(turn?' turn':'')+(lead?' lead':'')+'" data-p="'+p+'"><div class="who'+(p===0?' you':'')+'">'+ava(p,3)+'<div style="min-width:0"><div class="nm">'+nm(p)+'</div><div class="sub">('+SUBS[p]+')</div></div></div>'+
     '<div class="pips">'+pips(G.bids[p],G.won[p],p)+(turn?'<span class="turnpill" style="margin-left:6px">'+(G.phase===1?'OPENING':'PROPOSING')+'</span>':'')+'</div>'+
-    '<div class="score"><div class="sv">'+(lead?'<span class="md">🥇</span>':'')+G.totals[p]+(d!=null?'<span class="d '+(d>=0?'up':'dn')+'">'+(d>=0?'+':'')+d+'</span>':'')+'</div><div class="sg'+((G.paid&&G.paid[p])?' paid':'')+'">'+((G.paid&&G.paid[p])?'bribed '+G.paid[p]+' G':'no bribes')+'</div></div>';
+    '<div class="score"><div class="sv">'+(lead?'<span class="md">🥇</span>':'')+G.totals[p]+(d!=null?'<span class="d '+(d>=0?'up':'dn')+'">'+(d>=0?'+':'')+d+'</span>':'')+'</div><div class="sg'+((G.paid&&G.paid[p])?' paid':'')+'">'+((G.paid&&G.paid[p])?'💰 '+G.paid[p]+' Bribe':'no bribe')+'</div></div>';
    if(G.reveal===p&&G.wonPiles[p].length){var last=G.wonPiles[p][G.wonPiles[p].length-1];h+='<div class="revealrow" data-hide="'+p+'">'+last.map(function(c){return card(c.card,{win:c.win});}).join('')+'</div>';}
    h+='</div>';}
   $('b2').innerHTML=h;
@@ -439,7 +450,7 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
   var head='<th>Round</th>'+[0,1,2,3].map(function(p){return '<th>'+nmYou(p)+'</th>';}).join('');
   var body=G.history.map(function(h){return '<tr><td>'+(h.ri>=G.baseLen?'⚔ TB'+(h.ri-G.baseLen+1):'R'+(h.ri+1))+' <small>'+h.size+'p</small></td>'+[0,1,2,3].map(function(p){var f=h.fees?h.fees[p]:0;
     return '<td><b style="color:'+(h.deltas[p]>=0?'var(--good)':'var(--bad)')+'">'+(h.deltas[p]>=0?'+':'')+h.deltas[p]+'</b> <small>'+h.totals[p]+'</small>'+(f?' <small style="color:#f7b0b8">💰'+f+'</small>':'')+'</td>';}).join('')+'</tr>';}).join('');
-  var tot='<tr class="tot"><td>Deal Points</td>'+[0,1,2,3].map(function(p){return '<td>'+G.totals[p]+'</td>';}).join('')+'</tr>'+
+  var tot='<tr class="tot"><td>Deals</td>'+[0,1,2,3].map(function(p){return '<td>'+G.totals[p]+'</td>';}).join('')+'</tr>'+
    '<tr><td>Bribes paid</td>'+[0,1,2,3].map(function(p){return '<td>'+((G.paid&&G.paid[p])||0)+' G</td>';}).join('')+'</tr>';
   $('histBody').innerHTML='<table class="htab"><thead><tr>'+head+'</tr></thead><tbody>'+(body||'<tr><td colspan="5" style="text-align:center;color:var(--mut)">No rounds completed yet.</td></tr>')+tot+'</tbody></table>';
   $('histOv').hidden=false;
@@ -530,11 +541,15 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
   G.lastDeltas=deltas.slice();G.history.push({ri:G.ri,size:G.size,deltas:deltas.slice(),fees:fees.slice(),totals:G.totals.slice(),bids:G.bids.slice(),won:G.won.slice()});
   renderTrumpDeal();
   G._active=-1;drawTop();renderSeats();renderStandings();renderHand(false,null);
-  var line=[0,1,2,3].map(function(p){var hit=G.bids[p]===G.won[p];return '<div class="sl">'+ava(p,2)+'<div class="r"><b style="color:var(--ink)">'+nm(p)+'</b> '+(hit?'guessed right':'guessed wrong')+'<br>'+G.won[p]+' won / '+G.bids[p]+' open</div><div class="d '+(deltas[p]>0?'up':deltas[p]<0?'dn':'')+'">'+(deltas[p]>=0?'+':'')+deltas[p]+' <small style="font-size:12px">DP</small></div><div class="r" style="color:'+(fees[p]?'#f7b0b8':'var(--mut)')+'">'+(fees[p]?'💰 '+fees[p]+' GRAMS to the pot':'no bribe')+'</div></div>';}).join('');
+  var line=[0,1,2,3].map(function(p){var hit=G.bids[p]===G.won[p],d=deltas[p];
+   return '<div class="sl '+(hit?'ok':'ko')+'"><div class="slh">'+ava(p,2)+'<b>'+nm(p)+'</b><span class="vd '+(hit?'ok':'ko')+'">'+(hit?'RIGHT':'WRONG')+'</span></div>'+
+    '<div class="slm"><span><i>OPENED</i>'+G.bids[p]+'</span><span><i>CLOSED</i>'+G.won[p]+'</span></div>'+
+    '<div class="d '+(d>0?'up':d<0?'dn':'')+'">'+(d>0?'+':d<0?'−':'')+Math.abs(d)+'<small>'+(Math.abs(d)===1?'DEAL':'DEALS')+'</small></div>'+
+    '<div class="slb'+(fees[p]?' ko':'')+'">'+(fees[p]?'💰 '+fees[p]+' Bribe':'no bribe')+'</div></div>';}).join('');
   var last=G.ri===G.sizes.length-1,goTB=last&&KL.leaderTied(G.totals)&&G.sizes.length-G.baseLen<KL.TIEBREAK_CAP;
   $('tableHead').innerHTML='🤝 THE TABLE · '+rlabel().toLowerCase()+' settled';
-  $('b3').innerHTML='<div class="felt st"><div class="center settle"><div class="bigask">'+rlabel()+' settled · pot '+G.pot+' GRAMS<small>guess right: +1 DP per deal closed · guess wrong: −1 DP per deal off and 5 GRAMS into the bribe pot</small></div><div class="line">'+line+'</div><button class="btn" id="cont"'+(goTB?' style="background:var(--bad);color:#2a0a10"':'')+'>'+(goTB?'⚔ Tied at the top — tie break →':last?'Final result →':'Next round →')+'</button></div></div>';
-  setAction(goTB?'Tied at the top — the auction goes on!':'Round settled — Deal Points updated.','Deal');
+  $('b3').innerHTML='<div class="felt st"><div class="center settle"><div class="bigask">'+rlabel()+' settled · pot '+G.pot+' GRAMS<small>guess right: +1 deal for every deal closed · guess wrong: −1 deal for every deal off, and 💰 5 Bribe into the pot</small></div><div class="line">'+line+'</div><button class="btn" id="cont"'+(goTB?' style="background:var(--bad);color:#2a0a10"':'')+'>'+(goTB?'⚔ Tied at the top — tie break →':last?'Final result →':'Next round →')+'</button></div></div>';
+  setAction(goTB?'Tied at the top — the auction goes on!':'Round settled — deals updated.','Deal');
   await new Promise(function(res){if(AUTOTEST){res();return;}$('cont').onclick=res;});
   G.start=(G.start+1)%4;
  }
@@ -551,10 +566,10 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
   $('endSheet').innerHTML='<h1>'+(co.length>1?'🤝 '+co.map(function(o){return o.p===0?'You':o.nm;}).join(' and ')+' share the win':G.won0?'🏆 You win the auction!':order[0].nm+' wins the auction')+'</h1><div style="color:var(--mut);font-size:.9rem;margin:-.3rem 0 .2rem">'+MODE_NAMES[G.mode]+' · '+G.baseLen+' rounds'+(tbs?' + <b style="color:var(--bad)">'+tbs+' tie break'+(tbs>1?'s':'')+'</b>':'')+'</div>'+endTable(order.map(function(o){return {nm:o.nm+(o.p===0?' (you)':''),ava:ava(o.p,2),me:o.p===0,dp:o.t,deals:deals[o.p],place:o.place,paid:o.paid,pay:o.pay};}),G.pot,sp.house)+'<div style="margin-top:1.2rem;display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn" id="again">Play Again</button><button class="btn alt" id="changemode">Change mode</button><button class="btn alt" id="backarcade">← Back to Arcade</button></div>';
   $('endOv').hidden=false;$('again').onclick=function(){$('endOv').hidden=true;startGame(G.mode);};$('changemode').onclick=function(){$('endOv').hidden=true;$('startOv').hidden=false;};
   $('backarcade').onclick=function(){var url=(window.ArcadeHeader&&ArcadeHeader.isKktShell&&ArcadeHeader.isKktShell())?'/arcade':'/arcade';try{window.top.location.href=url;}catch(e){location.href=url;}};}
- // Final table: place, Deal Points, bribes paid, pot share and net GRAMS per leader.
+ // Final table: place, deals, bribes paid, pot share and net GRAMS per leader.
  function endTable(rows,pot,house){
-  return '<table><tr><th style="text-align:left">Final standing</th>'+(rows[0].deals!=null?'<th class="g">Deals</th>':'')+'<th class="g">Deal pts</th><th class="g">Bribed</th><th class="g">Pot share</th><th class="g">Net</th></tr>'+
-   rows.map(function(o){var net=gm(o.pay-o.paid);return '<tr'+(o.me?' class="me"':'')+'><td class="name">'+medal(o.place)+' '+o.ava+o.nm+'</td>'+(o.deals!=null?'<td class="g">'+o.deals+' 🤝</td>':'')+'<td class="g"><b>'+o.dp+'</b></td><td class="g">'+o.paid+'</td><td class="g">'+gm(o.pay)+'</td><td class="g '+(net>0?'up':net<0?'dn':'')+'"><b>'+(net>0?'+':'')+net+'</b></td></tr>';}).join('')+'</table>'+
+  return '<table><tr><th style="text-align:left">Final standing</th>'+'<th class="g">Deals</th><th class="g">💰 Bribes</th><th class="g">Pot share</th><th class="g">Net</th></tr>'+
+   rows.map(function(o){var net=gm(o.pay-o.paid);return '<tr'+(o.me?' class="me"':'')+'><td class="name">'+medal(o.place)+' '+o.ava+o.nm+'</td>'+'<td class="g"><b>'+o.dp+'</b></td><td class="g">'+o.paid+'</td><td class="g">'+gm(o.pay)+'</td><td class="g '+(net>0?'up':net<0?'dn':'')+'"><b>'+(net>0?'+':'')+net+'</b></td></tr>';}).join('')+'</table>'+
    '<p class="potline">💰 Bribe pot <b>'+pot+' GRAMS</b> · 1st 50% · 2nd 30% · 3rd 15% · house kept <b>'+gm(house)+'</b> · amounts in GRAMS</p>';}
  // Tie-break banner. Solo waits for the button; online it clears itself (the server moves on).
  function showTieBreak(n,size,online){
