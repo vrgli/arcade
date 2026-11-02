@@ -28,7 +28,7 @@ section{margin:34px 0}h2{font-size:20px;margin:0 0 10px;letter-spacing:-.01em}
 .hero img{cursor:pointer;transform-origin:50% 60%}
 @keyframes jerk{0%{transform:none}12%{transform:rotate(-7deg) scale(1.07) translateY(-8px)}30%{transform:rotate(6deg) scale(1.05) translateY(-4px)}48%{transform:rotate(-4deg) scale(1.03)}66%{transform:rotate(2deg) scale(1.01)}100%{transform:none}}
 .hero img.jerk{animation:jerk .65s cubic-bezier(.3,1.4,.5,1)}
-.game .fork,.fork{display:inline-block;margin:0;border:1px solid var(--yl);color:var(--yl);font:700 12px/1 var(--mono);letter-spacing:.12em;padding:9px 13px;border-radius:9px;text-decoration:none;cursor:pointer}
+.game .fork,.fork{display:inline-block;margin:0;background:transparent;border:1px solid var(--yl);color:var(--yl);font:700 12px/1 var(--mono);letter-spacing:.12em;padding:9px 13px;border-radius:9px;text-decoration:none;cursor:pointer}
 a.game .fork:hover,.fork:hover{background:var(--yl);color:#111}
 .game .cover{display:block}.game .title{text-decoration:none}.game .row{display:flex;gap:10px;align-items:center;margin-top:14px;justify-content:space-between}.game .fork{margin-left:auto;display:inline-flex;align-items:center;gap:7px}.game .t.top{border-bottom:1px solid var(--line)}.game .cover img{border-bottom:0}
 

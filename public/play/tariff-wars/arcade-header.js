@@ -1,12 +1,12 @@
 /* ===========================================================================
-   Fitz & Pop Arcade — CANONICAL HEADER runtime (shared, do not edit per-game)
-   Source of truth: docs/CANONICAL-HEADER-SPEC.md
+   Game header runtime for Tariff Wars.
    Classic <script> (no modules). Exposes window.ArcadeHeader = { Sound, Music,
    armOnFirstGesture, buildAudioButtons, buildMobileAudioItems, isEmbeddedInArcade,
    isKktShell, setupArcadeBack, setupEmbedExtras }.
 
    - Sound: procedural WebAudio SFX. Shared mute pref -> localStorage 'fp-sfx-muted'.
-   - Music: procedural chiptune.       Shared on/off pref -> localStorage 'fp-music-off'.
+   - Music: procedural chiptune or brass march (style:'march'). Always starts off;
+     the player switches it on with the 🎵 button.
    No audio files. Header ONLY — never touches gameplay.
    =========================================================================== */
 (function (global) {
@@ -122,8 +122,24 @@ var Music = (function () {
     wistful:     ['Am', 'Em', 'F', 'C', 'Am', 'Dm', 'Em', 'Am'],
     hopeful:     ['C', 'G', 'Am', 'F', 'C', 'G', 'F', 'C']
   };
-  var ctx = null, master = null, tone = null, off = false;
-  try { off = localStorage.getItem(LS_KEY) === '1'; } catch (e) {}
+  // Brass march for style:'march': original 16-bar tune in F, A then B section.
+  // Each bar is 8 eighths; melody events are [midi, eighths], 0 = rest.
+  var MARCH = {
+    chords: { F: [41, [57, 60, 65]], Bb: [46, [58, 62, 65]], C: [36, [55, 58, 64]], Gm: [43, [55, 58, 62]] },
+    bars: [
+      ['F',  [[72,3],[69,1],[65,2],[69,2]]], ['F',  [[72,2],[77,4],[72,2]]],
+      ['Bb', [[74,3],[72,1],[70,2],[74,2]]], ['F',  [[72,6],[0,2]]],
+      ['C',  [[70,3],[69,1],[67,2],[70,2]]], ['F',  [[69,3],[67,1],[65,2],[69,2]]],
+      ['C',  [[67,2],[69,2],[70,2],[64,2]]], ['F',  [[65,4],[0,2],[72,2]]],
+      ['Bb', [[74,2],[74,1],[74,1],[77,4]]], ['F',  [[72,2],[72,1],[72,1],[69,4]]],
+      ['Gm', [[70,2],[69,2],[67,2],[70,2]]], ['C',  [[72,6],[0,2]]],
+      ['Bb', [[74,2],[74,1],[74,1],[77,2],[74,2]]], ['F',  [[72,2],[69,2],[65,2],[69,2]]],
+      ['C',  [[67,3],[69,1],[70,2],[64,2]]], ['F',  [[65,2],[72,2],[65,2],[0,2]]]
+    ]
+  };
+  var style = 'chip', noise = null;
+  // Off on every page load, whatever was chosen last time: music is opt-in.
+  var ctx = null, master = null, tone = null, off = true;
   var playing = false, timer = null, nextNoteTime = 0, step = 0, bar = 0, arpIdx = 0, lastMelody = 76, melodyHold = 0;
   var bpm = 90, intensity = 0.55, progression = MOODS.bittersweet;
   var SCHED_INTERVAL = 25, SCHED_AHEAD = 0.12;
@@ -148,6 +164,44 @@ var Music = (function () {
     g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
     osc.connect(g); g.connect(tone); osc.start(when); osc.stop(when + dur + 0.03);
   }
+  function drum(when, kind) {
+    if (kind === 'kick') {
+      var o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine';
+      o.frequency.setValueAtTime(110, when); o.frequency.exponentialRampToValueAtTime(42, when + 0.12);
+      g.gain.setValueAtTime(0.32, when); g.gain.exponentialRampToValueAtTime(0.0001, when + 0.18);
+      o.connect(g); g.connect(master); o.start(when); o.stop(when + 0.2); return;
+    }
+    if (!noise) { noise = ctx.createBuffer(1, ctx.sampleRate * 0.3, ctx.sampleRate); var dd = noise.getChannelData(0); for (var i = 0; i < dd.length; i++) dd[i] = Math.random() * 2 - 1; }
+    var src = ctx.createBufferSource(); src.buffer = noise;
+    var f = ctx.createBiquadFilter(), g2 = ctx.createGain();
+    f.type = kind === 'cymbal' ? 'highpass' : 'bandpass'; f.frequency.value = kind === 'cymbal' ? 6000 : 1800; f.Q.value = 0.7;
+    var len = kind === 'cymbal' ? 0.9 : kind === 'roll' ? 0.06 : 0.11, peak = kind === 'cymbal' ? 0.07 : kind === 'roll' ? 0.07 : 0.12;
+    g2.gain.setValueAtTime(peak, when); g2.gain.exponentialRampToValueAtTime(0.0001, when + len);
+    src.connect(f); f.connect(g2); g2.connect(master); src.start(when); src.stop(when + len + 0.02);
+  }
+  function scheduleMarch(s, when) {
+    var eighth = eighthDur(), b = MARCH.bars[bar % MARCH.bars.length], ch = MARCH.chords[b[0]];
+    var lastOfPhrase = bar % 4 === 3;
+    // Oom-pah: tuba on the beat (root, then fifth), short brass chord on the off-beat.
+    if (s === 0 || s === 4) voice(hz(ch[0] + (s === 4 ? 7 : 0)), when, eighth * 1.6, { type: 'sawtooth', peak: 0.16, attack: 0.015 });
+    if (s === 2 || s === 6) ch[1].forEach(function (mm) { voice(hz(mm), when, eighth * 0.7, { type: 'sawtooth', peak: 0.035, attack: 0.01 }); });
+    if (s === 0 || s === 4) drum(when, 'kick');
+    if (s === 2 || s === 6) drum(when, 'snare');
+    if (lastOfPhrase && s >= 6) { drum(when + eighth / 2, 'roll'); drum(when + eighth * 0.75, 'roll'); }
+    if (s === 0 && bar % 8 === 0) drum(when, 'cymbal');
+    // Melody: brass (two detuned saws) over a soft octave-down horn.
+    var at = 0;
+    for (var i = 0; i < b[1].length; i++) {
+      var ev = b[1][i];
+      if (at === s && ev[0]) {
+        var secs = eighth * ev[1] * 0.9;
+        voice(hz(ev[0]), when, secs, { type: 'sawtooth', peak: 0.075, attack: 0.03 });
+        voice(hz(ev[0]), when, secs, { type: 'sawtooth', peak: 0.05, attack: 0.03, detune: 9 });
+        voice(hz(ev[0] - 12), when, secs, { type: 'triangle', peak: 0.06, attack: 0.04 });
+      }
+      at += ev[1];
+    }
+  }
   function pickMelody(chordPc, beat) {
     var candidates = beat ? MELODY_NOTES.filter(function (mm) { return chordPc.indexOf(mm % 12) >= 0; }) : MELODY_NOTES;
     var best = candidates[0], bestScore = -Infinity;
@@ -159,6 +213,7 @@ var Music = (function () {
     return best;
   }
   function scheduleStep(s, when) {
+    if (style === 'march') return scheduleMarch(s, when);
     var chord = CHORDS[progression[bar % progression.length]];
     var beat = s % 2 === 0, eighth = eighthDur();
     if (s === 0 || s === 4) voice(hz(chord.bass), when, eighth * 2 * 0.95, { type: 'triangle', peak: 0.22, attack: 0.02 });
@@ -220,7 +275,7 @@ var Music = (function () {
       if (playing && master && ctx) { var t = ctx.currentTime; master.gain.cancelScheduledValues(t); master.gain.linearRampToValueAtTime(intensity, t + 0.4); }
     },
     setMood: function (name) { if (MOODS[name]) progression = MOODS[name]; },
-    configure: function (o) { o = o || {}; if (o.bpm != null) this.setBpm(o.bpm); if (o.intensity != null) this.setIntensity(o.intensity); if (o.mood) this.setMood(o.mood); }
+    configure: function (o) { o = o || {}; if (o.style === 'march') { style = 'march'; bpm = 112; intensity = 0.5; } if (o.bpm != null) this.setBpm(o.bpm); if (o.intensity != null) this.setIntensity(o.intensity); if (o.mood) this.setMood(o.mood); }
   };
 })();
 

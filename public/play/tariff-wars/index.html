@@ -6,13 +6,16 @@
 body{font-family:"Segoe UI",system-ui,sans-serif;color:var(--ink);background:var(--bg);overflow:hidden}
 #app{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}
 img.px{image-rendering:pixelated;display:block}
-/* ===== TOP BAR — canonical shared header (arcade-header.css); .stat/#flash/.steps are what drawTop() fills ===== */
+/* ===== TOP BAR — canonical shared header (arcade-header.css); .stat/#flash are what drawTop() fills; the ☰ menu holds New game / Log / How to play ===== */
 .stat{font-size:12px;color:var(--mut);background:var(--pan2);padding:4px 11px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}.stat b{color:var(--ink)}.stat .dn{color:var(--warn);font-weight:800}
-@media (max-width:1560px){.stat .mtxt,.step .stx,.firstpill .ftx{display:none}.ah-center{flex:0 1 auto}.ah-right{flex:0 0 auto}}
+@media (max-width:1560px){.ah-center{flex:0 1 auto}.ah-right{flex:0 0 auto}}
+.ah-right{position:relative}.ah-brand-text{display:none}
+.tw-menu{position:absolute;right:0;top:calc(100% + 8px);z-index:60;min-width:180px;display:flex;flex-direction:column;padding:6px;border-radius:12px;background:#221935;border:1px solid #4a3b6b;box-shadow:0 14px 40px rgba(0,0,0,.6)}
+.tw-menu[hidden]{display:none}
+.tw-menu button{all:unset;cursor:pointer;padding:10px 12px;border-radius:8px;font:600 13px/1 system-ui,sans-serif;color:#ece3ff}.tw-menu button:hover,.tw-menu button:focus-visible{background:#3a2c58}
 #flash{display:flex;align-items:center;gap:12px;max-width:760px;width:100%;min-width:230px;padding:7px 16px;border-radius:10px;background:linear-gradient(90deg,rgba(232,193,90,.10),rgba(232,193,90,.20));border:1px solid rgba(232,193,90,.5);box-shadow:0 0 16px rgba(232,193,90,.25)}
 #flash .who{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#20160a;background:var(--gold);padding:3px 9px;border-radius:6px;font-weight:800;white-space:nowrap;flex:0 0 auto}
 #flash .msg{font-weight:700;color:#f6e2b0;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.steps{display:flex;gap:6px}.step{font-size:11px;font-weight:800;padding:5px 10px;border-radius:7px;white-space:nowrap;background:var(--pan2);border:1px solid var(--line);color:var(--mut)}.step.on{background:var(--gold);border-color:var(--gold);color:#20160a}
 .firstpill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;letter-spacing:.3px;color:#20160a;background:var(--gold);padding:2px 9px;border-radius:20px;white-space:nowrap;vertical-align:middle}
 .turnpill{font-size:10px;font-weight:800;letter-spacing:.5px;color:#20160a;background:var(--gold);padding:2px 8px;border-radius:20px;white-space:nowrap}
 .firstseat{font-size:10px;font-weight:800;letter-spacing:.4px;color:#053;background:var(--good);padding:2px 8px;border-radius:20px;white-space:nowrap}
@@ -160,14 +163,13 @@ img.px{image-rendering:pixelated;display:block}
   .sthead,.srow{grid-template-columns:110px 1fr 70px}.who .ava{width:40px;height:40px}.who .nm{font-size:14px}.score{font-size:20px}.pip{width:30px;height:30px;font-size:15px}
   .settle .line{grid-template-columns:repeat(2,1fr)}
   .sheet{max-width:calc(100vw - 20px)!important;max-height:calc(100dvh - 20px);overflow:auto}
-  .ah-topbar .ah-center{display:none}
+  .ah-topbar .ah-center{display:flex;order:3;flex:1 1 100%}#flash{min-width:0;padding:5px 10px}
   html{overflow-x:hidden}
   body{overflow:visible!important}
   .ah-topbar{display:flex!important;flex-wrap:wrap;height:auto!important;min-height:0;padding:6px 8px;gap:6px;align-items:center;position:relative}
   .ah-topbar .ah-left{flex:1 1 auto}
-  .ah-topbar .ah-right{flex:1 1 100%;flex-wrap:wrap;gap:6px;justify-content:flex-start}
-  #tbr{flex-wrap:wrap;gap:6px!important}.ah-ctlgroup{flex-wrap:wrap;gap:6px!important}
-  .stat,.step,.ah-ctl{font-size:11px;padding:4px 8px}
+  .ah-topbar .ah-right{flex:0 0 auto;gap:6px}
+  .stat,.ah-ctl{font-size:11px;padding:4px 8px}
 }
 </style>
 <link rel="stylesheet" href="arcade-header.css" />
@@ -184,11 +186,13 @@ img.px{image-rendering:pixelated;display:block}
         controls must NOT be its children) · controls live in a sibling group. -->
    <div class="ah-right">
      <span id="tbr" style="display:flex;gap:8px;align-items:center"></span>
-     <span class="ah-ctlgroup" id="ah-ctlgroup" style="display:flex;gap:10px;align-items:center">
-       <button id="btn-newgame" class="ah-ctl">NEW GAME</button>
-       <button id="btn-log" class="ah-ctl">LOG</button>
-       <button id="btn-help" class="ah-ctl">HOW TO PLAY</button>
-     </span>
+     <span class="ah-ctlgroup" id="ah-ctlgroup" style="display:flex;gap:6px;align-items:center"></span>
+     <button id="btn-menu" class="ah-ctl icon" title="Menu" aria-haspopup="true" aria-expanded="false">☰</button>
+     <div id="ah-menu" class="tw-menu" hidden>
+       <button id="btn-newgame">New game</button>
+       <button id="btn-log">Game log</button>
+       <button id="btn-help">How to play</button>
+     </div>
    </div>
  </header>
  <div class="main">
@@ -304,11 +308,7 @@ img.px{image-rendering:pixelated;display:block}
   return [lbl,left];}
  function drawTop(){
   var d=dir();
-  $('tbr').innerHTML='<span class="stat" title="Game mode: '+MODE_NAMES[G.mode]+'">🎮<span class="mtxt"> '+MODE_NAMES[G.mode]+'</span></span>'+
-   '<span class="stat" title="'+d[1]+' round'+(d[1]===1?'':'s')+' left after this one">🔁 Round <b>'+(G.ri+1)+'</b>/'+G.sizes.length+' <span class="dn">'+d[0]+'</span></span>'+
-   '<span class="stat" title="Proposals in hand this round">💰 <b>'+G.size+'</b> each</span>'+
-   '<span class="firstpill" title="'+nm(G.start)+' opens this round">▶ '+nm(G.start)+'<span class="ftx"> opens</span></span>'+
-   '<span class="steps"><span class="step'+(G.phase===1?' on':'')+' title="Deal">🃏<span class="stx"> DEAL</span></span><span class="step'+(G.phase===1?' on':'')+' title="Open deals">🤝<span class="stx"> OPEN</span></span><span class="step'+(G.phase>=2?' on':'')+' title="Negotiate">💬<span class="stx"> NEGOTIATE</span></span></span>';
+  $('tbr').innerHTML='<span class="stat" title="'+MODE_NAMES[G.mode]+' · '+d[1]+' round'+(d[1]===1?'':'s')+' left after this one · '+nm(G.start)+' opens this round">Round <b>'+(G.ri+1)+'</b>/'+G.sizes.length+' <span class="dn">'+d[0]+'</span> · <b>'+(G.phase>=2?'Negotiate':'Open deals')+'</b></span>';
   $('boxDeal').classList.toggle('active',G.phase===1);
   $('boxPlay').classList.toggle('active',G.phase>=2);
  }
@@ -652,7 +652,13 @@ import { startMultiplayer } from './mp-client.js';
 <script>
 (function(){
   var grp = document.getElementById('ah-ctlgroup');
-  ArcadeHeader.buildAudioButtons(grp, { music: { mood: 'wistful' } });
+  ArcadeHeader.buildAudioButtons(grp, { music: { style: 'march' }, divider: false });
+  var menu = document.getElementById('ah-menu'), mb = document.getElementById('btn-menu');
+  function setMenu(open) { menu.hidden = !open; mb.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+  mb.addEventListener('click', function (e) { e.stopPropagation(); setMenu(menu.hidden); });
+  menu.addEventListener('click', function () { setMenu(false); });
+  document.addEventListener('click', function (e) { if (!menu.hidden && !menu.contains(e.target)) setMenu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
   ArcadeHeader.setupArcadeBack(document.getElementById('ah-arcade'));
   ArcadeHeader.armOnFirstGesture();
   var helpOv = document.getElementById('helpOv');
