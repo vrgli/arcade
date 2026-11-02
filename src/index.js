@@ -116,7 +116,8 @@ export default {
         return Response.json({ wallop: strip(data.wallop), tariff_wars: strip(data.tariff_wars) });
       }
       const s = await getSession(req, env);
-      return new Response(leaderboardPage(data, s && s.accountId), { headers: { 'Content-Type': 'text/html;charset=utf-8' } });
+      const me = s ? (await acct(env, '/account?id=' + s.accountId)).account : null;
+      return new Response(leaderboardPage(data, me), { headers: { 'Content-Type': 'text/html;charset=utf-8' } });
     }
     // Wallop used to be BRUX.
     if (p === '/play/brux' || p.startsWith('/play/brux/')) return Response.redirect(url.origin + '/play/wallop/' + url.search, 301);

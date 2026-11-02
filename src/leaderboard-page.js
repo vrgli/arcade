@@ -8,7 +8,7 @@ export function page(title, body, app = 'Arcade') {
 <title>${esc(title)} · play.vrg.li</title><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/arcade.css">
 <style>.av{width:24px;height:24px;border-radius:50%;object-fit:cover;background:var(--panel);border:1px solid var(--line);vertical-align:middle;margin-right:10px}
 .av.i{display:inline-flex;align-items:center;justify-content:center;font:700 11px/1 var(--mono);color:var(--yl)}
-td.p{white-space:nowrap}tr.me td{background:rgba(255,212,0,.08)}tr.me td.p{color:var(--yl)}td.n{color:var(--mute);width:36px}</style></head>
+td.p{white-space:nowrap}.you{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:-24px 0 40px;color:var(--mute)}.you b{color:var(--yl)}tr.me td{background:rgba(255,212,0,.08)}tr.me td.p{color:var(--yl)}td.n{color:var(--mute);width:36px}</style></head>
 <body><script src="/env.js"></script><script src="/vrg-chrome.js" data-app="${esc(app)}" data-public="1"></script>
 <main class="wrap"><p class="kicker">VRG · ARCADE</p><h1>${esc(title)}</h1>${body}
 <footer><a href="/">ARCADE</a><a href="/source/">SOURCE</a><a href="/stats">STATS</a><a href="/privacy">PRIVACY</a></footer></main></body></html>`;
@@ -25,9 +25,13 @@ function board(title, rows, cols, me) {
       cols.map(([k]) => `<td>${esc(Number(r[k] || 0).toLocaleString('en'))}</td>`).join('')}</tr>`).join('')}</tbody></table></section>`;
 }
 
-// data = the Accounts DO's /leaderboard payload; me = signed-in account id or null.
-export function leaderboardPage(data, me) {
-  const body = `<p class="lead">Top 50 per game. Sign in from any game to get on the board.</p>
+// data = the Accounts DO's /leaderboard payload; account = the signed-in account or null.
+export function leaderboardPage(data, account) {
+  const me = account && account.id;
+  const you = account && account.nick_set
+    ? `<p class="you">Playing as <b>${esc(account.name)}</b><button class="fork" data-nick-edit="${esc(account.name)}">CHANGE NICKNAME</button></p><script src="/nick.js"></script>`
+    : account ? '<script src="/nick.js"></script>' : '';
+  const body = `<p class="lead">Top 50 per game. Sign in from any game to get on the board.</p>${you}
 ${board('Wallop', data.wallop, [['teeth', 'TEETH'], ['noise', 'NOISE'], ['battles', 'BATTLES']], me)}
 ${board('Tariff Wars', data.tariff_wars, [['won', 'GAMES WON'], ['margin_total', 'MARGIN OVER RUNNER-UP'], ['games', 'GAMES']], me)}`;
   return page('Leaderboard', body, 'Arcade · leaderboard');
