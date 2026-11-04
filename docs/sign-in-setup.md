@@ -1,5 +1,7 @@
 # Sign-in setup for play.vrg.li
 
+These OAuth clients are for the games site, play.vrg.li, only. VRG apps are separate: each app needs its own callback URL added (Google, Discord) or its own OAuth app (GitHub takes a single callback). The name shown to players on each consent screen is "Play VRG".
+
 Four OAuth clients, one per provider. Every provider uses the same two values:
 
 - **Site / origin:** `https://play.vrg.li`
@@ -15,7 +17,7 @@ Do each provider independently; the site switches a button on as soon as that pr
 Source: support.google.com/cloud/answer/6158849, developers.google.com/identity/openid-connect/openid-connect.
 
 1. Open https://console.cloud.google.com/auth/clients and sign in. Create a project if asked (any name, e.g. `vrg-arcade`).
-2. If the page asks you to configure Google Auth first (the consent screen), do it: look for "Branding" — enter app name `VRG Arcade`, a support e-mail, and `vrg.li` under authorized domains; look for "Audience" and choose **External**. Save.
+2. If the page asks you to configure Google Auth first (the consent screen), do it: look for "Branding" — enter app name `Play VRG`, a support e-mail, and `vrg.li` under authorized domains; look for "Audience" and choose **External**. Save.
 3. Back on the Clients page click **"CREATE CLIENT"**.
 4. Application type: **Web application**. Name: `play.vrg.li`.
 5. Under **"Authorized JavaScript origins"** add `https://play.vrg.li`.
@@ -33,7 +35,7 @@ Source: docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth
 
 1. Go to https://github.com/settings/developers (profile picture → **"Settings"** → **"Developer settings"** → **"OAuth apps"**).
 2. Click **"New OAuth App"** (reads **"Register a new application"** the first time).
-3. **"Application name"**: `VRG Arcade`.
+3. **"Application name"**: `Play VRG`.
 4. **"Homepage URL"**: `https://play.vrg.li`.
 5. **"Authorization callback URL"**: `https://play.vrg.li/auth/github/callback`.
 6. Leave "Enable Device Flow" off and "Expire user access tokens" as it is.
@@ -48,7 +50,7 @@ Hand back: `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`.
 
 Source: docs.discord.com/developers/topics/oauth2, docs.discord.com/developers/quick-start/getting-started.
 
-1. Go to https://discord.com/developers/applications and click the create button (look for **"New Application"**). Name: `VRG Arcade`, press **"Create"**.
+1. Go to https://discord.com/developers/applications and click the create button (look for **"New Application"**). Name: `Play VRG`, press **"Create"**.
 2. You land on **"General Information"**. Optionally add the icon and description players will see on the consent screen.
 3. In the left menu open **OAuth2**.
 4. Copy the **Client ID** (the same value as the Application ID).
@@ -75,7 +77,7 @@ Requirements: a paid **Apple Developer Program** membership (about US$99/year) w
 
 1. In **Certificates, Identifiers & Profiles** click **Identifiers**, then the add button (+).
 2. Select **App IDs**, click **Continue**; confirm type **App**, click **Continue**.
-3. **Description**: `VRG Arcade`. Select **Explicit App ID** and enter Bundle ID `li.vrg.arcade`.
+3. **Description**: `Play VRG`. Select **Explicit App ID** and enter Bundle ID `li.vrg.arcade`.
 4. Under **Capabilities** tick **Sign in with Apple**.
 5. Click **Continue**, then **Register**.
 
@@ -91,7 +93,7 @@ Requirements: a paid **Apple Developer Program** membership (about US$99/year) w
 ### D. Private key (.p8) and Key ID
 
 1. **Keys** → add button (+).
-2. **Key Name**: `arcade sign in`. Tick **Sign in with Apple**, click **Configure**, choose the primary App ID from step B, save, then **Continue**.
+2. **Key Name**: `play sign in`. Tick **Sign in with Apple**, click **Configure**, choose the primary App ID from step B, save, then **Continue**.
 3. Review and click **Confirm** (or **Register**).
 4. Click **Download**. The file is `AuthKey_<KEYID>.p8`. It can be downloaded only once; Apple does not keep a copy.
 5. Click **Done**. Select the key in the list: the **Key ID** (10 characters) appears below the key name.
@@ -102,7 +104,7 @@ Hand back: `APPLE_CLIENT_ID` = the Services ID identifier (`li.vrg.arcade.web`),
 
 ## Handing the values over
 
-1. In your password manager create one item named exactly **`arcade.vrg.li sign-in`** (type Login is fine; leave username/password empty).
+1. In your password manager create one item named exactly **`play.vrg.li sign-in`** (type Login is fine; leave username/password empty).
 2. Add one custom field per value, of type **Hidden**, named exactly like the env vars:
    `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `APPLE_CLIENT_ID`, `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_PRIVATE_KEY`.
 3. For `APPLE_PRIVATE_KEY` paste the whole `.p8` text into the field (multi-line is fine), or attach the `.p8` file to the item as well.
