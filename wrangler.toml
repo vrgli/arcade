@@ -3,7 +3,7 @@ main = "src/index.js"
 compatibility_date = "2026-01-01"
 workers_dev = false
 
-routes = [{ pattern = "play.vrg.li", custom_domain = true }, { pattern = "arcade.vrg.li", custom_domain = true }]
+routes = [{ pattern = "play.vrg.li", custom_domain = true }]
 
 [assets]
 directory = "public"
@@ -40,7 +40,7 @@ new_sqlite_classes = ["Accounts"]
 [env.uat]
 name = "vrg-arcade-uat"
 workers_dev = false
-routes = [{ pattern = "uat.play.vrg.li", custom_domain = true }, { pattern = "uat.arcade.vrg.li", custom_domain = true }]
+routes = [{ pattern = "uat.play.vrg.li", custom_domain = true }]
 
 [env.uat.vars]
 ARCADE_ENV = "uat"

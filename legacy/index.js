@@ -5,7 +5,7 @@
 const page = (to) => `<!doctype html><meta charset="utf-8"><title>Moved to play.vrg.li</title>
 <meta name="robots" content="noindex"><link rel="canonical" href="${to}">
 <noscript><meta http-equiv="refresh" content="0;url=${to}"></noscript>
-<p style="font:16px system-ui;margin:40px">The arcade moved to <a href="${to}">play.vrg.li</a>.</p>
+<p style="font:16px system-ui;margin:40px">Play VRG moved to <a href="${to}">play.vrg.li</a>.</p>
 <script>(function(){var to=${JSON.stringify(to)},h=location.hash;try{if(!localStorage.getItem('vg_moved')&&localStorage.length){var d={};for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);d[k]=localStorage.getItem(k);}
 var b=btoa(unescape(encodeURIComponent(JSON.stringify(d)))).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');h=(h?h+'&':'#')+'vgcarry='+b;localStorage.setItem('vg_moved','1');}}catch(e){}location.replace(to+h);})();</script>`;
 
