@@ -11,10 +11,10 @@ export function page(title, body, app = 'Play', signedIn = false) {
 <style>.av{width:24px;height:24px;border-radius:50%;object-fit:cover;background:var(--panel);border:1px solid var(--line);vertical-align:middle;margin-right:10px}
 .av.i{display:inline-flex;align-items:center;justify-content:center;font:700 11px/1 var(--mono);color:var(--yl)}
 td.p{white-space:nowrap}.you{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:-24px 0 40px;color:var(--mute)}.you b{color:var(--yl)}tr.me td{background:rgba(255,212,0,.08)}tr.me td.p{color:var(--yl)}td.n{color:var(--mute);width:36px}</style></head>
-<body><div id="barActions"><a class="btn" href="/">← ARCADE</a>${signedIn ? SIGN_OUT : ''}</div>
+<body><div id="barActions"><a class="btn" href="/">← PLAY</a>${signedIn ? SIGN_OUT : ''}</div>
 <script src="/env.js"></script><script src="/vrg-chrome.js" data-app="${esc(app)}" data-public="1" data-actions="#barActions"></script>
-<main class="wrap"><p class="kicker">VRG · ARCADE</p><h1>${esc(title)}</h1>${body}
-<footer><a href="/">ARCADE</a><a href="/source/">SOURCE</a><a href="/stats">STATS</a><a href="/privacy">PRIVACY</a></footer></main></body></html>`;
+<main class="wrap"><p class="kicker">VRG · PLAY</p><h1>${esc(title)}</h1>${body}
+<footer><a href="/">PLAY</a><a href="/source/">SOURCE</a><a href="/stats">STATS</a><a href="/privacy">PRIVACY</a></footer></main></body></html>`;
 }
 
 const avatar = (r) => r.avatar
