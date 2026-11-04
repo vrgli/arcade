@@ -210,7 +210,7 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
 <body><div id="app">
  <header id="topbar" class="ah-topbar" style="--hdr-accent:#e8c15a;">
    <div class="ah-left">
-     <a id="ah-arcade" class="ah-arcade" href="/arcade">← Arcade</a>
+     <a id="ah-arcade" class="ah-arcade" href="/">← Home</a>
      <span class="ah-brand-text">Tariff Wars</span>
    </div>
    <div class="ah-center"><div id="flash"><span class="who" id="flash-who">Tariff Wars</span><span class="msg" id="flash-msg"></span></div></div>
@@ -563,9 +563,9 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
   var deals=[0,0,0,0];G.history.forEach(function(h){for(var p=0;p<4;p++)deals[p]+=h.won[p];});
   var tbs=G.sizes.length-G.baseLen;
   var co=order.filter(function(o){return o.place===0;});
-  $('endSheet').innerHTML='<h1>'+(co.length>1?'🤝 '+co.map(function(o){return o.p===0?'You':o.nm;}).join(' and ')+' share the win':G.won0?'🏆 You win the auction!':order[0].nm+' wins the auction')+'</h1><div style="color:var(--mut);font-size:.9rem;margin:-.3rem 0 .2rem">'+MODE_NAMES[G.mode]+' · '+G.baseLen+' rounds'+(tbs?' + <b style="color:var(--bad)">'+tbs+' tie break'+(tbs>1?'s':'')+'</b>':'')+'</div>'+endTable(order.map(function(o){return {nm:o.nm+(o.p===0?' (you)':''),ava:ava(o.p,2),me:o.p===0,dp:o.t,deals:deals[o.p],place:o.place,paid:o.paid,pay:o.pay};}),G.pot,sp.house)+'<div style="margin-top:1.2rem;display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn" id="again">Play Again</button><button class="btn alt" id="changemode">Change mode</button><button class="btn alt" id="backarcade">← Back to Arcade</button></div>';
+  $('endSheet').innerHTML='<h1>'+(co.length>1?'🤝 '+co.map(function(o){return o.p===0?'You':o.nm;}).join(' and ')+' share the win':G.won0?'🏆 You win the auction!':order[0].nm+' wins the auction')+'</h1><div style="color:var(--mut);font-size:.9rem;margin:-.3rem 0 .2rem">'+MODE_NAMES[G.mode]+' · '+G.baseLen+' rounds'+(tbs?' + <b style="color:var(--bad)">'+tbs+' tie break'+(tbs>1?'s':'')+'</b>':'')+'</div>'+endTable(order.map(function(o){return {nm:o.nm+(o.p===0?' (you)':''),ava:ava(o.p,2),me:o.p===0,dp:o.t,deals:deals[o.p],place:o.place,paid:o.paid,pay:o.pay};}),G.pot,sp.house)+'<div style="margin-top:1.2rem;display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn" id="again">Play Again</button><button class="btn alt" id="changemode">Change mode</button><button class="btn alt" id="backarcade">← Home</button></div>';
   $('endOv').hidden=false;$('again').onclick=function(){$('endOv').hidden=true;startGame(G.mode);};$('changemode').onclick=function(){$('endOv').hidden=true;$('startOv').hidden=false;};
-  $('backarcade').onclick=function(){var url=(window.ArcadeHeader&&ArcadeHeader.isKktShell&&ArcadeHeader.isKktShell())?'/arcade':'/arcade';try{window.top.location.href=url;}catch(e){location.href=url;}};}
+  $('backarcade').onclick=function(){var url=(window.ArcadeHeader&&ArcadeHeader.isKktShell&&ArcadeHeader.isKktShell())?'/':'/';try{window.top.location.href=url;}catch(e){location.href=url;}};}
  // Final table: place, deals, bribes paid, pot share and net GRAMS per leader.
  function endTable(rows,pot,house){
   return '<table><tr><th style="text-align:left">Final standing</th>'+'<th class="g">Deals</th><th class="g">💰 Bribes</th><th class="g">Pot share</th><th class="g">Net</th></tr>'+
@@ -671,7 +671,7 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
   var order=result.players.map(function(p){return {seat:p.playerId,score:p.finalScore,place:p.place!=null?p.place:0,paid:p.paid||0,pay:p.payout||0,name:LEADERS[p.playerId%4].nm+(p.playerId===mySeat?' (you)':(p.isAI?'':' · '+(p.name||'')))};}).sort(function(a,b){return a.place-b.place||b.score-a.score;});
   var co=order.filter(function(o){return o.place===0;});
   var youWon=co.length===1&&result.winner===mySeat;
-  var backBtn='<button class="btn alt" id="mpback">← Back to Arcade</button>';
+  var backBtn='<button class="btn alt" id="mpback">← Home</button>';
   var againBtn=window.__presinaRematch?'<button class="btn" id="mpagain" style="background:var(--gold);color:#20160a;font-weight:800">🔄 Play again</button>':'';
   $('endSheet').innerHTML='<h1>'+(co.length>1?'🤝 '+co.map(function(o){return o.name;}).join(' and ')+' share the win':youWon?'🏆 You win the auction!':order[0].name+' wins the auction')+'</h1>'+
     '<div style="color:var(--mut);font-size:.9rem;margin:-.3rem 0 .2rem">'+(MODE_NAMES[result.mode]||result.mode)+' · online'+(result.tiebreaks?' · <b style="color:var(--bad)">'+result.tiebreaks+' tie break'+(result.tiebreaks>1?'s':'')+'</b>':'')+'</div>'+
@@ -680,7 +680,7 @@ body.tb .box{border-color:rgba(255,107,125,.45)}body.tb #flash{background:linear
   $('endOv').hidden=false;snd(youWon?'reward':'draw');
   if($('mpagain'))$('mpagain').onclick=function(){var b=$('mpagain');b.disabled=true;b.textContent='Restarting the table…';
    Promise.resolve(window.__presinaRematch()).then(function(ok){if(!ok&&$('mpagain')){$('mpagain').disabled=false;$('mpagain').textContent='🔄 Play again';}});};
-  $('mpback').onclick=function(){var u=(window.ArcadeHeader&&ArcadeHeader.isKktShell&&ArcadeHeader.isKktShell())?'/arcade':'/arcade';try{window.top.location.href=u;}catch(e){location.href=u;}};
+  $('mpback').onclick=function(){var u=(window.ArcadeHeader&&ArcadeHeader.isKktShell&&ArcadeHeader.isKktShell())?'/':'/';try{window.top.location.href=u;}catch(e){location.href=u;}};
  }
  // Bridge the ES-module MP client (mp-client.js) ↔ this IIFE + the e2e harness.
  // (Kept under the __presina name: the relay host and the testbed are shared with Presina.)

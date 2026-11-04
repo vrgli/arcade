@@ -6,7 +6,7 @@
     var addHome = function () {
       if (document.getElementById('arcade-home')) return;
       var a = document.createElement('a');
-      a.id = 'arcade-home'; a.href = '/arcade'; a.textContent = '← Arcade';
+      a.id = 'arcade-home'; a.href = '/'; a.textContent = '← Home';
       // CANONICAL arcade home button — keep identical across every game's
       // arcade-bridge.js (see the clearance rule in this game's CSS). Do not
       // restyle per-game: a divergent button is what caused the overlap bugs.
