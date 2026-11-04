@@ -7,7 +7,7 @@ a{color:inherit}
 #app{min-height:100vh;display:flex;flex-direction:column}
 #top{position:sticky;top:0;z-index:20;height:52px;display:flex;align-items:center;gap:12px;padding:0 14px;background:#0b0c10;border-bottom:1px solid var(--line)}
 #top::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--yl),rgba(255,212,0,0) 38%);pointer-events:none}
-#top .back{font:700 11px/1 var(--mono);letter-spacing:.14em;color:var(--mut);text-decoration:none}
+#top .back{color:var(--yl);text-decoration:none;font:700 12px/1 var(--mono);letter-spacing:.12em}
 #top .brand{font:900 18px/1 var(--mono);letter-spacing:.12em;color:var(--yl)}
 #top .battle{font:600 11px/1 var(--mono);letter-spacing:.14em;color:var(--mut)}#top .battle b{color:var(--ink)}
 .sp{flex:1}
