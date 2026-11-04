@@ -15,7 +15,7 @@
     providers = d.providers || {}; account = d.account || null;
     var a = $('#acctBtn');
     if (account) { a.innerHTML = (account.avatar ? '<img src="' + account.avatar + '" alt="">' : '') + String(account.name || 'YOU').toUpperCase(); a.href = '/leaderboard'; a.title = 'Leaderboard'; $('#outForm').style.display = 'contents'; }
-    else { a.textContent = 'SIGN IN'; a.classList.add('acct'); a.href = '#'; a.onclick = function (e) { e.preventDefault(); target = '/'; $('#gName').textContent = 'THE ARCADE'; $('#guestGo').textContent = 'Not now'; $('#guestGo').href = '#'; $('#guestGo').onclick = function (ev) { ev.preventDefault(); closeSheet(); }; paintProviders('/'); openSheet(); }; }
+    else { a.textContent = 'SIGN IN'; a.classList.add('acct'); a.href = '#'; a.onclick = function (e) { e.preventDefault(); target = '/'; $('#gName').textContent = 'PLAY VRG'; $('#guestGo').textContent = 'Not now'; $('#guestGo').href = '#'; $('#guestGo').onclick = function (ev) { ev.preventDefault(); closeSheet(); }; paintProviders('/'); openSheet(); }; }
     var ba = $('#barActions'); if (ba) ba.hidden = false;
   }).catch(function () { var ba = $('#barActions'); if (ba) ba.hidden = false; });
   document.querySelectorAll('a.play').forEach(function (a) {

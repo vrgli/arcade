@@ -3,9 +3,9 @@
 const esc = (v) => String(v == null ? '' : v).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 // Bare branded page shell, shared with the sign-in notices in auth.js. The bar
-// always carries a way back to the arcade; signedIn adds SIGN OUT.
+// always carries a way back to the home page; signedIn adds SIGN OUT.
 const SIGN_OUT = '<form method="post" action="/auth/logout" style="display:contents"><button type="submit">SIGN OUT</button></form>';
-export function page(title, body, app = 'Arcade', signedIn = false) {
+export function page(title, body, app = 'Play', signedIn = false) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)} · play.vrg.li</title><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/arcade.css">
 <style>.av{width:24px;height:24px;border-radius:50%;object-fit:cover;background:var(--panel);border:1px solid var(--line);vertical-align:middle;margin-right:10px}
@@ -38,5 +38,5 @@ export function leaderboardPage(data, account) {
 ${board('Tariff Wars', data.tariff_wars, [['won', 'GAMES WON'], ['margin_total', 'MARGIN OVER RUNNER-UP'], ['games', 'GAMES']], me)}
 ${board('Wallop', data.wallop, [['teeth', 'TEETH'], ['noise', 'NOISE'], ['battles', 'BATTLES']], me)}
 ${board('Nuclear Negotiations', data.nuclear_negotiations, [['best', 'LONGEST RUN (MOVES)'], ['games', 'GAMES']], me)}`;
-  return page('Leaderboard', body, 'Arcade · leaderboard', !!account);
+  return page('Leaderboard', body, 'Play · leaderboard', !!account);
 }

@@ -105,12 +105,12 @@ export async function handleAuth(req, env, url) {
   const [, name, isCallback] = m;
 
   if (name === 'providers') return Response.json(Object.fromEntries(Object.keys(PROVIDERS).map((k) => [k, !!env.SESSION_SECRET && live(env, k)])));
-  if (!env.SESSION_SECRET) return html('Sign-in is not configured', '<p class="mute">The arcade has no session secret yet, so sign-in is switched off.</p>', 503);
+  if (!env.SESSION_SECRET) return html('Sign-in is not configured', '<p class="mute">Play VRG has no session secret yet, so sign-in is switched off.</p>', 503);
   if (name === 'logout') return req.method === 'POST' ? redirect(url.origin + '/', [clearCookie()]) : new Response('POST only', { status: 405 });
 
   const prov = PROVIDERS[name];
   if (!prov) return new Response('not found', { status: 404 });
-  if (!live(env, name)) return html(`Sign in with ${prov.label} is not switched on yet`, '<p class="mute">The keys for this provider have not been added. Try another way in from the <a href="/">arcade</a>.</p>');
+  if (!live(env, name)) return html(`Sign in with ${prov.label} is not switched on yet`, '<p class="mute">The keys for this provider have not been added. Try another way in from the <a href="/">home page</a>.</p>');
   const callback = `${url.origin}/auth/${name}/callback`;
 
   // Step 1: remember state + where to go afterwards, send the player off.
@@ -124,7 +124,7 @@ export async function handleAuth(req, env, url) {
   const form = req.method === 'POST' ? Object.fromEntries((await req.formData()).entries()) : Object.fromEntries(url.searchParams.entries());
   let st = null;
   try { st = JSON.parse(unb64uStr(cookies(req).vg_oauth || '')); } catch (e) {}
-  const fail = (why) => html('Sign-in did not complete', `<p class="mute">${why}. <a href="/auth/${name}">Try again</a> or go back to the <a href="/">arcade</a>.</p>`, 400, [clearOauth]);
+  const fail = (why) => html('Sign-in did not complete', `<p class="mute">${why}. <a href="/auth/${name}">Try again</a> or go back to the <a href="/">home page</a>.</p>`, 400, [clearOauth]);
   if (form.error) return fail(form.error === 'access_denied' || form.error === 'user_cancelled_authorize' ? 'You cancelled' : 'The provider returned an error');
   if (!st || st.provider !== name || !form.state || !safeEq(String(form.state), st.state)) return fail('The sign-in link expired or did not match');
   if (!form.code) return fail('No code came back');
