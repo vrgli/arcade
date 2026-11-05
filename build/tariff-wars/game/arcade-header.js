@@ -347,7 +347,7 @@ function armOnFirstGesture() {
 function setupArcadeBack(el) {
   if (!el) return;
   if (isEmbeddedInArcade()) { el.setAttribute('hidden', ''); return; }
-  var url = isKktShell() ? '/arcade' : '/arcade';
+  var url = isKktShell() ? '/' : '/';
   el.addEventListener('click', function (e) {
     e.preventDefault();
     try { global.top.location.href = url; } catch (err) { location.href = url; }
